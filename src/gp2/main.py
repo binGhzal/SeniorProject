@@ -7,15 +7,9 @@ import numpy as np
 from .detection import FatigueDetector
 from .planning.ai_algorithms import build_default_ai_plan, detector_mode
 from .planning.connectivity import ConnectivityConfig, validate_connectivity_config
-from .planning.features import (
-    build_default_feature_definition,
-    derive_runtime_feature_flags,
-)
-from .planning.power_plan import (
-    PowerProfile,
-    estimate_total_current,
-    has_valid_power_bounds,
-)
+from .planning.features import build_default_feature_definition, derive_runtime_feature_flags
+from .planning.power_plan import PowerProfile, estimate_total_current, has_valid_power_bounds
+from .planning.software_architecture import RuntimeOrchestratorContract, execute_runtime_cycle
 from .planning.storage_strategy import LocalStorageBuffer, StorageEvent, StoragePolicy
 from .sensors import CameraModule, IMUSensor, IRSys
 from .telemetry import TelemetryClient
@@ -90,94 +84,105 @@ def main():
     ir.set_brightness(50)  # Set IR LEDs to 50%
     sensor_health = build_sensor_health(imu, cam, ir)
     power_profile = build_power_profile(sensor_health)
-    last_status_publish_ts = 0.0
+    runtime_state = {
+        "last_status_publish_ts": 0.0,
+    }
 
-    try:
-        while True:
-            # A. Read Sensors
-            _frame = cam.get_frame()
-            ax, ay, az = imu.read_accel()
-            total_g = np.sqrt(ax**2 + ay**2 + az**2)
+    def read_sensor_snapshot():
+        frame = cam.get_frame()
+        ax, ay, az = imu.read_accel()
+        g_force = float(np.sqrt(ax**2 + ay**2 + az**2))
+        return {
+            "frame": frame,
+            "g_force": g_force,
+        }
 
-            # B. Crash Detection (High G Event) [cite: 228]
-            if runtime_flags.enable_crash_detection and total_g > 2.5:  # 2.5G threshold
-                print(f"CRASH DETECTED! G-Force: {total_g:.2f}")
-                if runtime_flags.enable_alert_publish:
-                    mqtt.send_alert("CRASH", total_g)
-                local_storage.add_event(
-                    StorageEvent(
-                        event_type="alert_crash",
-                        payload={"g_force": total_g},
-                    )
-                )
-                # Here you would lock the circular video buffer
-
-            # C. AI Processing (Simulated landmarks for structure)
-            # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            # rects = detector_dlib(gray, 0)
-            # landmarks = predictor(gray, rect) ...
-
-            # For this code snippet, we simulate landmarks
-            drowsy = False
-            ear = 0.0
-            ai_metrics = {
-                "mode": active_detector_mode,
+    def detect_fatigue(snapshot):
+        if not runtime_flags.enable_fatigue_detection:
+            return {
+                "is_drowsy": False,
+                "ear": 0.0,
                 "latency_ms": 0.0,
                 "false_alert": False,
+                "mode": active_detector_mode,
+                "perclos": 0.0,
             }
-            if runtime_flags.enable_fatigue_detection:
-                mock_landmarks = np.zeros((68, 2))
-                result = detector.analyze_frame_with_metrics(
-                    mock_landmarks,
-                    mode=active_detector_mode,
-                )
-                drowsy = bool(result["is_drowsy"])
-                ear = float(result["ear"])
-                ai_metrics = {
-                    "mode": result["mode"],
-                    "latency_ms": result["latency_ms"],
-                    "false_alert": result["false_alert"],
-                }
 
-            if drowsy:
-                print(f"FATIGUE ALERT! EAR: {ear:.2f}")
-                if runtime_flags.enable_alert_publish:
-                    mqtt.send_alert("FATIGUE", ear)
-                local_storage.add_event(
-                    StorageEvent(
-                        event_type="alert_fatigue",
-                        payload={"ear": ear},
-                    )
-                )
+        return detector.analyze_frame_with_metrics(
+            None,
+            None,
+            active_detector_mode,
+            snapshot.get("frame"),
+        )
 
-            # D. Telemetry Heartbeat
+    def publish_runtime_event(event_type, payload):
+        if event_type == "CRASH":
+            g_force = float(payload.get("g_force", 0.0))
+            print(f"CRASH DETECTED! G-Force: {g_force:.2f}")
+            if runtime_flags.enable_alert_publish:
+                mqtt.send_alert("CRASH", g_force)
+            local_storage.add_event(
+                StorageEvent(
+                    event_type="alert_crash",
+                    payload={"g_force": g_force},
+                )
+            )
+            return
+
+        if event_type == "FATIGUE":
+            ear = float(payload.get("ear", 0.0))
+            print(f"FATIGUE ALERT! EAR: {ear:.2f}")
+            if runtime_flags.enable_alert_publish:
+                mqtt.send_alert("FATIGUE", ear)
+            local_storage.add_event(
+                StorageEvent(
+                    event_type="alert_fatigue",
+                    payload={"ear": ear},
+                )
+            )
+            return
+
+        if event_type == "STATUS":
             current_ts = time.time()
             should_publish_status = (
                 runtime_flags.enable_status_telemetry
-                and (current_ts - last_status_publish_ts)
+                and (current_ts - runtime_state["last_status_publish_ts"])
                 >= connectivity_config.telemetry_interval_s
             )
-            if should_publish_status:
-                mqtt.send_telemetry(
-                    perclos=0.05,
-                    g_force=total_g,
-                    sensor_health=sensor_health,
-                    power_profile=power_profile,
-                    ai_metrics=ai_metrics,
+            if not should_publish_status:
+                return
+
+            ai_metrics = dict(payload.get("ai_metrics", {}))
+            mqtt.send_telemetry(
+                perclos=float(payload.get("perclos", 0.0)),
+                g_force=float(payload.get("g_force", 0.0)),
+                sensor_health=sensor_health,
+                power_profile=power_profile,
+                ai_metrics=ai_metrics,
+            )
+            local_storage.add_event(
+                StorageEvent(
+                    event_type="status",
+                    payload={
+                        "perclos": float(payload.get("perclos", 0.0)),
+                        "g_force": float(payload.get("g_force", 0.0)),
+                        "sensor_health": sensor_health,
+                        "power_profile": power_profile,
+                        "ai_metrics": ai_metrics,
+                    },
                 )
-                local_storage.add_event(
-                    StorageEvent(
-                        event_type="status",
-                        payload={
-                            "perclos": 0.05,
-                            "g_force": total_g,
-                            "sensor_health": sensor_health,
-                            "power_profile": power_profile,
-                            "ai_metrics": ai_metrics,
-                        },
-                    )
-                )
-                last_status_publish_ts = current_ts
+            )
+            runtime_state["last_status_publish_ts"] = current_ts
+
+    contract = RuntimeOrchestratorContract(
+        read_sensor_snapshot=read_sensor_snapshot,
+        detect_fatigue=detect_fatigue,
+        publish_runtime_event=publish_runtime_event,
+    )
+
+    try:
+        while True:
+            execute_runtime_cycle(contract)
 
             # Maintenance loop delay
             time.sleep(0.05)

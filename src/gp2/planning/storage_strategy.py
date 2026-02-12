@@ -1,5 +1,7 @@
 """Storage strategy models and local retention/replay helpers."""
 
+import json
+import sqlite3
 import time
 from dataclasses import dataclass, field
 from typing import Any
@@ -27,16 +29,58 @@ class StorageEvent:
     synced: bool = False
 
 
-@dataclass
 class LocalStorageBuffer:
-    """In-memory placeholder buffer for retention and replay logic."""
+    """SQLite-backed local buffer for retention, replay, and sync bookkeeping."""
 
-    policy: StoragePolicy
-    events: list[StorageEvent] = field(default_factory=list)
+    def __init__(self, policy: StoragePolicy, db_path: str = ":memory:"):
+        self.policy = policy
+        self.db_path = db_path
+        self._conn = sqlite3.connect(self.db_path)
+        self._conn.row_factory = sqlite3.Row
+        self._init_schema()
+
+    def _init_schema(self):
+        self._conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                event_type TEXT NOT NULL,
+                payload TEXT NOT NULL,
+                timestamp REAL NOT NULL,
+                synced INTEGER NOT NULL DEFAULT 0
+            )
+            """
+        )
+        self._conn.commit()
+
+    @property
+    def events(self) -> list[StorageEvent]:
+        """Return all events in insertion order for compatibility with tests."""
+        rows = self._conn.execute(
+            "SELECT event_type, payload, timestamp, synced FROM events ORDER BY id ASC"
+        ).fetchall()
+        return [
+            StorageEvent(
+                event_type=str(row["event_type"]),
+                payload=json.loads(str(row["payload"])),
+                timestamp=float(row["timestamp"]),
+                synced=bool(row["synced"]),
+            )
+            for row in rows
+        ]
 
     def add_event(self, event: StorageEvent):
         """Append event and enforce retention/queue bounds."""
-        self.events.append(event)
+        self._conn.execute(
+            "INSERT INTO events(event_type, payload, timestamp, synced) VALUES (?, ?, ?, ?)",
+            (
+                event.event_type,
+                json.dumps(event.payload),
+                float(event.timestamp),
+                int(event.synced),
+            ),
+        )
+        self._conn.commit()
         self.prune_retention()
         self.prune_capacity()
 
@@ -44,23 +88,50 @@ class LocalStorageBuffer:
         """Drop events older than retention window in hours."""
         effective_now = now if now is not None else time.time()
         cutoff = effective_now - (self.policy.on_device_retention_hours * 3600)
-        self.events = [event for event in self.events if event.timestamp >= cutoff]
+        self._conn.execute("DELETE FROM events WHERE timestamp < ?", (cutoff,))
+        self._conn.commit()
 
     def prune_capacity(self):
         """Bound stored events by configured maximum queue length."""
         max_items = max(1, self.policy.on_device_queue_max_items)
-        if len(self.events) > max_items:
-            self.events = self.events[-max_items:]
+        count_row = self._conn.execute("SELECT COUNT(*) AS total FROM events").fetchone()
+        total = int(count_row["total"] if count_row else 0)
+        overflow = total - max_items
+        if overflow <= 0:
+            return
+
+        self._conn.execute(
+            "DELETE FROM events WHERE id IN (SELECT id FROM events ORDER BY id ASC LIMIT ?)",
+            (overflow,),
+        )
+        self._conn.commit()
 
     def pending_replay_events(self):
         """Return unsynced events in insertion order for replay."""
-        return [event for event in self.events if not event.synced]
+        rows = self._conn.execute(
+            "SELECT event_type, payload, timestamp, synced "
+            "FROM events WHERE synced = 0 ORDER BY id ASC"
+        ).fetchall()
+        return [
+            StorageEvent(
+                event_type=str(row["event_type"]),
+                payload=json.loads(str(row["payload"])),
+                timestamp=float(row["timestamp"]),
+                synced=bool(row["synced"]),
+            )
+            for row in rows
+        ]
 
     def mark_synced(self, indexes: list[int]):
         """Mark selected event indexes as synced after successful upload."""
+        id_rows = self._conn.execute("SELECT id FROM events ORDER BY id ASC").fetchall()
+        ordered_ids = [int(row["id"]) for row in id_rows]
         for index in indexes:
-            if 0 <= index < len(self.events):
-                self.events[index].synced = True
+            if 0 <= index < len(ordered_ids):
+                self._conn.execute(
+                    "UPDATE events SET synced = 1 WHERE id = ?", (ordered_ids[index],)
+                )
+        self._conn.commit()
 
 
 def needs_cloud_policy(policy: StoragePolicy) -> bool:

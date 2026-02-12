@@ -1,3 +1,33 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gp2-smart-helmet"
+version = "0.1.0"
+description = "GP2 smart helmet runtime and planning modules"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.26",
+  "paho-mqtt>=2.1",
+]
+
+[project.optional-dependencies]
+vision = [
+  "opencv-python>=4.10",
+  "mediapipe>=0.10",
+]
+hardware = [
+  "smbus2>=0.4",
+]
+dev = [
+  "black==24.10.0",
+  "ruff==0.12.8",
+  "pylint==3.3.1",
+  "pyright==1.1.389",
+  "pre-commit==4.0.1",
+]
+
 [tool.black]
 line-length = 100
 target-version = ["py311"]

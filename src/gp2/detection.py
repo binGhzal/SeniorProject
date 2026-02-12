@@ -5,18 +5,17 @@ import time
 import numpy as np
 
 try:
-    from scipy.spatial import distance as dist  # type: ignore
+    import cv2  # type: ignore
 except ImportError:  # pragma: no cover
+    cv2 = None
 
-    class _Dist:
-        @staticmethod
-        def euclidean(a, b):
-            """Compute Euclidean distance without scipy for test/dev environments."""
-            a_arr = np.asarray(a, dtype=float)
-            b_arr = np.asarray(b, dtype=float)
-            return float(np.linalg.norm(a_arr - b_arr))
+try:
+    import mediapipe as mp  # type: ignore
+except ImportError:  # pragma: no cover
+    mp = None
 
-    dist = _Dist()
+LEFT_EYE_MEDIAPIPE = [33, 160, 158, 133, 153, 144]
+RIGHT_EYE_MEDIAPIPE = [362, 385, 387, 263, 373, 380]
 
 # Thresholds from report [cite: 226]
 EYE_AR_THRESH = 0.25  # Below this, eye is "closed"
@@ -26,11 +25,20 @@ EYE_AR_CONSEC_FRAMES = 3  # Frame buffer for blink consistency
 
 def eye_aspect_ratio(eye):
     """Compute eye aspect ratio (EAR) from a 6-point eye landmark slice."""
+    eye1 = np.asarray(eye[1], dtype=float)
+    eye5 = np.asarray(eye[5], dtype=float)
+    eye2 = np.asarray(eye[2], dtype=float)
+    eye4 = np.asarray(eye[4], dtype=float)
+    eye0 = np.asarray(eye[0], dtype=float)
+    eye3 = np.asarray(eye[3], dtype=float)
+
     # Compute euclidean distances between vertical eye landmarks
-    vertical_a = dist.euclidean(eye[1], eye[5])
-    vertical_b = dist.euclidean(eye[2], eye[4])
+    vertical_a = float(np.linalg.norm(eye1 - eye5))
+    vertical_b = float(np.linalg.norm(eye2 - eye4))
     # Compute euclidean distance between horizontal eye landmarks
-    horizontal = dist.euclidean(eye[0], eye[3])
+    horizontal = float(np.linalg.norm(eye0 - eye3))
+    if horizontal == 0:
+        return 0.0
     # EAR Formula
     ear = (vertical_a + vertical_b) / (2.0 * horizontal)
     return ear
@@ -44,6 +52,41 @@ class FatigueDetector:
         self.closed_frames = 0
         self.total_frames = 0
         self.perclos_buffer = []  # Circular buffer for PERCLOS window
+        self.face_mesh = self._create_face_mesh()
+
+    def _create_face_mesh(self):
+        if mp is None:
+            return None
+        return mp.solutions.face_mesh.FaceMesh(
+            max_num_faces=1,
+            refine_landmarks=True,
+            min_detection_confidence=0.5,
+            min_tracking_confidence=0.5,
+        )
+
+    def _extract_face_landmarks(self, frame):
+        if self.face_mesh is None or frame is None:
+            return None
+
+        rgb_frame = frame
+        if cv2 is not None and isinstance(frame, np.ndarray):
+            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        results = self.face_mesh.process(rgb_frame)
+        if not results or not results.multi_face_landmarks:
+            return None
+
+        return results.multi_face_landmarks[0]
+
+    def _extract_eye_landmarks_from_frame(self, frame):
+        face_landmarks = self._extract_face_landmarks(frame)
+        if face_landmarks is None:
+            return None
+
+        points = face_landmarks.landmark
+        left_eye = [(points[idx].x, points[idx].y) for idx in LEFT_EYE_MEDIAPIPE]
+        right_eye = [(points[idx].x, points[idx].y) for idx in RIGHT_EYE_MEDIAPIPE]
+        return left_eye, right_eye
 
     def analyze_frame(self, landmarks):
         """
@@ -87,10 +130,29 @@ class FatigueDetector:
         landmarks,
         expected_drowsy=None,
         mode="heuristic-ear-perclos",
+        frame=None,
     ):
         """Run fatigue analysis and return latency/false-alert metadata."""
         start = time.perf_counter()
-        is_drowsy, ear = self.analyze_frame(landmarks)
+        landmarks_input = landmarks
+
+        if landmarks_input is None and frame is not None:
+            eye_landmarks = self._extract_eye_landmarks_from_frame(frame)
+            if eye_landmarks is not None:
+                left_eye, right_eye = eye_landmarks
+                landmarks_input = np.zeros((68, 2), dtype=float)
+                landmarks_input[36:42] = np.asarray(left_eye, dtype=float)
+                landmarks_input[42:48] = np.asarray(right_eye, dtype=float)
+
+        if landmarks_input is None:
+            is_drowsy = False
+            ear = 0.0
+            self.perclos_buffer.append(0)
+            if len(self.perclos_buffer) > 1000:
+                self.perclos_buffer.pop(0)
+        else:
+            is_drowsy, ear = self.analyze_frame(landmarks_input)
+
         latency_ms = (time.perf_counter() - start) * 1000.0
         false_alert = bool(expected_drowsy is False and is_drowsy)
         return {
