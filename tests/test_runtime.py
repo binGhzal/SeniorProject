@@ -1,18 +1,23 @@
 """Unit tests for GP2 prototype logic and feature-flag wiring."""
 
+import json
 import unittest
 from unittest.mock import MagicMock
 from src.gp2.sensors import IMUSensor
 from src.gp2.sensors import CameraModule, IRSys
 from src.gp2.detection import FatigueDetector
 from src.gp2.main import build_sensor_health
+from src.gp2.main import build_power_profile
 from src.gp2.planning.hardware_architecture import default_interface_map
+from src.gp2.planning.power_plan import PowerProfile, estimate_total_current
+from src.gp2.planning.power_plan import has_valid_power_bounds
 from src.gp2.planning.features import (
     AppFeatureSet,
     FeatureDefinition,
     OnBoardFeatureSet,
     derive_runtime_feature_flags,
 )
+from src.gp2.telemetry import TelemetryClient
 
 
 class TestSmartHelmet(unittest.TestCase):
@@ -112,6 +117,43 @@ class TestSmartHelmet(unittest.TestCase):
         self.assertEqual(snapshot["imu"]["bus"], specs["imu"].bus)
         self.assertEqual(snapshot["camera"]["direction"], specs["camera"].direction)
         self.assertEqual(snapshot["ir"]["bus"], specs["ir"].bus)
+
+    def test_power_profile_aggregation_and_bounds(self):
+        """Validates power aggregation and electrical sanity bounds."""
+        total = estimate_total_current(
+            {
+                "a": PowerProfile(average_ma=10.0, peak_ma=20.0, standby_ma=5.0),
+                "b": PowerProfile(average_ma=15.0, peak_ma=30.0, standby_ma=8.0),
+            }
+        )
+        self.assertEqual(total.average_ma, 25.0)
+        self.assertEqual(total.peak_ma, 50.0)
+        self.assertEqual(total.standby_ma, 13.0)
+        self.assertTrue(has_valid_power_bounds(total))
+
+    def test_runtime_power_profile_shape(self):
+        """Ensures runtime builds a serializable power profile payload."""
+        power_profile = build_power_profile(build_sensor_health(IMUSensor(), CameraModule(), IRSys()))
+        self.assertIn("average_ma", power_profile)
+        self.assertIn("peak_ma", power_profile)
+        self.assertIn("standby_ma", power_profile)
+        self.assertIn("bounds_valid", power_profile)
+        self.assertTrue(power_profile["bounds_valid"])
+
+    def test_telemetry_includes_power_profile(self):
+        """Confirms status telemetry payload carries optional power profile fields."""
+        client = TelemetryClient()
+        client.client = MagicMock()
+        client.send_telemetry(
+            perclos=0.1,
+            g_force=1.2,
+            sensor_health={"imu": {"available": True}},
+            power_profile={"average_ma": 100.0, "peak_ma": 200.0, "standby_ma": 50.0},
+        )
+        publish_args = client.client.publish.call_args.args
+        payload = json.loads(publish_args[1])
+        self.assertIn("power_profile", payload)
+        self.assertEqual(payload["power_profile"]["peak_ma"], 200.0)
 
 
 if __name__ == '__main__':

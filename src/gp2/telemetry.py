@@ -45,7 +45,7 @@ class TelemetryClient:
         }
         self.client.publish(TOPIC_ALERTS, json.dumps(payload), qos=1)
 
-    def send_telemetry(self, perclos, g_force, sensor_health=None):
+    def send_telemetry(self, perclos, g_force, sensor_health=None, power_profile=None):
         """Publish periodic status telemetry with optional sensor health metadata."""
         if self.client is None:
             return
@@ -57,4 +57,6 @@ class TelemetryClient:
         }
         if sensor_health is not None:
             payload["sensor_health"] = sensor_health
+        if power_profile is not None:
+            payload["power_profile"] = power_profile
         self.client.publish(TOPIC_TELEMETRY, json.dumps(payload), qos=0)

@@ -9,6 +9,11 @@ from .planning.features import (
     build_default_feature_definition,
     derive_runtime_feature_flags,
 )
+from .planning.power_plan import (
+    PowerProfile,
+    estimate_total_current,
+    has_valid_power_bounds,
+)
 # import dlib # Required for actual landmark detection
 
 
@@ -18,6 +23,28 @@ def build_sensor_health(imu, cam, ir):
         "imu": imu.health_status(),
         "camera": cam.health_status(),
         "ir": ir.health_status(),
+    }
+
+
+def build_power_profile(sensor_health):
+    """Build aggregate power profile estimates from subsystem assumptions."""
+    profiles = {
+        "compute": PowerProfile(average_ma=650.0, peak_ma=1200.0, standby_ma=250.0),
+        "imu": PowerProfile(average_ma=8.0, peak_ma=12.0, standby_ma=4.0),
+        "camera": PowerProfile(average_ma=120.0, peak_ma=200.0, standby_ma=0.0),
+        "ir": PowerProfile(average_ma=90.0, peak_ma=180.0, standby_ma=0.0),
+        "radio": PowerProfile(average_ma=80.0, peak_ma=220.0, standby_ma=15.0),
+    }
+
+    if sensor_health["camera"].get("available") is False:
+        profiles["camera"] = PowerProfile(average_ma=0.0, peak_ma=0.0, standby_ma=0.0)
+    if sensor_health["ir"].get("available") is False:
+        profiles["ir"] = PowerProfile(average_ma=0.0, peak_ma=0.0, standby_ma=0.0)
+
+    total = estimate_total_current(profiles)
+    return {
+        **total.as_dict(),
+        "bounds_valid": has_valid_power_bounds(total),
     }
 
 
@@ -38,6 +65,7 @@ def main():
     print("System Initialized. Starting Monitoring...")
     ir.set_brightness(50)  # Set IR LEDs to 50%
     sensor_health = build_sensor_health(imu, cam, ir)
+    power_profile = build_power_profile(sensor_health)
 
     try:
         while True:
@@ -73,9 +101,10 @@ def main():
             # D. Telemetry Heartbeat
             if runtime_flags.enable_status_telemetry:
                 mqtt.send_telemetry(
-                    perclos=0.05,
-                    g_force=total_g,
-                    sensor_health=sensor_health,
+                    0.05,
+                    total_g,
+                    sensor_health,
+                    power_profile,
                 )
 
             # Maintenance loop delay
