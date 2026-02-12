@@ -13,6 +13,8 @@ Default settings in the prototype:
 - Telemetry topic: `smarthelmet/v1/telemetry`
 - Alerts topic: `smarthelmet/v1/alerts`
 
+Connectivity is configured via `ConnectivityConfig` (`src/gp2/planning/connectivity.py`) and consumed by `TelemetryClient`.
+
 ## Message types
 
 ### Status telemetry (qos=0)
@@ -80,6 +82,13 @@ Use any MQTT client to subscribe:
 - Subscribe to `smarthelmet/v1/alerts`
 
 Then run `PYTHONPATH=src python -m gp2.main` and observe incoming messages.
+
+## Runtime reliability behavior
+
+- QoS for status and alerts is configurable (`status_qos`, `alert_qos`).
+- When connectivity is unavailable, unsent messages can be queued (`offline_queue_enabled`).
+- Queue length is bounded by `offline_queue_max_items`.
+- Reconnect attempts use exponential backoff and then replay queued payloads on success.
 
 ## Security note
 

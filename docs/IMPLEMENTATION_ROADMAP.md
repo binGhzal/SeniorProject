@@ -96,9 +96,9 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 
 ### Phase 4 deliverables
 
-- Introduce validated connectivity config consumed by telemetry client.
-- Add reconnect/backoff and offline queue placeholders.
-- Distinguish QoS behavior for status vs alert flows.
+- [x] Introduce validated connectivity config consumed by telemetry client.
+- [x] Add reconnect/backoff and offline queue placeholders.
+- [x] Distinguish QoS behavior for status vs alert flows.
 
 ## Phase 5: Data Storage strategy implementation
 
