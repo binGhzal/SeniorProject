@@ -77,3 +77,15 @@ Dev-machine behavior:
   - Crash alert wiring (threshold → alert call)
 
 For expected outputs and full run example, see `docs/TESTING.md`.
+
+## `unit-tests/placeholders/`
+
+- Purpose: task-aligned scaffolding modules created from `docs/tasks.md`.
+- Scope: non-runtime placeholder classes/configs for:
+  - features
+  - hardware architecture
+  - power plan
+  - connectivity
+  - storage strategy
+  - software architecture
+  - AI/algorithm planning
