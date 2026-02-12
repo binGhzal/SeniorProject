@@ -1,8 +1,13 @@
 import unittest
-import time
 from unittest.mock import MagicMock
 from sensors import IMUSensor
 from detection import FatigueDetector
+from placeholders.features import (
+    AppFeatureSet,
+    FeatureDefinition,
+    OnBoardFeatureSet,
+    derive_runtime_feature_flags,
+)
 
 class TestSmartHelmet(unittest.TestCase):
 
@@ -22,9 +27,6 @@ class TestSmartHelmet(unittest.TestCase):
     def test_fatigue_logic(self):
         """Test 5: Fatigue Logic Simulation (Software Injection)"""
         det = FatigueDetector()
-
-        # Simulate 100 frames of closed eyes (EAR = 0.15 < 0.25 Threshold)
-        fake_eye = [(0,0), (1,3), (2,3), (3,0), (2,1), (1,1)] # Resulting EAR approx 0.3
 
         # Inject "closed" eye landmarks (mocking EAR < 0.2)
         # We manually trigger the logic for testing
@@ -56,6 +58,26 @@ class TestSmartHelmet(unittest.TestCase):
         # Verify alert was sent
         mock_mqtt.send_alert.assert_called_with("CRASH", 3.0)
         print("\n[Pass] Crash Integration (Sensor -> Cloud Trigger) Verified")
+
+    def test_feature_flags_disable_status_telemetry(self):
+        feature_definition = FeatureDefinition(
+            app_features=AppFeatureSet(live_status=False, alerts_center=True),
+            board_features=OnBoardFeatureSet(crash_detection=True, fatigue_detection=True),
+        )
+        flags = derive_runtime_feature_flags(feature_definition)
+
+        self.assertFalse(flags.enable_status_telemetry)
+        self.assertTrue(flags.enable_alert_publish)
+
+    def test_feature_flags_disable_alert_publish(self):
+        feature_definition = FeatureDefinition(
+            app_features=AppFeatureSet(live_status=True, alerts_center=False),
+            board_features=OnBoardFeatureSet(crash_detection=True, fatigue_detection=True),
+        )
+        flags = derive_runtime_feature_flags(feature_definition)
+
+        self.assertFalse(flags.enable_alert_publish)
+        self.assertTrue(flags.enable_status_telemetry)
 
 if __name__ == '__main__':
     unittest.main()
