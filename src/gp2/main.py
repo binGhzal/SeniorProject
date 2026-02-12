@@ -12,6 +12,15 @@ from .planning.features import (
 # import dlib # Required for actual landmark detection
 
 
+def build_sensor_health(imu, cam, ir):
+    """Build a consolidated sensor health snapshot for telemetry."""
+    return {
+        "imu": imu.health_status(),
+        "camera": cam.health_status(),
+        "ir": ir.health_status(),
+    }
+
+
 def main():
     """Initialize modules and execute the monitoring loop."""
     # 1. Hardware Bring-up [cite: 379]
@@ -28,6 +37,7 @@ def main():
 
     print("System Initialized. Starting Monitoring...")
     ir.set_brightness(50)  # Set IR LEDs to 50%
+    sensor_health = build_sensor_health(imu, cam, ir)
 
     try:
         while True:
@@ -62,7 +72,11 @@ def main():
 
             # D. Telemetry Heartbeat
             if runtime_flags.enable_status_telemetry:
-                mqtt.send_telemetry(perclos=0.05, g_force=total_g)
+                mqtt.send_telemetry(
+                    perclos=0.05,
+                    g_force=total_g,
+                    sensor_health=sensor_health,
+                )
 
             # Maintenance loop delay
             time.sleep(0.05)

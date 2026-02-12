@@ -25,7 +25,7 @@ class TelemetryClient:
         try:
             self.client.connect(BROKER, PORT, 60)
             self.client.loop_start()
-        except Exception as e:
+        except (OSError, ConnectionError, ValueError) as e:
             print(f"MQTT Connection Failed: {e}")
 
     def send_alert(self, alert_type, value):
@@ -40,7 +40,7 @@ class TelemetryClient:
         }
         self.client.publish(TOPIC_ALERTS, json.dumps(payload), qos=1)
 
-    def send_telemetry(self, perclos, g_force):
+    def send_telemetry(self, perclos, g_force, sensor_health=None):
         if self.client is None:
             return
         payload = {
@@ -49,4 +49,6 @@ class TelemetryClient:
             "perclos": perclos,
             "g_force": g_force
         }
+        if sensor_health is not None:
+            payload["sensor_health"] = sensor_health
         self.client.publish(TOPIC_TELEMETRY, json.dumps(payload), qos=0)

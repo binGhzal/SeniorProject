@@ -24,6 +24,7 @@ CMD_SOFT_RESET = 0xB6
 
 class IMUSensor:
     def __init__(self, bus_num=1):
+        self.is_stub = smbus2 is None
         if smbus2 is None:
             # Minimal stub bus for dev/test machines. Unit tests can monkeypatch
             # self.bus.read_i2c_block_data as needed.
@@ -40,6 +41,13 @@ class IMUSensor:
         self.address = BMI160_ADDR
         self._init_sensor()
 
+    def health_status(self):
+        """Return IMU availability and backend mode."""
+        return {
+            "available": True,
+            "mode": "stub" if self.is_stub else "hardware",
+        }
+
     def _init_sensor(self):
         # Soft reset to ensure clean state
         try:
@@ -47,7 +55,7 @@ class IMUSensor:
             time.sleep(0.1)
             # Configure accelerometer (normal power mode) - strict implementation required here
             # For prototype: assuming default config works after reset
-        except Exception as e:
+        except (OSError, AttributeError) as e:
             print(f"IMU Init Error: {e}")
 
     def read_accel(self):
@@ -64,7 +72,7 @@ class IMUSensor:
             # Convert to 'g' (assuming default range +/- 2g)
             scale = 16384.0
             return (x / scale, y / scale, z / scale)
-        except Exception:
+        except (OSError, AttributeError, IndexError, TypeError, ValueError):
             return (0, 0, 0)
 
     def _bytes_to_int(self, msb, lsb):
@@ -76,6 +84,7 @@ class IMUSensor:
 
 class CameraModule:
     def __init__(self):
+        self.is_stub = cv2 is None
         if cv2 is None:
             self.cap = None
             return
@@ -97,12 +106,20 @@ class CameraModule:
         if self.cap is not None:
             self.cap.release()
 
+    def health_status(self):
+        """Return camera capture availability and backend mode."""
+        return {
+            "available": self.cap is not None,
+            "mode": "stub" if self.is_stub else "hardware",
+        }
+
 
 class IRSys:
     """Controls the IR LED array via GPIO."""
 
     def __init__(self, pin=18):
         self.pin = pin
+        self.is_stub = GPIO is None
         self.pwm = None
         if GPIO is None:
             return
@@ -122,3 +139,10 @@ class IRSys:
             self.pwm.stop()
         if GPIO is not None:
             GPIO.cleanup()
+
+    def health_status(self):
+        """Return IR control availability and backend mode."""
+        return {
+            "available": self.pwm is not None,
+            "mode": "stub" if self.is_stub else "hardware",
+        }

@@ -3,7 +3,9 @@
 import unittest
 from unittest.mock import MagicMock
 from src.gp2.sensors import IMUSensor
+from src.gp2.sensors import CameraModule, IRSys
 from src.gp2.detection import FatigueDetector
+from src.gp2.main import build_sensor_health
 from src.gp2.planning.features import (
     AppFeatureSet,
     FeatureDefinition,
@@ -86,6 +88,20 @@ class TestSmartHelmet(unittest.TestCase):
 
         self.assertFalse(flags.enable_alert_publish)
         self.assertTrue(flags.enable_status_telemetry)
+
+    def test_sensor_health_snapshot_shape(self):
+        """Provides a stable sensor-health structure for telemetry payloads."""
+        imu = IMUSensor()
+        cam = CameraModule()
+        ir = IRSys()
+
+        snapshot = build_sensor_health(imu, cam, ir)
+
+        self.assertIn("imu", snapshot)
+        self.assertIn("camera", snapshot)
+        self.assertIn("ir", snapshot)
+        self.assertIn("available", snapshot["imu"])
+        self.assertIn("mode", snapshot["imu"])
 
 
 if __name__ == '__main__':
