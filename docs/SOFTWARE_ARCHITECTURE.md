@@ -68,3 +68,10 @@ Current runtime model:
     - `execute_runtime_cycle(...)`
 - Side-effect boundary ownership map in `side_effect_boundaries()`.
 - Dependency declaration helper in `dependency_versions()`.
+
+Watchdog and escalation policy (`watchdog_escalation_policy()`):
+
+- `sensor_read_failures`: warn at 3, degrade at 5, escalate at 10.
+- `detect_failures`: warn at 3, degrade at 5, escalate at 10.
+- `reconnect_failures`: warn at 2, degrade at 4, escalate at 8.
+- Escalation actions are contract-defined for degraded-mode fallback and health alerting.

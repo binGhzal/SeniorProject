@@ -1,9 +1,9 @@
 # TODO 01: Feature Definition
 
-- [ ] Finalize application platform scope (mobile, web, or both)
-- [ ] Define user stories for pairing, live monitoring, and alerts
-- [ ] Define board-side feature list with acceptance criteria
-- [ ] Prioritize MVP vs post-MVP features
+- [x] Finalize application platform scope (mobile, web, or both)
+- [x] Define user stories for pairing, live monitoring, and alerts
+- [x] Define board-side feature list with acceptance criteria
+- [x] Prioritize MVP vs post-MVP features
 - [x] Add traceability to tests and telemetry fields
 
 ## Implementation plan

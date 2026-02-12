@@ -51,6 +51,29 @@ Distraction-path validation protocol (planning contract):
 - Thresholds: gaze offset `25°`, head pitch `20°`, head yaw `30°`
 - Acceptance: max false-alert `0.05`, max detection latency `200ms`
 
+### Baseline benchmark template
+
+Use this template for each benchmark run:
+
+- Run ID:
+- Dataset tag:
+- Runtime mode (`heuristic-ear-perclos` or `model-based`):
+- Mean latency (ms):
+- P95 latency (ms):
+- False-alert rate:
+- Miss rate:
+- Device/profile:
+- Notes:
+
+### Rollout acceptance gates (go/no-go)
+
+| Gate | Threshold | Decision rule |
+| --- | --- | --- |
+| Latency | `<= 200ms` alert path budget | No-go if exceeded in benchmark run |
+| False alerts | `<= 0.05` | No-go if sustained above threshold |
+| Runtime stability | No crash-loop regressions | No-go if reliability regresses |
+| Resource bounds | Within CPU/memory/power budget | No-go if target budget exceeded |
+
 ## Phase 7 implementation summary
 
 - AI planning module (`src/gp2/planning/ai_algorithms.py`) now provides:

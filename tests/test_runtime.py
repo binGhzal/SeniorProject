@@ -17,6 +17,15 @@ from src.gp2.planning.ai_algorithms import (
     evaluation_contract,
     supported_dataset_scopes,
 )
+from src.gp2.planning.carry_forward import (
+    BenchmarkHarnessContract,
+    ClipBufferContract,
+    DashboardIntegrationContract,
+    DistractionTriggerContract,
+    EmergencyRoutingPolicy,
+    PrivacyGovernanceContract,
+    carry_forward_validation_targets,
+)
 from src.gp2.planning.connectivity import (
     ConnectivityConfig,
     default_connectivity_slo,
@@ -38,6 +47,7 @@ from src.gp2.planning.software_architecture import (
     dependency_versions,
     execute_runtime_cycle,
     side_effect_boundaries,
+    watchdog_escalation_policy,
 )
 from src.gp2.planning.storage_strategy import (
     LocalStorageBuffer,
@@ -411,6 +421,15 @@ class TestSmartHelmet(unittest.TestCase):
         self.assertIn("numpy", versions)
         self.assertEqual(versions["python"], "3.11+")
 
+    def test_watchdog_escalation_policy_thresholds(self):
+        """Defines warning/degraded/escalation thresholds for runtime faults."""
+        policy = watchdog_escalation_policy()
+        reconnect = cast(dict[str, int | str], policy["reconnect_failures"])
+
+        self.assertEqual(reconnect["warn_at"], 2)
+        self.assertEqual(reconnect["degrade_at"], 4)
+        self.assertEqual(reconnect["escalate_at"], 8)
+
     def test_ai_mode_selection_and_evaluation_contract(self):
         """Builds model-based AI contracts with dataset and metric gates."""
         plan = AIPlan(
@@ -454,6 +473,24 @@ class TestSmartHelmet(unittest.TestCase):
         self.assertIn("gaze_offset", protocol["signals"])
         acceptance = cast(dict[str, float], protocol["acceptance"])
         self.assertEqual(acceptance["max_detection_latency_ms"], 200)
+
+    def test_carry_forward_contracts(self):
+        """Defines GP1 deferred contracts for distraction, clips, dashboard, and routing."""
+        distraction = DistractionTriggerContract()
+        clip = ClipBufferContract()
+        dashboard = DashboardIntegrationContract()
+        routing = EmergencyRoutingPolicy()
+        privacy = PrivacyGovernanceContract()
+        benchmark = BenchmarkHarnessContract()
+        targets = carry_forward_validation_targets()
+
+        self.assertIn("gaze_offset", distraction.required_signals)
+        self.assertEqual(clip.storage_mode, "ring-buffer")
+        self.assertIn("events", dashboard.required_streams)
+        self.assertEqual(routing.max_route_latency_ms, 200)
+        self.assertIn("/api/v1/dsar/delete", privacy.dsar_endpoints)
+        self.assertEqual(benchmark.latency_target_ms, 200)
+        self.assertEqual(targets["runtime_hours_target"], 8)
 
 
 if __name__ == "__main__":

@@ -99,3 +99,28 @@ def dependency_versions() -> dict[str, str | None]:
         "paho-mqtt": None,
         "scipy": None,
     }
+
+
+def watchdog_escalation_policy() -> dict[str, dict[str, int | str]]:
+    """Defines degradation and escalation thresholds for repeated runtime faults."""
+
+    return {
+        "sensor_read_failures": {
+            "warn_at": 3,
+            "degrade_at": 5,
+            "escalate_at": 10,
+            "action": "enter_degraded_mode_and_raise_health_alert",
+        },
+        "detect_failures": {
+            "warn_at": 3,
+            "degrade_at": 5,
+            "escalate_at": 10,
+            "action": "switch_to_safe_detection_defaults",
+        },
+        "reconnect_failures": {
+            "warn_at": 2,
+            "degrade_at": 4,
+            "escalate_at": 8,
+            "action": "disable_noncritical_status_publish_and_raise_connectivity_alert",
+        },
+    }
