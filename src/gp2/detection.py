@@ -1,5 +1,7 @@
-import numpy as np
+"""Fatigue detection logic based on EAR and rolling PERCLOS-style scoring."""
+
 import time
+import numpy as np
 
 try:
     from scipy.spatial import distance as dist  # type: ignore
@@ -19,16 +21,19 @@ PERCLOS_THRESH = 0.12     # 12% fatigue threshold
 EYE_AR_CONSEC_FRAMES = 3  # Frame buffer for blink consistency
 
 def eye_aspect_ratio(eye):
+    """Compute eye aspect ratio (EAR) from a 6-point eye landmark slice."""
     # Compute euclidean distances between vertical eye landmarks
-    A = dist.euclidean(eye[1], eye[5])
-    B = dist.euclidean(eye[2], eye[4])
+    vertical_a = dist.euclidean(eye[1], eye[5])
+    vertical_b = dist.euclidean(eye[2], eye[4])
     # Compute euclidean distance between horizontal eye landmarks
-    C = dist.euclidean(eye[0], eye[3])
+    horizontal = dist.euclidean(eye[0], eye[3])
     # EAR Formula
-    ear = (A + B) / (2.0 * C)
+    ear = (vertical_a + vertical_b) / (2.0 * horizontal)
     return ear
 
 class FatigueDetector:
+    """Tracks rolling eye-closure state and detects fatigue events."""
+
     def __init__(self):
         self.counter = 0
         self.closed_frames = 0
@@ -42,14 +47,14 @@ class FatigueDetector:
         """
         # Placeholder indices for 68-point model:
         # Left Eye: 36-41, Right Eye: 42-47
-        leftEye = landmarks[36:42]
-        rightEye = landmarks[42:48]
+        left_eye = landmarks[36:42]
+        right_eye = landmarks[42:48]
 
-        leftEAR = eye_aspect_ratio(leftEye)
-        rightEAR = eye_aspect_ratio(rightEye)
+        left_ear = eye_aspect_ratio(left_eye)
+        right_ear = eye_aspect_ratio(right_eye)
 
         # Average EAR
-        ear = (leftEAR + rightEAR) / 2.0
+        ear = (left_ear + right_ear) / 2.0
 
         # PERCLOS Calculation Logic
         is_closed = 0

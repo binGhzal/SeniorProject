@@ -10,6 +10,8 @@ MODEL_MODE = "model-based"
 
 @dataclass
 class AIPlan:
+    """Defines runtime AI mode and validation thresholds for rollout gating."""
+
     approach: str = HEURISTIC_MODE
     requires_training_data: bool = False
     model_version: str = "v0-placeholder"
@@ -19,6 +21,7 @@ class AIPlan:
 
 
 def requires_validation_dataset(plan: AIPlan) -> bool:
+    """Return whether the selected approach requires a labeled validation dataset."""
     return plan.approach != HEURISTIC_MODE
 
 

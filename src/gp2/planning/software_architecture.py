@@ -6,6 +6,8 @@ from typing import Any, Callable, Dict, List, Mapping, Optional
 
 @dataclass
 class RuntimeTopology:
+    """Declares execution style for sensor, detection, and telemetry loops."""
+
     sensor_loop: str = "single-thread-polling"
     detection_loop: str = "inline"
     telemetry_loop: str = "inline"
@@ -13,6 +15,8 @@ class RuntimeTopology:
 
 @dataclass
 class DependencyPlan:
+    """Tracks required and optional runtime dependency groups."""
+
     runtime_libraries: List[str] = field(default_factory=lambda: ["numpy"])
     optional_libraries: List[str] = field(default_factory=lambda: ["opencv-python", "paho-mqtt"])
 
@@ -81,6 +85,7 @@ def side_effect_boundaries() -> Dict[str, str]:
 
 
 def architecture_ready_for_mvp(topology: RuntimeTopology, deps: DependencyPlan) -> bool:
+    """Return whether the declared topology and dependencies satisfy MVP readiness."""
     return bool(topology.sensor_loop and deps.runtime_libraries)
 
 
