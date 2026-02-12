@@ -8,6 +8,7 @@ Main file: `sgp2-report.tex`
 - `references.bib` – BibTeX references used by the report
 - `acro.tex` – acronym file (kept minimal)
 - `Figures/` – put images here (optional)
+- `../references/` – external template assets and forms (normalized path)
 
 ## Compile (local)
 

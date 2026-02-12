@@ -1,3 +1,5 @@
+"""Main runtime loop for the GP2 smart-helmet prototype."""
+
 import time
 import numpy as np
 from sensors import IMUSensor, CameraModule, IRSys
@@ -6,7 +8,9 @@ from telemetry import TelemetryClient
 from placeholders.features import build_default_feature_definition, derive_runtime_feature_flags
 # import dlib # Required for actual landmark detection
 
+
 def main():
+    """Initialize modules and execute the monitoring loop."""
     # 1. Hardware Bring-up [cite: 379]
     imu = IMUSensor()
     cam = CameraModule()
@@ -20,7 +24,7 @@ def main():
     # predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
     print("System Initialized. Starting Monitoring...")
-    ir.set_brightness(50) # Set IR LEDs to 50%
+    ir.set_brightness(50)  # Set IR LEDs to 50%
 
     try:
         while True:
@@ -30,7 +34,7 @@ def main():
             total_g = np.sqrt(ax**2 + ay**2 + az**2)
 
             # B. Crash Detection (High G Event) [cite: 228]
-            if runtime_flags.enable_crash_detection and total_g > 2.5: # 2.5G threshold
+            if runtime_flags.enable_crash_detection and total_g > 2.5:  # 2.5G threshold
                 print(f"CRASH DETECTED! G-Force: {total_g:.2f}")
                 if runtime_flags.enable_alert_publish:
                     mqtt.send_alert("CRASH", total_g)
@@ -65,6 +69,7 @@ def main():
     finally:
         cam.release()
         ir.cleanup()
+
 
 if __name__ == "__main__":
     main()

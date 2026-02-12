@@ -1,3 +1,5 @@
+"""Unit tests for GP2 prototype logic and feature-flag wiring."""
+
 import unittest
 from unittest.mock import MagicMock
 from sensors import IMUSensor
@@ -9,7 +11,9 @@ from placeholders.features import (
     derive_runtime_feature_flags,
 )
 
+
 class TestSmartHelmet(unittest.TestCase):
+    """Covers core sensor/detection logic and feature configuration behavior."""
 
     # --- Part A: Individual Unit Tests ---
 
@@ -17,7 +21,9 @@ class TestSmartHelmet(unittest.TestCase):
         """Test 1: Verify IMU reads data format correctly"""
         imu = IMUSensor()
         # Mocking the actual SMBus to avoid hardware errors on PC
-        imu.bus.read_i2c_block_data = MagicMock(return_value=[0,0, 0,0, 32,60]) # Mock Z-axis gravity
+        imu.bus.read_i2c_block_data = MagicMock(
+            return_value=[0, 0, 0, 0, 32, 60]
+        )
 
         accel = imu.read_accel()
         self.assertIsInstance(accel, tuple)
@@ -60,6 +66,7 @@ class TestSmartHelmet(unittest.TestCase):
         print("\n[Pass] Crash Integration (Sensor -> Cloud Trigger) Verified")
 
     def test_feature_flags_disable_status_telemetry(self):
+        """Disables status telemetry when app live status is turned off."""
         feature_definition = FeatureDefinition(
             app_features=AppFeatureSet(live_status=False, alerts_center=True),
             board_features=OnBoardFeatureSet(crash_detection=True, fatigue_detection=True),
@@ -70,6 +77,7 @@ class TestSmartHelmet(unittest.TestCase):
         self.assertTrue(flags.enable_alert_publish)
 
     def test_feature_flags_disable_alert_publish(self):
+        """Disables alert publishing when app alert center is turned off."""
         feature_definition = FeatureDefinition(
             app_features=AppFeatureSet(live_status=True, alerts_center=False),
             board_features=OnBoardFeatureSet(crash_detection=True, fatigue_detection=True),
@@ -78,6 +86,7 @@ class TestSmartHelmet(unittest.TestCase):
 
         self.assertFalse(flags.enable_alert_publish)
         self.assertTrue(flags.enable_status_telemetry)
+
 
 if __name__ == '__main__':
     unittest.main()

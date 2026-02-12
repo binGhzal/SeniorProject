@@ -3,16 +3,17 @@
 Documentation is in `docs/`.
 
 - Start here: `docs/README.md`
+- Structure guide: `docs/PROJECT_STRUCTURE.md`
 
 ## Quick start (tests)
 
 ```bash
 cd unit-tests
-python -m unittest -v
+python3 -m unittest -v
 ```
 
 If `numpy` is missing:
 
 ```bash
-python -m pip install numpy
+python3 -m pip install numpy
 ```

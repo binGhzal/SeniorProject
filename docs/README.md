@@ -20,8 +20,10 @@ This folder contains the canonical documentation for the GP2 smart-helmet protot
 - Testing guide + expected outputs: `docs/TESTING.md`
 - Limitations & future work: `docs/LIMITATIONS.md`
 - Section checklists: `docs/todo/README.md`
+- Project structure guide: `docs/PROJECT_STRUCTURE.md`
 
 ## SGP2 report
 
 - LaTeX report draft: `docs/report/sgp2-report.tex`
 - Rubric checklist: `docs/report/RUBRIC-CHECKLIST.md`
+- Template/reference assets: `docs/references/`

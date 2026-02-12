@@ -89,3 +89,10 @@ For expected outputs and full run example, see `docs/TESTING.md`.
   - storage strategy
   - software architecture
   - AI/algorithm planning
+
+## `unit-tests/legacy/`
+
+- Purpose: archived or superseded runtime files kept for reference only.
+- Current contents:
+  - `sensors_rpi_only_legacy.py` (older sensor implementation previously named `sensons.py`)
+- Rule: new work should target active modules under `unit-tests/` only.
