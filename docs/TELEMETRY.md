@@ -17,7 +17,7 @@ Default settings in the prototype:
 
 ### Status telemetry (qos=0)
 
-Published by `TelemetryClient.send_telemetry(perclos, g_force, sensor_health=None)`.
+Published by `TelemetryClient.send_telemetry(perclos, g_force, sensor_health=None, power_profile=None)`.
 
 Example payload (JSON):
 
@@ -46,6 +46,12 @@ Example payload (JSON):
       "bus": "GPIO/PWM",
       "direction": "board->ir"
     }
+  },
+  "power_profile": {
+    "average_ma": 948.0,
+    "peak_ma": 1812.0,
+    "standby_ma": 269.0,
+    "bounds_valid": true
   }
 }
 ```

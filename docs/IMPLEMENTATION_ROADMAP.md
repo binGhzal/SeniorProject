@@ -73,9 +73,9 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 
 ### Phase 3 deliverables
 
-- Add a power profile model for average/peak/standby estimates.
-- Include optional power metrics in status payloads.
-- Add validation tests for budget aggregation and bounds.
+- [x] Add a power profile model for average/peak/standby estimates.
+- [x] Include optional power metrics in status payloads.
+- [x] Add validation tests for budget aggregation and bounds.
 
 ## Phase 4: Connectivity hardening
 

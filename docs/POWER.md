@@ -56,6 +56,16 @@ Use this table and replace placeholders with measured values.
 | Radio/Connectivity |          TBD |       TBD |          TBD | Protocol dependent       |
 | **Total**          |      **TBD** |   **TBD** |      **TBD** |                          |
 
+## Runtime implementation status
+
+Current runtime implementation includes a software power-profile model in `src/gp2/planning/power_plan.py`:
+
+- `PowerProfile` data model for average, peak, and standby current estimates.
+- `estimate_total_current(...)` to aggregate subsystem estimates.
+- `has_valid_power_bounds(...)` to verify `peak >= average >= standby >= 0`.
+
+The runtime loop (`src/gp2/main.py`) builds a `power_profile` snapshot and includes it in STATUS telemetry payloads when telemetry is enabled.
+
 ## Validation checklist
 
 - [ ] Measure current in active mode
