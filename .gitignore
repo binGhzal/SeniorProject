@@ -23,3 +23,26 @@ unit-tests/
 *.bak
 *.bak*
 docs/report/indent.log
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.ist
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.toc
+*.synctex.gz
+
+# Generated report outputs
+docs/report/*.pdf

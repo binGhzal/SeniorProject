@@ -9,7 +9,7 @@
 \usepackage{listings}
 \usepackage{amsmath}
 \usepackage{graphicx}
-\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{microtype}
 \usepackage{glossaries}
 \usepackage{pdfpages}
 \usepackage{natbib}
@@ -33,6 +33,8 @@
   keepspaces=true
 }
 
+\setlength{\emergencystretch}{3em}
+
 \begin{document}
 
 \IfFileExists{acro.tex}{\include{acro}}{}
@@ -47,8 +49,8 @@
 	\IfFileExists{Figures/CIT_logo.jpg}{\includegraphics[width=120mm]{Figures/CIT_logo.jpg}}{%
 		\fbox{\parbox{120mm}{\centering Place \texttt{CIT\_logo.jpg} in \texttt{docs/report/Figures/} to display the logo.}}}
 	\\ \vspace{0.7cm}
-	\textsc{\large \bfseries ITBP481: Senior Graduation Project II}\\ \vspace{0.3cm}
-	\textsc{\large \bfseries Final Project Report }\\ \vspace{0.3cm}
+	\textsc{\large ITBP481: Senior Graduation Project II}\\ \vspace{0.3cm}
+	\textsc{\large Final Project Report }\\ \vspace{0.3cm}
 	\textsc{Spring 2026} \\ \vspace{1.8cm}
 	\Large \textbf{Project Title: Smart Helmet Fatigue \& Crash Telemetry}\\ \vspace{0.3cm}
 	Project ID: Group 11 \\[0.6cm]
@@ -65,14 +67,13 @@
 
 	\textbf{Project Advisor}: Dr. Mohammad Naouss \\ \vspace{1.3cm}
 
-	\textsc{\large \bfseries\textbf{A project report submitted in partial fulfillment of the requirements for the Bachelor of Science degree at the College of Information Technology, United Arab Emirates University}} \\ \vspace{1.3cm}
+	\textbf{\large A project report submitted in partial fulfillment of the requirements for the Bachelor of Science degree at the College of Information Technology, United Arab Emirates University} \\ \vspace{1.3cm}
 	{\today}
 \end{center}
 
 \thispagestyle{empty}
 
 \newpage
-\setcounter{page}{1}
 
 % ----------------------------------------------------------------------------------------------
 % BEGINNING OF REPORT
@@ -200,7 +201,7 @@ Telemetry is published over MQTT to separate topics for status and alerts. MQTT 
 
 The orchestration loop coordinates sensor sampling, detection logic, and telemetry publishing at a fixed interval.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 	\centering
 	\fbox{\parbox{0.9\linewidth}{\centering
 			\textbf{Architecture diagram summary.}\\
@@ -246,7 +247,7 @@ Testing is performed with a focus on repeatability and isolation. The project us
 
 Table~\ref{tab:objective_traceability} maps the major SGP2 objectives to implementation artifacts and validation evidence.
 
-\begin{table}[h]
+\begin{table}[htbp]
 	\centering
 	\caption{Objective-to-implementation traceability.}
 	\label{tab:objective_traceability}
@@ -276,11 +277,11 @@ Unit tests validate individual components:
 
 An integration-style test validates crash detection wiring by simulating an IMU measurement exceeding the threshold and asserting that an alert publish call is made.
 
-\begin{table}[h]
+\begin{table}[htbp]
 	\centering
 	\caption{Summary of implemented automated tests and expected outcomes.}
 	\label{tab:test_summary}
-	\begin{tabular}{|l|l|l|}
+	\begin{tabular}{|p{0.32\textwidth}|p{0.31\textwidth}|p{0.27\textwidth}|}
 		\hline
 		\textbf{Test}                                          & \textbf{Component/Functionality}  & \textbf{Expected Outcome}                           \\ \hline
 		\texttt{test\_imu\_connection}                         & IMU wrapper return format         & Returns 3-tuple; test passes                        \\ \hline
@@ -320,7 +321,7 @@ Project execution followed an iterative workflow with milestones for module impl
 
 The project schedule used a milestone-oriented sequence aligned with the GP1 plan structure and adapted for GP2 delivery priorities.
 
-\begin{table}[h]
+\begin{table}[htbp]
 	\centering
 	\caption{Milestone schedule adapted from GP1 planning to GP2 execution.}
 	\label{tab:gantt_milestones}
@@ -342,7 +343,7 @@ The project schedule used a milestone-oriented sequence aligned with the GP1 pla
 
 Table~\ref{tab:team_allocation} summarizes the role allocation derived from GP1 planning and maintained through GP2 implementation.
 
-\begin{table}[h]
+\begin{table}[htbp]
 	\centering
 	\caption{Team organization and resource allocation.}
 	\label{tab:team_allocation}
@@ -379,7 +380,7 @@ This report presented a modular smart helmet prototype implementing fatigue dete
 
 This chapter summarizes contribution distribution by major workstream for the GP2 delivery phase.
 
-\begin{table}[h]
+\begin{table}[htbp]
 	\centering
 	\caption{Student contribution distribution during SGP2.}
 	\label{tab:student_contribution}
