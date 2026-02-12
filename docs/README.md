@@ -5,7 +5,7 @@ This folder contains the canonical documentation for the GP2 smart-helmet protot
 ## Start here
 
 - Architecture overview: `docs/ARCHITECTURE.md`
-- Task plan source: `docs/tasks.md`
+- Task execution plan: `docs/IMPLEMENTATION_ROADMAP.md`
 - Feature definition: `docs/FEATURES.md`
 - Hardware architecture: `docs/HARDWARE.md`
 - Power supply plan: `docs/POWER.md`

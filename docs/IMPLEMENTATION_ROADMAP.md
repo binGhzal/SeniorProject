@@ -144,9 +144,9 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 
 ### Phase 6 deliverables
 
-- Define a single orchestrator contract for sensor-read, detect, publish.
-- Isolate side effects to boundaries (I/O modules).
-- Ensure unit tests cover module contracts, not only happy paths.
+- [x] Define a single orchestrator contract for sensor-read, detect, publish.
+- [x] Isolate side effects to boundaries (I/O modules).
+- [x] Ensure unit tests cover module contracts, not only happy paths.
 
 ## Phase 7: AI and Advanced Algorithms maturation
 
@@ -168,9 +168,9 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 
 ### Phase 7 deliverables
 
-- Add algorithm mode selection: heuristic vs model-based pipeline.
-- Define dataset and evaluation hooks without breaking runtime loop.
-- Add latency and false-alert tracking fields for validation.
+- [x] Add algorithm mode selection: heuristic vs model-based pipeline.
+- [x] Define dataset and evaluation hooks without breaking runtime loop.
+- [x] Add latency and false-alert tracking fields for validation.
 
 ## Definition of done per phase
 

@@ -1,12 +1,12 @@
 # AI and Advanced Algorithms
 
-This document describes the AI/ML components (if any) used by GP2.
+This document describes the AI/ML components used by GP2.
 
-Status: placeholder; current prototype uses classical geometric features (EAR/PERCLOS) and thresholding.
+Status: implemented with heuristic-first runtime mode and model-ready validation contracts.
 
 ## Description of AI-based features
 
-- [ ] Drowsiness detection from face/eye landmarks
+- [x] Drowsiness detection from face/eye landmarks
 - [ ] Optional: head pose / yawning / gaze estimation
 - [ ] Optional: anomaly detection on IMU patterns
 
@@ -16,11 +16,13 @@ Status: placeholder; current prototype uses classical geometric features (EAR/PE
 
 - [x] Use ready-to-use landmark extractor (e.g., MediaPipe FaceMesh)
 - [x] Apply custom logic (EAR/PERCLOS)
+- [x] Expose algorithm mode selector (`heuristic-ear-perclos` vs `model-based`)
 
 ### Custom model path (optional)
 
 - [ ] Train a classifier on features (EAR history, blink rate)
-- [ ] Train an end-to-end model (video  drowsy) (higher risk/complexity)
+- [ ] Train an end-to-end model (video to drowsy) (higher risk/complexity)
+- [x] Define model validation/evaluation contract fields for rollout gates
 
 ## Training data requirements
 
@@ -32,6 +34,15 @@ Status: placeholder; current prototype uses classical geometric features (EAR/PE
 
 - [ ] Collection protocol + consent
 - [ ] Train/val/test split rules
-- [ ] Metrics: false alarm rate, detection latency
-- [ ] On-device deployment constraints (CPU, memory, power)
-- [ ] Update strategy (model versioning)
+- [x] Metrics: false alarm rate, detection latency (runtime fields added)
+- [x] On-device deployment constraints (CPU, memory, power) captured in AI plan contract
+- [x] Update strategy (model versioning) captured in `AIPlan.model_version`
+
+## Phase 7 implementation summary
+
+- AI planning module (`src/gp2/planning/ai_algorithms.py`) now provides:
+  - `AIPlan` with dataset tag and rollout thresholds
+  - `detector_mode(...)` for runtime mode selection
+  - `evaluation_contract(...)` for dataset/metrics gate definitions
+  - `supported_dataset_scopes()` for labeling buckets
+- Fatigue runtime metrics now include `latency_ms`, `false_alert`, and `mode` fields.

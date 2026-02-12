@@ -1,6 +1,6 @@
 # Documentation Task Checklists
 
-These checklists mirror `docs/tasks.md` and break each section into implementation-ready items.
+These checklists track implementation phases and break each section into executable items.
 
 Execution plan: `docs/IMPLEMENTATION_ROADMAP.md`
 
