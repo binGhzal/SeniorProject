@@ -35,3 +35,6 @@ black .
 pylint src tests
 pyright
 ```
+
+Markdown linting uses repository config in `.markdownlint.json`.
+Nested unordered list items use a 4-space indent (`MD007`).

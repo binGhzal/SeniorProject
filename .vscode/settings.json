@@ -3,9 +3,6 @@
   "python.testing.unittestEnabled": true,
   "python.testing.pytestEnabled": false,
   "python.testing.unittestArgs": ["-v", "tests/test_runtime.py"],
-  "python.analysis.typeCheckingMode": "basic",
-  "python.analysis.extraPaths": ["./src"],
-  "python.analysis.exclude": ["**/__pycache__", "archive", "unit-tests"],
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports": "explicit",
