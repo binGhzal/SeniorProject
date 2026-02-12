@@ -17,7 +17,7 @@ Default settings in the prototype:
 
 ### Status telemetry (qos=0)
 
-Published by `TelemetryClient.send_telemetry(perclos, g_force)`.
+Published by `TelemetryClient.send_telemetry(perclos, g_force, sensor_health=None)`.
 
 Example payload (JSON):
 
@@ -26,7 +26,12 @@ Example payload (JSON):
   "device_id": "helmet_01",
   "type": "STATUS",
   "perclos": 0.05,
-  "g_force": 1.02
+  "g_force": 1.02,
+  "sensor_health": {
+    "imu": { "available": true, "mode": "hardware" },
+    "camera": { "available": true, "mode": "hardware" },
+    "ir": { "available": true, "mode": "hardware" }
+  }
 }
 ```
 

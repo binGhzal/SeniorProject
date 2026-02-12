@@ -50,9 +50,9 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 
 ### Phase 2 deliverables
 
-- Add interface specification constants shared by sensors and orchestration.
-- Add startup validation for IMU, camera, and IR subsystems.
-- Add clear runtime health telemetry fields for each sensor block.
+- [ ] Add interface specification constants shared by sensors and orchestration.
+- [x] Add startup validation for IMU, camera, and IR subsystems.
+- [x] Add clear runtime health telemetry fields for each sensor block.
 
 ## Phase 3: Power Supply plan to measurable telemetry
 

@@ -30,6 +30,8 @@ Implemented in `src/gp2/sensors.py`.
 
 On non-Raspberry Pi machines, `sensors.py` includes safe fallbacks so the module can still be imported and unit tests can run without hardware.
 
+Sensor modules expose a `health_status()` method, allowing the runtime to generate a consolidated hardware-health snapshot (`imu`, `camera`, `ir`) for status telemetry.
+
 ### 2) Detection
 
 Implemented in `src/gp2/detection.py`.
@@ -71,13 +73,11 @@ MQTT is treated as an optional dependency so the code can import in environments
 The prototype loop is in `src/gp2/main.py`:
 
 1. Initialize sensors, telemetry, detector
-2. In a loop:
-   - Read IMU and compute `total_g`
-   - If crash threshold exceeded: publish `CRASH` alert
-   - Get camera frame (if available)
-   - Run fatigue detector (prototype uses mock landmarks)
-   - If fatigue condition triggered: publish `FATIGUE` alert
-   - Send periodic status telemetry
+2. Read IMU and compute `total_g`.
+3. If crash threshold is exceeded, publish a `CRASH` alert.
+4. Get camera frame (if available) and run fatigue detection logic.
+5. If fatigue condition is triggered, publish a `FATIGUE` alert.
+6. Send periodic status telemetry including sensor-health snapshot.
 
 ## Key design assumptions (prototype)
 

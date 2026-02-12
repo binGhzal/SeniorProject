@@ -1,5 +1,8 @@
 # TODO 02: Hardware Architecture
 
+- [x] Add runtime startup sensor health snapshot wiring (IMU/camera/IR)
+- [x] Expose per-module availability/mode status for telemetry
+
 - [ ] Confirm board SKU and compute constraints
 - [ ] Confirm IMU part and electrical interface details
 - [ ] Confirm camera module and interface bandwidth needs
