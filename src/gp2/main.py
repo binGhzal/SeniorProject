@@ -14,6 +14,7 @@ from .planning.power_plan import (
     estimate_total_current,
     has_valid_power_bounds,
 )
+from .planning.connectivity import ConnectivityConfig, validate_connectivity_config
 # import dlib # Required for actual landmark detection
 
 
@@ -54,7 +55,17 @@ def main():
     imu = IMUSensor()
     cam = CameraModule()
     ir = IRSys()
-    mqtt = TelemetryClient()
+    connectivity_config = ConnectivityConfig(
+        protocol="mqtt",
+        telemetry_interval_s=1.0,
+        max_alert_latency_s=2.0,
+        offline_queue_enabled=True,
+        offline_queue_max_items=200,
+    )
+    if not validate_connectivity_config(connectivity_config):
+        raise ValueError("Invalid runtime connectivity configuration.")
+
+    mqtt = TelemetryClient(config=connectivity_config)
     detector = FatigueDetector()
     feature_definition = build_default_feature_definition()
     runtime_flags = derive_runtime_feature_flags(feature_definition)
@@ -66,6 +77,7 @@ def main():
     ir.set_brightness(50)  # Set IR LEDs to 50%
     sensor_health = build_sensor_health(imu, cam, ir)
     power_profile = build_power_profile(sensor_health)
+    last_status_publish_ts = 0.0
 
     try:
         while True:
@@ -99,13 +111,19 @@ def main():
                     mqtt.send_alert("FATIGUE", ear)
 
             # D. Telemetry Heartbeat
-            if runtime_flags.enable_status_telemetry:
+            current_ts = time.time()
+            should_publish_status = (
+                runtime_flags.enable_status_telemetry
+                and (current_ts - last_status_publish_ts) >= connectivity_config.telemetry_interval_s
+            )
+            if should_publish_status:
                 mqtt.send_telemetry(
                     0.05,
                     total_g,
                     sensor_health,
                     power_profile,
                 )
+                last_status_publish_ts = current_ts
 
             # Maintenance loop delay
             time.sleep(0.05)

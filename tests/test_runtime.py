@@ -11,6 +11,8 @@ from src.gp2.main import build_power_profile
 from src.gp2.planning.hardware_architecture import default_interface_map
 from src.gp2.planning.power_plan import PowerProfile, estimate_total_current
 from src.gp2.planning.power_plan import has_valid_power_bounds
+from src.gp2.planning.connectivity import ConnectivityConfig
+from src.gp2.planning.connectivity import validate_connectivity_config
 from src.gp2.planning.features import (
     AppFeatureSet,
     FeatureDefinition,
@@ -133,7 +135,9 @@ class TestSmartHelmet(unittest.TestCase):
 
     def test_runtime_power_profile_shape(self):
         """Ensures runtime builds a serializable power profile payload."""
-        power_profile = build_power_profile(build_sensor_health(IMUSensor(), CameraModule(), IRSys()))
+        power_profile = build_power_profile(
+            build_sensor_health(IMUSensor(), CameraModule(), IRSys())
+        )
         self.assertIn("average_ma", power_profile)
         self.assertIn("peak_ma", power_profile)
         self.assertIn("standby_ma", power_profile)
@@ -154,6 +158,43 @@ class TestSmartHelmet(unittest.TestCase):
         payload = json.loads(publish_args[1])
         self.assertIn("power_profile", payload)
         self.assertEqual(payload["power_profile"]["peak_ma"], 200.0)
+
+    def test_connectivity_config_validation(self):
+        """Rejects invalid connectivity configuration values."""
+        valid = ConnectivityConfig()
+        invalid = ConnectivityConfig(protocol="invalid")
+        self.assertTrue(validate_connectivity_config(valid))
+        self.assertFalse(validate_connectivity_config(invalid))
+
+    def test_offline_queue_placeholder_behavior(self):
+        """Queues unsent messages when connectivity is unavailable."""
+        config = ConnectivityConfig(
+            offline_queue_enabled=True,
+            offline_queue_max_items=2,
+        )
+        client = TelemetryClient(config=config)
+        client.client = None
+
+        client.send_alert("CRASH", 3.0)
+        client.send_alert("FATIGUE", 0.1)
+        client.send_alert("CRASH", 2.8)
+
+        self.assertEqual(len(client.offline_queue), 2)
+        self.assertEqual(client.offline_queue[-1]["payload"]["alert"], "CRASH")
+
+    def test_qos_policy_from_connectivity_config(self):
+        """Uses configured QoS values for status and alert publishes."""
+        config = ConnectivityConfig(status_qos=1, alert_qos=0)
+        client = TelemetryClient(config=config)
+        client.client = MagicMock()
+
+        client.send_alert("FATIGUE", 0.2)
+        client.send_telemetry(0.1, 1.1)
+
+        alert_call = client.client.publish.call_args_list[0]
+        status_call = client.client.publish.call_args_list[1]
+        self.assertEqual(alert_call.kwargs["qos"], 0)
+        self.assertEqual(status_call.kwargs["qos"], 1)
 
 
 if __name__ == '__main__':
