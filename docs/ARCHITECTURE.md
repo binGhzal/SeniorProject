@@ -68,6 +68,14 @@ Implemented in `src/gp2/telemetry.py`.
 
 MQTT is treated as an optional dependency so the code can import in environments without `paho-mqtt`.
 
+### 5) Local storage strategy
+
+Implemented in `src/gp2/planning/storage_strategy.py` and used by `src/gp2/main.py`.
+
+- Defines storage policy (retention hours, queue bounds, sync toggles, conflict policy).
+- Buffers crash/fatigue/status events locally before cloud replay.
+- Provides replay list and sync-marking hooks for post-outage recovery.
+
 ## Orchestration
 
 The prototype loop is in `src/gp2/main.py`:
@@ -78,6 +86,7 @@ The prototype loop is in `src/gp2/main.py`:
 4. Get camera frame (if available) and run fatigue detection logic.
 5. If fatigue condition is triggered, publish a `FATIGUE` alert.
 6. Send periodic status telemetry including sensor-health snapshot.
+7. Persist local event snapshots for replay and retention management.
 
 ## Key design assumptions (prototype)
 

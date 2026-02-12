@@ -2,7 +2,7 @@
 
 This document defines where GP2 data is stored, for how long, and how it is synchronized securely.
 
-Status: placeholder; current prototype sends telemetry/alerts without persistence.
+Status: partially implemented in software via in-memory local buffer hooks.
 
 ## On-device storage
 
@@ -12,6 +12,18 @@ Status: placeholder; current prototype sends telemetry/alerts without persistenc
   - [ ] Recent telemetry samples / summaries
   - [ ] Crash event snapshot (pre/post window)
 - [ ] Retention policy: (e.g., last N hours or N events)
+
+Current runtime implementation:
+
+- `src/gp2/planning/storage_strategy.py` defines:
+  - `StoragePolicy` (retention window, queue bounds, cloud sync flag, conflict policy)
+  - `StorageEvent` schema (`event_type`, `payload`, `timestamp`, `synced`)
+  - `LocalStorageBuffer` with retention pruning and bounded queue behavior
+- `src/gp2/main.py` now records:
+  - crash alerts
+  - fatigue alerts
+  - periodic status snapshots
+- Retention is enforced by hours (`on_device_retention_hours`) and maximum queue size (`on_device_queue_max_items`).
 
 ## Application-side storage
 
@@ -31,6 +43,12 @@ Status: placeholder; current prototype sends telemetry/alerts without persistenc
 - [ ] Encryption in transit (TLS)
 - [ ] Data minimization (store only what is needed)
 - [ ] Consent and privacy (who can see crash/fatigue data)
+
+Implemented sync/replay hooks:
+
+- `pending_replay_events()` returns unsynced records in insertion order.
+- `mark_synced(...)` marks replayed records as synced.
+- `resolve_sync_conflict(...)` supports `local-wins`, `remote-wins`, and `last-write-wins` policy.
 
 ## Open questions
 

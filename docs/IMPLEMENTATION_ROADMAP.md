@@ -119,9 +119,9 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 
 ### Phase 5 deliverables
 
-- Define local storage interface for events and summaries.
-- Add retention policy enforcement hooks.
-- Add tests for retention and replay behavior.
+- [x] Define local storage interface for events and summaries.
+- [x] Add retention policy enforcement hooks.
+- [x] Add tests for retention and replay behavior.
 
 ## Phase 6: Software Architecture consolidation
 
