@@ -1,6 +1,7 @@
 """Fatigue detection logic based on EAR and rolling PERCLOS-style scoring."""
 
 import time
+from collections import deque
 from typing import Any
 
 import numpy as np
@@ -22,6 +23,7 @@ RIGHT_EYE_MEDIAPIPE = [362, 385, 387, 263, 373, 380]
 EYE_AR_THRESH = 0.25  # Below this, eye is "closed"
 PERCLOS_THRESH = 0.12  # 12% fatigue threshold
 EYE_AR_CONSEC_FRAMES = 3  # Frame buffer for blink consistency
+PERCLOS_WINDOW_FRAMES = 1000
 
 
 def create_face_mesh() -> Any:
@@ -81,8 +83,13 @@ class FatigueDetector:
         self.counter = 0
         self.closed_frames = 0
         self.total_frames = 0
-        self.perclos_buffer = []  # Circular buffer for PERCLOS window
+        self.perclos_buffer = deque(maxlen=PERCLOS_WINDOW_FRAMES)
         self.face_mesh = create_face_mesh()
+
+    def _current_perclos(self) -> float:
+        if not self.perclos_buffer:
+            return 0.0
+        return float(sum(self.perclos_buffer) / len(self.perclos_buffer))
 
     def _extract_face_landmarks(self, frame):
         landmarks = extract_face_landmarks(frame, self.face_mesh)
@@ -125,12 +132,9 @@ class FatigueDetector:
         else:
             self.counter = 0
 
-        # Update PERCLOS buffer (e.g., last 1000 frames)
+        # Update PERCLOS buffer for a fixed rolling window.
         self.perclos_buffer.append(is_closed)
-        if len(self.perclos_buffer) > 1000:
-            self.perclos_buffer.pop(0)
-
-        perclos_score = sum(self.perclos_buffer) / len(self.perclos_buffer)
+        perclos_score = self._current_perclos()
 
         # Trigger logic
         if perclos_score > PERCLOS_THRESH:
@@ -161,8 +165,6 @@ class FatigueDetector:
             is_drowsy = False
             ear = 0.0
             self.perclos_buffer.append(0)
-            if len(self.perclos_buffer) > 1000:
-                self.perclos_buffer.pop(0)
         else:
             is_drowsy, ear = self.analyze_frame(landmarks_input)
 
@@ -174,7 +176,5 @@ class FatigueDetector:
             "latency_ms": latency_ms,
             "false_alert": false_alert,
             "mode": mode,
-            "perclos": (
-                sum(self.perclos_buffer) / len(self.perclos_buffer) if self.perclos_buffer else 0.0
-            ),
+            "perclos": self._current_perclos(),
         }

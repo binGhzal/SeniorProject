@@ -9,7 +9,7 @@ This is a file-by-file reference for the GP2 prototype.
 - Key behaviors:
     - Crash detection threshold: `total_g > 2.5`
     - Fatigue alert when `FatigueDetector` returns `drowsy=True`
-    - Periodic `send_telemetry(perclos=..., g_force=...)`
+    - Periodic `send_telemetry(...)` with status, health, power, and AI metrics
 
 ## `src/gp2/sensors.py`
 
@@ -85,7 +85,7 @@ For expected outputs and full run example, see `docs/TESTING.md`.
 ## `src/gp2/planning/`
 
 - Purpose: task-aligned scaffolding modules created from `docs/tasks.md`.
-- Scope: non-runtime placeholder classes/configs for:
+- Scope: runtime contracts/configuration used by tests and orchestration boundaries for:
     - features
     - hardware architecture
     - power plan

@@ -1,6 +1,7 @@
 # Setup & Dependencies
 
-This project is a prototype that can be developed and tested on macOS/Windows/Linux, with optional Raspberry Pi hardware support.
+This project is a prototype that can be developed and tested on
+macOS/Windows/Linux, with optional Raspberry Pi hardware support.
 
 ## Python environment
 
@@ -63,5 +64,14 @@ The code is written so these are optional when running on a dev machine.
 
 ## Notes
 
-- The current `src/gp2/main.py` passes camera frames into `FatigueDetector`; when MediaPipe is available, real landmarks are extracted.
+- The current `src/gp2/main.py` passes camera frames into `FatigueDetector`;
+  when MediaPipe is available, real landmarks are extracted.
 - For production-like testing of telemetry, prefer a local MQTT broker with authentication and TLS.
+
+## Library decisions (reuse over custom code)
+
+- `mediapipe` + `opencv-python`: preferred for landmark extraction and camera handling (avoid writing custom CV pipelines).
+- `paho-mqtt`: preferred MQTT transport with reconnect/publish APIs (avoid custom socket protocol code).
+- `sqlite3` (stdlib): preferred local event buffer and retention storage (avoid custom file-queue formats).
+- `smbus2` and `RPi.GPIO`: preferred hardware access adapters on Raspberry Pi (avoid direct low-level driver reimplementation).
+- `numpy`: preferred vectorized math for EAR and g-force calculations (avoid manual numeric loops where possible).

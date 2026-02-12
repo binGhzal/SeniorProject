@@ -6,7 +6,7 @@ Main file: `sgp2-report.tex`
 
 - `sgp2-report.tex` – filled report draft based on the UAEU CIT template structure
 - `references.bib` – BibTeX references used by the report
-- `acro.tex` – acronym file (kept minimal)
+- `acro.tex` – acronym file loaded when present
 - `Figures/` – put images here (optional)
 - `../references/` – external template assets and forms (normalized path)
 

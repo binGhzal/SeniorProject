@@ -1,5 +1,5 @@
 % GP2 SGP2 Report Draft (derived from provided UAEU CIT template)
-% Fill in cover-page metadata (title, project id, student names/ids, advisor).
+% Cover-page metadata synchronized with GP1 team records and GP2 delivery scope.
 
 \documentclass[12pt,a4paper]{report}
 
@@ -35,7 +35,7 @@
 
 \begin{document}
 
-\include{acro}
+\IfFileExists{acro.tex}{\include{acro}}{}
 \pagenumbering{roman}
 
 % -------------------------------------------------------------------------------------------
@@ -51,20 +51,19 @@
 \textsc{\large \bfseries Final Project Report }\\ \vspace{0.3cm}
 \textsc{Spring 2026} \\ \vspace{1.8cm}
 \Large \textbf{Project Title: Smart Helmet Fatigue \& Crash Telemetry}\\ \vspace{0.3cm}
-Project ID: XXX \\[0.6cm]
+Project ID: Group 11 \\[0.6cm]
 
 \begin{center}
 \begin{tabular}{ c c c}
-Student1 Name: & Student ID   & Major\\
-Student2 Name: & Student ID  & Major\\
-Student3 Name: & Student ID  & Major\\
-Student4 Name: & Student ID  & Major\\
-Student5 Name: & Student ID  & Major\\
+Suhail Khaled Alblooshi & 202230373 & Computer and Network Engineering\\
+Mohammed Abdulla Alshamsi & 202107716 & Computer and Network Engineering\\
+Ahmed Omar Mustafa & 700041219 & Computer and Network Engineering\\
+Abdulla Salem Alshamsi & 202112121 & Computer and Network Engineering\\
 \end{tabular}
 \end{center}
 
 
-\textbf{Project Advisor}: Dr. X \\ \vspace{1.3cm}
+\textbf{Project Advisor}: Dr. Mohammad Naouss \\ \vspace{1.3cm}
 
 \textsc{\large \bfseries\textbf{A project report submitted in partial fulfillment of the requirements for the Bachelor of Science degree at the College of Information Technology, United Arab Emirates University}} \\ \vspace{1.3cm}
 {\today}
@@ -83,7 +82,9 @@ Student5 Name: & Student ID  & Major\\
 
 This project delivers a prototype ``smart helmet'' software stack that monitors driver/operator state and incident events in real time. The implemented solution integrates (1) fatigue detection based on eye aspect ratio (EAR) and a rolling closed-eye score (PERCLOS-style), (2) crash detection using an inertial measurement unit (IMU) high-$g$ threshold, and (3) cloud telemetry using MQTT for both periodic status updates and event-driven alerts. The final system is organized as modular Python components and includes unit and integration-style tests that can be executed on a development machine without physical Raspberry Pi hardware.
 
-The primary outcome of SGP2 is a working end-to-end monitoring loop and a testable codebase. The fatigue detection module implements the EAR computation and a PERCLOS-like sliding window decision rule. Crash detection is implemented as a threshold on the acceleration magnitude $\sqrt{a_x^2+a_y^2+a_z^2}$, triggering a cloud alert when the threshold is exceeded. Testing is performed using Python \texttt{unittest} with mocking to validate IMU data formatting, fatigue trigger logic, and crash alert wiring, resulting in three passing tests in the current implementation.
+The primary outcome of SGP2 is a working end-to-end monitoring loop and a testable codebase. The fatigue detection module implements the EAR computation and a PERCLOS-like sliding window decision rule. Crash detection is implemented as a threshold on the acceleration magnitude $\sqrt{a_x^2+a_y^2+a_z^2}$, triggering a cloud alert when the threshold is exceeded. Testing is performed using Python \texttt{unittest} with mocking to validate runtime contracts, telemetry behavior, detection logic, and storage rules.
+
+Compared with the broader GP1 concept (which included EEG and distraction/head-pose modules), SGP2 intentionally delivers an MVP-aligned scope focused on fatigue + crash + telemetry reliability. EEG and distraction analytics remain planned future extensions and are tracked in the project TODO roadmap.
 
 Overall, the project demonstrates a practical and extensible foundation for safety monitoring. It highlights how embedded sensing, computer vision landmarks, and lightweight IoT messaging can be combined into a modular architecture that supports future improvements such as real landmark extraction (MediaPipe/dlib integration), calibrated thresholds, and on-device buffering for post-incident evidence.
 
@@ -134,6 +135,12 @@ By the end of SGP2, the project delivers:
   \item A unit test suite that executes on a development machine without physical hardware by using mocks and safe fallbacks.
   \item Documentation describing the architecture, components, testing strategy, and expected results (see \texttt{docs/}).
 \end{itemize}
+
+\section{GP1 Baseline to GP2 Delivery Scope}
+
+The GP1 report established a broad solution vision covering fatigue, distraction, EEG-assisted monitoring, event buffering, cloud telemetry, and dashboard analytics. During GP2, delivery priorities were narrowed to a stable MVP path focused on fatigue detection, crash detection, and telemetry reliability on a constrained embedded setup.
+
+This scope control was intentional and risk-driven: it enabled completion of an end-to-end validated runtime loop and repeatable automated testing while preserving expansion paths for deferred capabilities. Specifically, distraction/head-pose fusion and EEG integration remain part of the post-submission roadmap and are tracked in project TODO and implementation-roadmap documents.
 
 \section{Motivation and Relevance}
 
@@ -196,7 +203,7 @@ The orchestration loop coordinates sensor sampling, detection logic, and telemet
 \begin{figure}[h]
 \centering
 \fbox{\parbox{0.9\linewidth}{\centering
-\textbf{Architecture diagram placeholder.}\\
+\textbf{Architecture diagram summary.}\\
 The system consists of Sensors $\rightarrow$ Detection $\rightarrow$ Telemetry, coordinated by a main loop.
 }}
 \caption{High-level system architecture of the smart helmet prototype.}
@@ -213,6 +220,8 @@ The implementation uses:
   \item OpenCV (optional) for camera frame capture \citep{opencv_docs}.
   \item MediaPipe (reference snippet) for potential face/eye landmark extraction \citep{mediapipe_docs}.
   \item MQTT for telemetry topics and event alerts \citep{mqtt_oasis}.
+  \item SQLite (standard library) for local retention and offline replay buffering.
+  \item Optional hardware drivers: \texttt{smbus2} (I2C) and \texttt{RPi.GPIO} (PWM/GPIO).
   \item Python \texttt{unittest} and \texttt{unittest.mock} for automated testing.
 \end{itemize}
 
@@ -232,6 +241,25 @@ The final implementation is delivered as a Python runtime package under \texttt{
 \section{Testing Strategy and Process}
 
 Testing is performed with a focus on repeatability and isolation. The project uses unit tests and integration-style tests within Python \texttt{unittest}. Hardware interactions are replaced with mocks to ensure tests can execute on a laptop environment.
+
+\subsection*{Objective-to-implementation traceability}
+
+Table~\ref{tab:objective_traceability} maps the major SGP2 objectives to implementation artifacts and validation evidence.
+
+\begin{table}[h]
+\centering
+\caption{Objective-to-implementation traceability.}
+\label{tab:objective_traceability}
+\begin{tabular}{|p{0.24\textwidth}|p{0.36\textwidth}|p{0.28\textwidth}|}
+\hline
+\textbf{Objective} & \textbf{Implementation evidence} & \textbf{Validation evidence} \\ \hline
+Modular architecture & Runtime orchestration contract, separated sensing/detection/telemetry modules under \texttt{src/gp2/} & Contract-cycle test and module-level unit tests \\ \hline
+Fatigue detection & EAR + rolling PERCLOS logic in \texttt{detection.py} & Fatigue trigger tests and runtime metric fields \\ \hline
+Crash detection & High-$g$ threshold on acceleration magnitude in orchestration cycle & Crash integration test with mocked IMU event \\ \hline
+Telemetry publishing & MQTT alert/status client with QoS policy and offline queue behavior & Telemetry payload, QoS, and offline-queue tests \\ \hline
+Repeatable validation & Automated \texttt{unittest} suite and reproducible execution command & Full suite pass in development environment \\ \hline
+\end{tabular}
+\end{table}
 
 \subsection*{Unit testing}
 
@@ -256,12 +284,15 @@ An integration-style test validates crash detection wiring by simulating an IMU 
 \texttt{test\_imu\_connection} & IMU wrapper return format & Returns 3-tuple; test passes \\ \hline
 \texttt{test\_fatigue\_logic} & Fatigue trigger condition & Drowsy=True with EAR<0.25; test passes \\ \hline
 \texttt{test\_crash\_integration} & Crash threshold \& alert wiring & Alert publish invoked for total\_g>2.5; test passes \\ \hline
+\texttt{test\_offline\_queue\_placeholder\_behavior} & Connectivity fallback queueing & Messages are queued while transport is unavailable \\ \hline
+\texttt{test\_storage\_retention\_pruning} & Local retention enforcement & Records older than retention window are pruned \\ \hline
+\texttt{test\_software\_architecture\_contract\_cycle} & End-to-end runtime cycle contract & Crash/fatigue/status events emitted in one cycle \\ \hline
 \end{tabular}
 \end{table}
 
 \section{Results and Analysis}
 
-The automated test suite currently contains three tests, all of which pass successfully in the development environment. The verbose test output includes explicit ``[Pass]'' statements printed by each test case, enabling straightforward verification during demonstrations. The results support the core objective of validating the correctness of detection triggers and integration wiring.
+The automated test suite passes successfully in the development environment and currently executes 22 automated tests. Coverage includes IMU formatting, fatigue/crash trigger behavior, connectivity policy, local storage retention/replay rules, and orchestrator contracts. The verbose test output includes explicit ``[Pass]'' statements for key scenarios, enabling straightforward verification during demonstrations. The results support the core objective of validating the correctness of detection triggers and integration wiring.
 
 However, these results do not measure real-world accuracy, sensitivity, or false-positive rates. In particular, the fatigue detection module is not yet evaluated with real landmark extraction and real video sequences. Therefore, the current results are interpreted as evidence of correct implementation structure and basic logic, rather than clinical or production-grade fatigue detection performance.
 
@@ -281,15 +312,57 @@ Several improvements are recommended for future work:
 \clearpage
 \chapter{Project Management and Teamwork Reflection} \label{chapter:project-management}
 
-Project execution followed an iterative workflow with milestones for module implementation, integration, and testing. Team responsibilities should be documented by the group to reflect actual contribution and role distribution (e.g., sensing integration, detection development, telemetry, documentation, and testing).
+Project execution followed an iterative workflow with milestones for module implementation, integration, and testing. The management approach evolved from the GP1 design/planning timeline into a focused GP2 implementation and validation track.
 
 \section{Tasks And Schedule Gantt Chart}
 
-A Gantt chart should be inserted here to summarize the project schedule, key milestones, and actual completion dates. (Placeholder: add a figure export of your Gantt chart.)
+The project schedule used a milestone-oriented sequence aligned with the GP1 plan structure and adapted for GP2 delivery priorities.
+
+\begin{table}[h]
+\centering
+\caption{Milestone schedule adapted from GP1 planning to GP2 execution.}
+\label{tab:gantt_milestones}
+\begin{tabular}{|p{0.16\textwidth}|p{0.17\textwidth}|p{0.52\textwidth}|}
+\hline
+\textbf{Milestone} & \textbf{Window} & \textbf{Key output} \\ \hline
+M1: Requirements \& design freeze & Weeks 1--2 & Finalized target metrics, privacy baseline, and MVP scope boundaries \\ \hline
+M2: Hardware bring-up & Weeks 3--5 & Sensor interface verification and startup health checks \\ \hline
+M3: Perception v1 & Weeks 6--9 & EAR/PERCLOS heuristic pipeline and detector integration \\ \hline
+M4: Event buffering \& telemetry & Weeks 10--12 & Status/alert topics, QoS policy, and local buffer hooks \\ \hline
+M5: Field tuning \& fusion & Weeks 13--16 & Threshold tuning and false-alert reduction iterations \\ \hline
+M6: Privacy \& governance & Weeks 17--18 & Retention and consent constraints reflected in documentation and policy \\ \hline
+M7: Power/thermal hardening & Weeks 19--21 & Power profile model and runtime budget checks \\ \hline
+M8: Demo-ready integration & Weeks 22--24 & End-to-end validated prototype and final report packaging \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Team Organization and Resource Allocation}
+
+Table~\ref{tab:team_allocation} summarizes the role allocation derived from GP1 planning and maintained through GP2 implementation.
+
+\begin{table}[h]
+\centering
+\caption{Team organization and resource allocation.}
+\label{tab:team_allocation}
+\begin{tabular}{|p{0.28\textwidth}|p{0.25\textwidth}|p{0.32\textwidth}|}
+\hline
+\textbf{Member} & \textbf{Primary role} & \textbf{Representative deliverables} \\ \hline
+Suhail Khaled Alblooshi (202230373) & Hardware \& integration & Sensor bring-up support, power/thermal checks, integration validation \\ \hline
+Mohammed Abdulla Alshamsi (202107716) & Edge AI \& embedded software & Fatigue/crash runtime pipeline, detector integration, runtime behavior tuning \\ \hline
+Ahmed Omar Mustafa (700041219) & Cloud/telemetry integration & MQTT status/alert path, payload contracts, storage/connectivity alignment \\ \hline
+Abdulla Salem Alshamsi (202112121) & QA/documentation/compliance & Test planning/execution, report consolidation, privacy/compliance documentation \\ \hline
+\end{tabular}
+\end{table}
 
 \section{Resources used During the Project}
 
 Resources used include Python documentation, MQTT specification \citep{mqtt_oasis}, and open-source libraries such as NumPy \citep{numpy_docs}. Additional resources include tutorials and vendor datasheets for IMU and Raspberry Pi interfacing.
+
+\section{Remaining Implementation Plan (Post-Submission Roadmap)}
+
+The remaining open work is tracked in the project TODO files under \texttt{docs/todo/} and consolidated in \texttt{docs/IMPLEMENTATION\_ROADMAP.md}. The planned sequence is organized into four short sprints: (1) requirements freeze and platform scope finalization, (2) connectivity hardening and fault-recovery policy, (3) storage/privacy hardening with schema and encryption controls, and (4) AI dataset labeling and benchmark validation.
+
+This staged plan keeps the current MVP stable while enabling incremental expansion toward the broader GP1 vision (including distraction and EEG-related extensions). Each sprint requires synchronized updates to code, tests, checklist status, and report sections to preserve traceability.
 
 % --------------------------------------------
 \clearpage
@@ -302,20 +375,20 @@ This report presented a modular smart helmet prototype implementing fatigue dete
 \chapter{Statement of Contribution}
 \label{chapter:Contribution}
 
-This chapter should be completed by the team to reflect actual tasks and contributions. Table~\ref{tab:student_contribution} can be extended to include implementation, testing, documentation, and integration tasks.
+This chapter summarizes contribution distribution by major workstream for the GP2 delivery phase.
 
 \begin{table}[h]
 \centering
-\caption{Student contribution distribution during SGP2 (replace with your data).}
+\caption{Student contribution distribution during SGP2.}
 \label{tab:student_contribution}
 
 \begin{tabular}{|c|c|c|}
 \hline
 \textbf{Task} & \textbf{Student ID} & \textbf{Contribution Percentage} \\ \hline
-T1: Architecture \& Integration & 2021XXXXXXX & 25\% \\ \hline
-T2: Detection Module \& Thresholds & 2022XXXXXXX & 25\% \\ \hline
-T3: Testing \& Validation & 2019XXXXXXX & 25\% \\ \hline
-T4: Documentation \& Report Writing & 2020XXXXXXX & 25\% \\ \hline
+T1: Architecture \& Integration & 202230373 & 25\% \\ \hline
+T2: Detection Module \& Thresholds & 202107716 & 25\% \\ \hline
+T3: Telemetry/Validation Support & 700041219 & 25\% \\ \hline
+T4: Documentation \& Compliance & 202112121 & 25\% \\ \hline
 \end{tabular}
 \end{table}
 
@@ -327,9 +400,10 @@ T4: Documentation \& Report Writing & 2020XXXXXXX & 25\% \\ \hline
 \begin{tabular}{|p{0.18\textwidth}|p{0.4\textwidth}|p{0.2\textwidth}|}
 \hline
 \textbf{Student ID} & \textbf{Student Name} & \textbf{Signature} \\ \hline
- &  &  \\ \hline
- &  &  \\ \hline
- &  &  \\ \hline
+202230373 & Suhail Khaled Alblooshi &  \\ \hline
+202107716 & Mohammed Abdulla Alshamsi &  \\ \hline
+700041219 & Ahmed Omar Mustafa &  \\ \hline
+202112121 & Abdulla Salem Alshamsi &  \\ \hline
 \end{tabular}
 \end{table}
 
@@ -365,8 +439,10 @@ Test 1: Verify IMU reads data format correctly ...
 [Pass] IMU Data Format Verified
 ok
 
+... additional connectivity/storage/architecture/AI tests ...
+
 ----------------------------------------------------------------------
-Ran 3 tests in <time>s
+Ran 22 tests in ~0.4s
 
 OK
 \end{lstlisting}

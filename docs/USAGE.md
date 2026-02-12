@@ -24,8 +24,8 @@ On startup:
 
 During execution:
 
-- If a high-g event is detected: `CRASH DETECTED! G-Force: <value>`
-- If fatigue is detected: `FATIGUE ALERT! EAR: <value>`
+- Crash alerts appear in logs with g-force values.
+- Fatigue alerts appear in logs with EAR values.
 
 Stop with Ctrl+C.
 
@@ -33,7 +33,7 @@ Stop with Ctrl+C.
 
 - Crash threshold: `total_g > 2.5`
 - Fatigue thresholding is handled by `FatigueDetector` using a rolling closed-eye buffer.
-- Landmarks in `main.py` are currently simulated as zeros; this means fatigue triggering depends on the detector logic and configured thresholds, not on real camera input.
+- When `mediapipe` + camera input are available, landmarks are extracted from frames in `src/gp2/detection.py`.
 
 ## On-device (Raspberry Pi) notes
 

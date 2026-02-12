@@ -6,6 +6,7 @@ repos:
       - id: trailing-whitespace
       - id: check-merge-conflict
       - id: check-added-large-files
+        args: ["--maxkb=2048"]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.12.8
@@ -18,3 +19,17 @@ repos:
     rev: 24.10.0
     hooks:
       - id: black
+
+  - repo: local
+    hooks:
+      - id: sanitize-main-footer
+        name: Sanitize main footer
+        entry: python3 scripts/sanitize_main_footer.py
+        language: system
+        files: ^src/gp2/main\.py$
+
+      - id: validate-main-footer
+        name: Validate main footer duplication
+        entry: python3 scripts/validate_main_footer.py
+        language: system
+        files: ^src/gp2/main\.py$

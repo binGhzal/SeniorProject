@@ -39,6 +39,10 @@ If you are using the repo virtual environment explicitly:
 - **FaceMesh integration (`src/gp2/detection.py`)**: logic path is covered, but
   accuracy against real video remains manual/experimental.
 
+Current suite scope extends beyond the original three baseline tests and now also
+covers connectivity policy, storage retention/replay, runtime contract execution,
+power profile validation, and AI metrics fields.
+
 ## Test-by-test detail
 
 ### 1) IMU sensor wrapper (`IMUSensor`)
@@ -100,23 +104,22 @@ If you are using the repo virtual environment explicitly:
 A successful run should resemble:
 
 ```text
-test_crash_integration (tests.TestSmartHelmet.test_crash_integration)
-Test 4: The 'Shake to Upload' Crash Logic ...
-[Pass] Crash Integration (Sensor -> Cloud Trigger) Verified
+test_crash_integration (...)
+...
 ok
 
-test_fatigue_logic (tests.TestSmartHelmet.test_fatigue_logic)
-Test 5: Fatigue Logic Simulation (Software Injection) ...
-[Pass] Fatigue Logic Triggered Correctly
+test_fatigue_logic (...)
+...
 ok
 
-test_imu_connection (tests.TestSmartHelmet.test_imu_connection)
-Test 1: Verify IMU reads data format correctly ...
-[Pass] IMU Data Format Verified
+test_imu_connection (...)
+...
 ok
+
+... additional tests for connectivity, storage, architecture contracts, and AI metrics ...
 
 ----------------------------------------------------------------------
-Ran 3 tests in <time>s
+Ran <N> tests in <time>s
 
 OK
 ```

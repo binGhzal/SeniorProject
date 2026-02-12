@@ -11,3 +11,9 @@
 - [ ] Define battery capacity target and charging strategy
 - [ ] Estimate runtime for day/night operating profiles
 - [ ] Add brownout and overcurrent protection plan
+
+## Implementation plan
+
+- Week 2: measure average/peak current for compute, camera, IR, and radio under day/night scenarios.
+- Week 3: finalize battery and charging design targets with thermal margin calculations.
+- Week 3: document protection strategy (brownout, overcurrent) and link to hardware diagram.

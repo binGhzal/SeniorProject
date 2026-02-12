@@ -64,7 +64,7 @@ Implemented in `src/gp2/telemetry.py`.
     - Telemetry: `smarthelmet/v1/telemetry`
     - Alerts: `smarthelmet/v1/alerts`
 - **Payloads**
-    - Status: includes `perclos` and `g_force`.
+    - Status: includes `perclos`, `g_force`, `sensor_health`, `power_profile`, and `ai_metrics`.
     - Alert: includes `alert` type and `value`.
 
 MQTT is treated as an optional dependency so the code can import in
@@ -89,8 +89,14 @@ The prototype loop is in `src/gp2/main.py`:
 3. If crash threshold is exceeded, publish a `CRASH` alert.
 4. Get camera frame (if available) and run fatigue detection logic.
 5. If fatigue condition is triggered, publish a `FATIGUE` alert.
-6. Send periodic status telemetry including sensor-health snapshot.
+6. Send periodic status telemetry including health/power/AI metrics.
 7. Persist local event snapshots for replay and retention management.
+
+## Scope note
+
+The current GP2 runtime implements fatigue + crash + telemetry MVP behavior
+from the original report direction. EEG and distraction/head-pose analytics are
+tracked as future phases and are intentionally out of the current runtime flow.
 
 ## Key design assumptions (prototype)
 

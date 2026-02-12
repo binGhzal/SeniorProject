@@ -36,5 +36,8 @@ pylint src tests
 pyright
 ```
 
+Pre-commit also runs a local guard that validates
+`src/gp2/main.py` does not contain duplicated `__main__` footer blocks.
+
 Markdown linting uses repository config in `.markdownlint.json`.
 Nested unordered list items use a 4-space indent (`MD007`).

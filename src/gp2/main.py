@@ -1,5 +1,6 @@
 """Main runtime loop for the GP2 smart-helmet prototype."""
 
+import logging
 import time
 
 import numpy as np
@@ -15,6 +16,8 @@ from .sensors import CameraModule, IMUSensor, IRSys
 from .telemetry import TelemetryClient
 
 # import dlib # Required for actual landmark detection
+
+logger = logging.getLogger(__name__)
 
 
 def build_sensor_health(imu, cam, ir):
@@ -48,8 +51,24 @@ def build_power_profile(sensor_health):
     }
 
 
+def run_monitoring_loop(contract, loop_delay_s=0.05, max_cycles=None):
+    """Execute runtime cycles until interrupted or max cycle count is reached."""
+    cycles = 0
+    while True:
+        execute_runtime_cycle(contract)
+        cycles += 1
+        if max_cycles is not None and cycles >= max_cycles:
+            break
+        time.sleep(loop_delay_s)
+
+
 def main():
     """Initialize modules and execute the monitoring loop."""
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
+
     # 1. Hardware Bring-up [cite: 379]
     imu = IMUSensor()
     cam = CameraModule()
@@ -80,7 +99,7 @@ def main():
     # Mocking dlib predictor for code structure (Actual implementation needs .dat file)
     # predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-    print("System Initialized. Starting Monitoring...")
+    logger.info("System initialized. Starting monitoring loop")
     ir.set_brightness(50)  # Set IR LEDs to 50%
     sensor_health = build_sensor_health(imu, cam, ir)
     power_profile = build_power_profile(sensor_health)
@@ -118,7 +137,7 @@ def main():
     def publish_runtime_event(event_type, payload):
         if event_type == "CRASH":
             g_force = float(payload.get("g_force", 0.0))
-            print(f"CRASH DETECTED! G-Force: {g_force:.2f}")
+            logger.warning("Crash detected (g_force=%.2f)", g_force)
             if runtime_flags.enable_alert_publish:
                 mqtt.send_alert("CRASH", g_force)
             local_storage.add_event(
@@ -131,7 +150,7 @@ def main():
 
         if event_type == "FATIGUE":
             ear = float(payload.get("ear", 0.0))
-            print(f"FATIGUE ALERT! EAR: {ear:.2f}")
+            logger.warning("Fatigue alert triggered (ear=%.2f)", ear)
             if runtime_flags.enable_alert_publish:
                 mqtt.send_alert("FATIGUE", ear)
             local_storage.add_event(
@@ -181,18 +200,13 @@ def main():
     )
 
     try:
-        while True:
-            execute_runtime_cycle(contract)
-
-            # Maintenance loop delay
-            time.sleep(0.05)
+        run_monitoring_loop(contract, loop_delay_s=0.05)
 
     except KeyboardInterrupt:
-        print("Shutting down...")
+        logger.info("Shutting down")
     finally:
         cam.release()
         ir.cleanup()
-
 
 if __name__ == "__main__":
     main()

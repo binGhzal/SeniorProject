@@ -184,3 +184,36 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 - Implement phases 1 through 4 first for a stable operational core.
 - Implement phases 5 through 7 after connectivity and reliability are stable.
 - Use small pull requests, each mapped to one phase and one checklist file.
+
+## Remaining TODO implementation plan
+
+The following items remain open in `docs/todo/` and are grouped into an executable sequence.
+
+### Sprint A: Scope and requirements freeze (Week 1)
+
+- Finalize app platform scope (web/mobile/both) and user stories (`TODO 01`).
+- Freeze MVP vs post-MVP matrix and map each feature to telemetry/test traceability (`TODO 01`).
+- Confirm board SKU, IMU part, camera interface, and final pin map (`TODO 02`).
+
+### Sprint B: Reliability and secure transport (Week 2)
+
+- Complete reconnect + offline replay behavior in runtime telemetry path (`TODO 04`).
+- Finalize topic/schema contracts and alert latency SLOs (`TODO 04`).
+- Define health monitoring + fault-recovery policy for sensor outages and publish failures (`TODO 06`).
+
+### Sprint C: Data and privacy controls (Week 3)
+
+- Define app-side schema for trips/events/diagnostics (`TODO 05`).
+- Add encryption-at-rest and privacy controls for local sensitive payloads (`TODO 05`).
+- Lock retention/runtime estimates for day vs night operation profiles (`TODO 03`).
+
+### Sprint D: AI dataset and evaluation readiness (Week 4)
+
+- Define dataset collection scope, labeling protocol, and acceptance gates (`TODO 07`).
+- Execute first benchmark run (latency + false-alert) and publish baseline report section (`TODO 07`, report update).
+
+### Exit criteria for all remaining TODOs
+
+- Every checklist item in `docs/todo/*.todo.md` is either checked or explicitly moved to post-MVP backlog.
+- Corresponding section docs and report chapters are updated in the same change set.
+- Tests for affected runtime behavior are added/updated and pass.

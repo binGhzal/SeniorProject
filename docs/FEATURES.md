@@ -5,15 +5,21 @@ This document defines GP2 features at two levels:
 - **Application-level** features (mobile/web app)
 - **On-board** features (embedded device / helmet)
 
-Status: these are **requirements placeholders** aligned with the project prototype described in `docs/ARCHITECTURE.md`.
+Status: this tracks alignment between the original GP1 report scope and the implemented GP2 MVP.
+
+## Scope alignment (GP1 \u2192 GP2)
+
+- Implemented in GP2 MVP: fatigue detection (EAR/PERCLOS),
+  crash detection (IMU high-g), MQTT status/alerts, local event buffering.
+- Deferred from GP1 concept: EEG integration, distraction/head-pose analytics, cloud dashboard UX, circular video clip upload.
 
 ## Application-level features (mobile/web)
 
 ### Core user features
 
 - [ ] **Pair device** (discover + connect to helmet)
-- [ ] **Live status** (fatigue state + crash state + sensor health)
-- [ ] **Alerts** (push/notification + in-app alert list)
+- [x] **Live status** (fatigue state + crash state + sensor health) via telemetry payloads
+- [x] **Alerts** (event alerts over telemetry topics)
 - [ ] **Trip history** (timeline of telemetry summaries)
 
 ### Configuration
@@ -39,11 +45,11 @@ Status: these are **requirements placeholders** aligned with the project prototy
 
 - [x] **Periodic telemetry publish** (prototype: MQTT)
 - [x] **Event alerts** (prototype: CRASH / FATIGUE)
-- [ ] **Local buffering** (queue telemetry while offline)
+- [x] **Local buffering** (SQLite retention + replay hooks)
 
 ### Device behavior
 
-- [ ] **IR illumination control** (for low light camera)
+- [x] **IR illumination control** (PWM brightness interface)
 - [ ] **Power modes** (active, standby, low-power)
 
 ## Open questions
