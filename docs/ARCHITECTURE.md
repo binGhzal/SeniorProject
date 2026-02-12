@@ -8,8 +8,6 @@ GP2 is a prototype “smart helmet” loop that combines:
 
 ## Directory layout
 
-- `perclos.py`
-  - Reference snippet for MediaPipe FaceMesh initialization (eye/iris landmarks).
 - `src/gp2/`
   - Prototype runtime modules.
 - `tests/`
@@ -90,5 +88,5 @@ The prototype loop is in `src/gp2/main.py`:
 
 ## Key design assumptions (prototype)
 
-- Facial landmarks are assumed to be 68-point indices (dlib-style). MediaPipe FaceMesh uses a different indexing scheme; `perclos.py` is a starting point but not integrated.
+- Runtime fatigue flow can consume camera frames and extract MediaPipe FaceMesh landmarks through `src/gp2/detection.py`.
 - The fatigue test suite focuses on **logic trigger and integration wiring**, not accuracy/validation against real video.

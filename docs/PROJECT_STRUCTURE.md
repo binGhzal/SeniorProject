@@ -8,7 +8,6 @@ This guide defines where to place code and documentation so the repository stays
 - `src/gp2/` - active Python runtime package
 - `tests/` - test suite
 - `archive/` - archived legacy code kept for reference
-- `perclos.py` - standalone MediaPipe reference snippet (not yet integrated)
 
 ## Documentation layout
 

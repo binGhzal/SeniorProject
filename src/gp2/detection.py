@@ -1,6 +1,7 @@
 """Fatigue detection logic based on EAR and rolling PERCLOS-style scoring."""
 
 import time
+from typing import Any
 
 import numpy as np
 
@@ -21,6 +22,35 @@ RIGHT_EYE_MEDIAPIPE = [362, 385, 387, 263, 373, 380]
 EYE_AR_THRESH = 0.25  # Below this, eye is "closed"
 PERCLOS_THRESH = 0.12  # 12% fatigue threshold
 EYE_AR_CONSEC_FRAMES = 3  # Frame buffer for blink consistency
+
+
+def create_face_mesh() -> Any:
+    """Create a MediaPipe FaceMesh instance, or return None when unavailable."""
+    if mp is None:
+        return None
+
+    return mp.solutions.face_mesh.FaceMesh(
+        max_num_faces=1,
+        refine_landmarks=True,
+        min_detection_confidence=0.5,
+        min_tracking_confidence=0.5,
+    )
+
+
+def extract_face_landmarks(frame: Any, face_mesh: Any) -> list[Any]:
+    """Process a frame and return face landmarks list if detected."""
+    if face_mesh is None or frame is None:
+        return []
+
+    rgb_frame = frame
+    if cv2 is not None and isinstance(frame, np.ndarray):
+        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+    results = face_mesh.process(rgb_frame)
+    if not results or not results.multi_face_landmarks:
+        return []
+
+    return list(results.multi_face_landmarks)
 
 
 def eye_aspect_ratio(eye):
@@ -52,31 +82,14 @@ class FatigueDetector:
         self.closed_frames = 0
         self.total_frames = 0
         self.perclos_buffer = []  # Circular buffer for PERCLOS window
-        self.face_mesh = self._create_face_mesh()
-
-    def _create_face_mesh(self):
-        if mp is None:
-            return None
-        return mp.solutions.face_mesh.FaceMesh(
-            max_num_faces=1,
-            refine_landmarks=True,
-            min_detection_confidence=0.5,
-            min_tracking_confidence=0.5,
-        )
+        self.face_mesh = create_face_mesh()
 
     def _extract_face_landmarks(self, frame):
-        if self.face_mesh is None or frame is None:
+        landmarks = extract_face_landmarks(frame, self.face_mesh)
+        if not landmarks:
             return None
 
-        rgb_frame = frame
-        if cv2 is not None and isinstance(frame, np.ndarray):
-            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-        results = self.face_mesh.process(rgb_frame)
-        if not results or not results.multi_face_landmarks:
-            return None
-
-        return results.multi_face_landmarks[0]
+        return landmarks[0]
 
     def _extract_eye_landmarks_from_frame(self, frame):
         face_landmarks = self._extract_face_landmarks(frame)
