@@ -15,6 +15,9 @@ from .planning.power_plan import (
     has_valid_power_bounds,
 )
 from .planning.connectivity import ConnectivityConfig, validate_connectivity_config
+from .planning.storage_strategy import LocalStorageBuffer
+from .planning.storage_strategy import StorageEvent
+from .planning.storage_strategy import StoragePolicy
 # import dlib # Required for actual landmark detection
 
 
@@ -67,6 +70,12 @@ def main():
 
     mqtt = TelemetryClient(config=connectivity_config)
     detector = FatigueDetector()
+    storage_policy = StoragePolicy(
+        on_device_retention_hours=24,
+        on_device_queue_max_items=500,
+        cloud_sync_enabled=connectivity_config.offline_queue_enabled,
+    )
+    local_storage = LocalStorageBuffer(policy=storage_policy)
     feature_definition = build_default_feature_definition()
     runtime_flags = derive_runtime_feature_flags(feature_definition)
 
@@ -91,6 +100,12 @@ def main():
                 print(f"CRASH DETECTED! G-Force: {total_g:.2f}")
                 if runtime_flags.enable_alert_publish:
                     mqtt.send_alert("CRASH", total_g)
+                local_storage.add_event(
+                    StorageEvent(
+                        event_type="alert_crash",
+                        payload={"g_force": total_g},
+                    )
+                )
                 # Here you would lock the circular video buffer
 
             # C. AI Processing (Simulated landmarks for structure)
@@ -109,12 +124,19 @@ def main():
                 print(f"FATIGUE ALERT! EAR: {ear:.2f}")
                 if runtime_flags.enable_alert_publish:
                     mqtt.send_alert("FATIGUE", ear)
+                local_storage.add_event(
+                    StorageEvent(
+                        event_type="alert_fatigue",
+                        payload={"ear": ear},
+                    )
+                )
 
             # D. Telemetry Heartbeat
             current_ts = time.time()
             should_publish_status = (
                 runtime_flags.enable_status_telemetry
-                and (current_ts - last_status_publish_ts) >= connectivity_config.telemetry_interval_s
+                and (current_ts - last_status_publish_ts)
+                >= connectivity_config.telemetry_interval_s
             )
             if should_publish_status:
                 mqtt.send_telemetry(
@@ -122,6 +144,17 @@ def main():
                     total_g,
                     sensor_health,
                     power_profile,
+                )
+                local_storage.add_event(
+                    StorageEvent(
+                        event_type="status",
+                        payload={
+                            "perclos": 0.05,
+                            "g_force": total_g,
+                            "sensor_health": sensor_health,
+                            "power_profile": power_profile,
+                        },
+                    )
                 )
                 last_status_publish_ts = current_ts
 

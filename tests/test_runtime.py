@@ -1,6 +1,7 @@
 """Unit tests for GP2 prototype logic and feature-flag wiring."""
 
 import json
+import time
 import unittest
 from unittest.mock import MagicMock
 from src.gp2.sensors import IMUSensor
@@ -13,6 +14,10 @@ from src.gp2.planning.power_plan import PowerProfile, estimate_total_current
 from src.gp2.planning.power_plan import has_valid_power_bounds
 from src.gp2.planning.connectivity import ConnectivityConfig
 from src.gp2.planning.connectivity import validate_connectivity_config
+from src.gp2.planning.storage_strategy import LocalStorageBuffer
+from src.gp2.planning.storage_strategy import StorageEvent
+from src.gp2.planning.storage_strategy import StoragePolicy
+from src.gp2.planning.storage_strategy import resolve_sync_conflict
 from src.gp2.planning.features import (
     AppFeatureSet,
     FeatureDefinition,
@@ -195,6 +200,52 @@ class TestSmartHelmet(unittest.TestCase):
         status_call = client.client.publish.call_args_list[1]
         self.assertEqual(alert_call.kwargs["qos"], 0)
         self.assertEqual(status_call.kwargs["qos"], 1)
+
+    def test_storage_retention_pruning(self):
+        """Prunes records older than retention window."""
+        policy = StoragePolicy(on_device_retention_hours=1, on_device_queue_max_items=100)
+        buffer = LocalStorageBuffer(policy=policy)
+        now = time.time()
+        buffer.add_event(StorageEvent("status", {"id": 1}, timestamp=now - 5000))
+        buffer.add_event(StorageEvent("status", {"id": 2}, timestamp=now - 100))
+
+        buffer.prune_retention(now=now)
+        self.assertEqual(len(buffer.events), 1)
+        self.assertEqual(buffer.events[0].payload["id"], 2)
+
+    def test_storage_capacity_bounds(self):
+        """Keeps only the newest events when queue reaches max capacity."""
+        policy = StoragePolicy(on_device_queue_max_items=2)
+        buffer = LocalStorageBuffer(policy=policy)
+        buffer.add_event(StorageEvent("status", {"id": 1}))
+        buffer.add_event(StorageEvent("status", {"id": 2}))
+        buffer.add_event(StorageEvent("status", {"id": 3}))
+
+        self.assertEqual(len(buffer.events), 2)
+        self.assertEqual(buffer.events[0].payload["id"], 2)
+        self.assertEqual(buffer.events[1].payload["id"], 3)
+
+    def test_storage_replay_and_sync_marking(self):
+        """Returns unsynced records for replay and marks selected entries synced."""
+        buffer = LocalStorageBuffer(policy=StoragePolicy())
+        buffer.add_event(StorageEvent("status", {"id": 1}, synced=False))
+        buffer.add_event(StorageEvent("status", {"id": 2}, synced=True))
+        buffer.add_event(StorageEvent("status", {"id": 3}, synced=False))
+
+        pending = buffer.pending_replay_events()
+        self.assertEqual(len(pending), 2)
+
+        buffer.mark_synced([0, 2])
+        pending_after = buffer.pending_replay_events()
+        self.assertEqual(len(pending_after), 0)
+
+    def test_storage_conflict_resolution_last_write_wins(self):
+        """Selects the latest timestamp event for last-write-wins policy."""
+        local = StorageEvent("status", {"source": "local"}, timestamp=200.0)
+        remote = StorageEvent("status", {"source": "remote"}, timestamp=100.0)
+        winner = resolve_sync_conflict(local, remote, "last-write-wins")
+
+        self.assertEqual(winner.payload["source"], "local")
 
 
 if __name__ == '__main__':
