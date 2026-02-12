@@ -1,3 +1,5 @@
+"""MQTT telemetry client for GP2 status and alert publishing."""
+
 import json
 import time
 
@@ -12,6 +14,8 @@ TOPIC_TELEMETRY = "smarthelmet/v1/telemetry"
 TOPIC_ALERTS = "smarthelmet/v1/alerts"
 
 class TelemetryClient:
+    """Handles MQTT connectivity and message publishing for runtime events."""
+
     def __init__(self, device_id="helmet_01"):
         if mqtt is None:
             self.client = None
@@ -29,6 +33,7 @@ class TelemetryClient:
             print(f"MQTT Connection Failed: {e}")
 
     def send_alert(self, alert_type, value):
+        """Publish a high-priority alert event payload."""
         if self.client is None:
             return
         payload = {
@@ -41,6 +46,7 @@ class TelemetryClient:
         self.client.publish(TOPIC_ALERTS, json.dumps(payload), qos=1)
 
     def send_telemetry(self, perclos, g_force, sensor_health=None):
+        """Publish periodic status telemetry with optional sensor health metadata."""
         if self.client is None:
             return
         payload = {

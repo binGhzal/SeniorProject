@@ -1,3 +1,5 @@
+"""Sensor and actuator abstractions for IMU, camera, and IR subsystems."""
+
 import time
 
 try:
@@ -23,6 +25,8 @@ CMD_SOFT_RESET = 0xB6
 
 
 class IMUSensor:
+    """IMU abstraction with optional stub behavior for development machines."""
+
     def __init__(self, bus_num=1):
         self.is_stub = smbus2 is None
         if smbus2 is None:
@@ -30,9 +34,11 @@ class IMUSensor:
             # self.bus.read_i2c_block_data as needed.
             class _StubBus:
                 def write_byte_data(self, *_args, **_kwargs):
+                    """No-op register write for non-hardware environments."""
                     return None
 
                 def read_i2c_block_data(self, *_args, **_kwargs):
+                    """Return zeroed bytes for deterministic stub reads."""
                     return [0, 0, 0, 0, 0, 0]
 
             self.bus = _StubBus()
@@ -83,6 +89,8 @@ class IMUSensor:
 
 
 class CameraModule:
+    """Camera capture abstraction with optional OpenCV stub behavior."""
+
     def __init__(self):
         self.is_stub = cv2 is None
         if cv2 is None:
@@ -95,6 +103,7 @@ class CameraModule:
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
     def get_frame(self):
+        """Capture and return a single frame, or None if unavailable."""
         if self.cap is None:
             return None
         ret, frame = self.cap.read()
@@ -103,6 +112,7 @@ class CameraModule:
         return None
 
     def release(self):
+        """Release camera resources when capture backend is active."""
         if self.cap is not None:
             self.cap.release()
 
@@ -135,6 +145,7 @@ class IRSys:
             self.pwm.ChangeDutyCycle(duty_cycle)
 
     def cleanup(self):
+        """Release PWM and GPIO resources if initialized."""
         if self.pwm is not None:
             self.pwm.stop()
         if GPIO is not None:
