@@ -18,6 +18,15 @@ from src.gp2.planning.storage_strategy import LocalStorageBuffer
 from src.gp2.planning.storage_strategy import StorageEvent
 from src.gp2.planning.storage_strategy import StoragePolicy
 from src.gp2.planning.storage_strategy import resolve_sync_conflict
+from src.gp2.planning.software_architecture import RuntimeOrchestratorContract
+from src.gp2.planning.software_architecture import execute_runtime_cycle
+from src.gp2.planning.software_architecture import side_effect_boundaries
+from src.gp2.planning.software_architecture import dependency_versions
+from src.gp2.planning.ai_algorithms import AIPlan
+from src.gp2.planning.ai_algorithms import MODEL_MODE
+from src.gp2.planning.ai_algorithms import detector_mode
+from src.gp2.planning.ai_algorithms import evaluation_contract
+from src.gp2.planning.ai_algorithms import supported_dataset_scopes
 from src.gp2.planning.features import (
     AppFeatureSet,
     FeatureDefinition,
@@ -164,6 +173,20 @@ class TestSmartHelmet(unittest.TestCase):
         self.assertIn("power_profile", payload)
         self.assertEqual(payload["power_profile"]["peak_ma"], 200.0)
 
+    def test_telemetry_includes_ai_metrics(self):
+        """Confirms status telemetry payload carries optional AI runtime metrics."""
+        client = TelemetryClient()
+        client.client = MagicMock()
+        client.send_telemetry(
+            perclos=0.1,
+            g_force=1.2,
+            ai_metrics={"mode": "heuristic-ear-perclos", "latency_ms": 5.0},
+        )
+        publish_args = client.client.publish.call_args.args
+        payload = json.loads(publish_args[1])
+        self.assertIn("ai_metrics", payload)
+        self.assertEqual(payload["ai_metrics"]["mode"], "heuristic-ear-perclos")
+
     def test_connectivity_config_validation(self):
         """Rejects invalid connectivity configuration values."""
         valid = ConnectivityConfig()
@@ -246,6 +269,81 @@ class TestSmartHelmet(unittest.TestCase):
         winner = resolve_sync_conflict(local, remote, "last-write-wins")
 
         self.assertEqual(winner.payload["source"], "local")
+
+    def test_software_architecture_contract_cycle(self):
+        """Executes a single cycle through injected boundaries and publishes outputs."""
+        published = []
+
+        def read_sensor_snapshot():
+            return {"g_force": 3.1}
+
+        def detect_fatigue(_snapshot):
+            return {
+                "is_drowsy": True,
+                "ear": 0.14,
+                "latency_ms": 12.5,
+                "mode": "heuristic-ear-perclos",
+                "perclos": 0.18,
+                "false_alert": False,
+            }
+
+        def publish_runtime_event(event_type, payload):
+            published.append((event_type, payload))
+
+        contract = RuntimeOrchestratorContract(
+            read_sensor_snapshot=read_sensor_snapshot,
+            detect_fatigue=detect_fatigue,
+            publish_runtime_event=publish_runtime_event,
+        )
+        result = execute_runtime_cycle(contract)
+
+        event_types = [event for event, _ in published]
+        self.assertIn("CRASH", event_types)
+        self.assertIn("FATIGUE", event_types)
+        self.assertIn("STATUS", event_types)
+        self.assertTrue(result["crash_detected"])
+        self.assertTrue(result["fatigue_detected"])
+
+    def test_software_architecture_boundaries_and_versions(self):
+        """Publishes stable module boundary map and dependency declarations."""
+        boundaries = side_effect_boundaries()
+        versions = dependency_versions()
+
+        self.assertEqual(boundaries["sensor_io"], "src/gp2/sensors.py")
+        self.assertIn("numpy", versions)
+        self.assertEqual(versions["python"], "3.11+")
+
+    def test_ai_mode_selection_and_evaluation_contract(self):
+        """Builds model-based AI contracts with dataset and metric gates."""
+        plan = AIPlan(
+            approach=MODEL_MODE,
+            requires_training_data=True,
+            model_version="v1.0.0",
+            dataset_tag="night-helmet-v1",
+            max_latency_ms=65.0,
+            max_false_alert_rate=0.03,
+        )
+
+        self.assertEqual(detector_mode(plan), MODEL_MODE)
+        contract = evaluation_contract(plan)
+        self.assertEqual(contract["dataset_tag"], "night-helmet-v1")
+        self.assertEqual(contract["metrics"]["max_latency_ms"], 65.0)
+        self.assertIn("outdoor_night", supported_dataset_scopes())
+
+    def test_fatigue_metrics_include_false_alert_tracking(self):
+        """Returns latency/mode metrics and false-alert flag for AI validation."""
+        detector = FatigueDetector()
+        detector.analyze_frame = MagicMock(return_value=(True, 0.19))
+        result = detector.analyze_frame_with_metrics(
+            landmarks=[],
+            expected_drowsy=False,
+            mode="heuristic-ear-perclos",
+        )
+
+        self.assertTrue(result["is_drowsy"])
+        self.assertTrue(result["false_alert"])
+        self.assertGreaterEqual(result["latency_ms"], 0.0)
+        self.assertEqual(result["mode"], "heuristic-ear-perclos")
 
 
 if __name__ == '__main__':

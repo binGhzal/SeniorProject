@@ -108,7 +108,14 @@ class TelemetryClient:
         }
         self._publish(TOPIC_ALERTS, payload, self.config.alert_qos)
 
-    def send_telemetry(self, perclos, g_force, sensor_health=None, power_profile=None):
+    def send_telemetry(
+        self,
+        perclos,
+        g_force,
+        sensor_health=None,
+        power_profile=None,
+        ai_metrics=None,
+    ):
         """Publish periodic status telemetry with optional sensor health metadata."""
         payload = {
             "device_id": self.device_id,
@@ -120,4 +127,6 @@ class TelemetryClient:
             payload["sensor_health"] = sensor_health
         if power_profile is not None:
             payload["power_profile"] = power_profile
+        if ai_metrics is not None:
+            payload["ai_metrics"] = ai_metrics
         self._publish(TOPIC_TELEMETRY, payload, self.config.status_qos)

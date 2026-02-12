@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 try:
     from scipy.spatial import distance as dist  # type: ignore
@@ -70,3 +71,25 @@ class FatigueDetector:
             return True, ear
 
         return False, ear
+
+    def analyze_frame_with_metrics(
+        self,
+        landmarks,
+        expected_drowsy=None,
+        mode="heuristic-ear-perclos",
+    ):
+        """Run fatigue analysis and return latency/false-alert metadata."""
+        start = time.perf_counter()
+        is_drowsy, ear = self.analyze_frame(landmarks)
+        latency_ms = (time.perf_counter() - start) * 1000.0
+        false_alert = bool(expected_drowsy is False and is_drowsy)
+        return {
+            "is_drowsy": is_drowsy,
+            "ear": ear,
+            "latency_ms": latency_ms,
+            "false_alert": false_alert,
+            "mode": mode,
+            "perclos": sum(self.perclos_buffer) / len(self.perclos_buffer)
+            if self.perclos_buffer
+            else 0.0,
+        }

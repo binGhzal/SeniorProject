@@ -18,6 +18,7 @@ from .planning.connectivity import ConnectivityConfig, validate_connectivity_con
 from .planning.storage_strategy import LocalStorageBuffer
 from .planning.storage_strategy import StorageEvent
 from .planning.storage_strategy import StoragePolicy
+from .planning.ai_algorithms import build_default_ai_plan, detector_mode
 # import dlib # Required for actual landmark detection
 
 
@@ -78,6 +79,8 @@ def main():
     local_storage = LocalStorageBuffer(policy=storage_policy)
     feature_definition = build_default_feature_definition()
     runtime_flags = derive_runtime_feature_flags(feature_definition)
+    ai_plan = build_default_ai_plan()
+    active_detector_mode = detector_mode(ai_plan)
 
     # Mocking dlib predictor for code structure (Actual implementation needs .dat file)
     # predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
@@ -116,9 +119,24 @@ def main():
             # For this code snippet, we simulate landmarks
             drowsy = False
             ear = 0.0
+            ai_metrics = {
+                "mode": active_detector_mode,
+                "latency_ms": 0.0,
+                "false_alert": False,
+            }
             if runtime_flags.enable_fatigue_detection:
                 mock_landmarks = np.zeros((68, 2))
-                drowsy, ear = detector.analyze_frame(mock_landmarks)
+                result = detector.analyze_frame_with_metrics(
+                    mock_landmarks,
+                    mode=active_detector_mode,
+                )
+                drowsy = bool(result["is_drowsy"])
+                ear = float(result["ear"])
+                ai_metrics = {
+                    "mode": result["mode"],
+                    "latency_ms": result["latency_ms"],
+                    "false_alert": result["false_alert"],
+                }
 
             if drowsy:
                 print(f"FATIGUE ALERT! EAR: {ear:.2f}")
@@ -140,10 +158,11 @@ def main():
             )
             if should_publish_status:
                 mqtt.send_telemetry(
-                    0.05,
-                    total_g,
-                    sensor_health,
-                    power_profile,
+                    perclos=0.05,
+                    g_force=total_g,
+                    sensor_health=sensor_health,
+                    power_profile=power_profile,
+                    ai_metrics=ai_metrics,
                 )
                 local_storage.add_event(
                     StorageEvent(
@@ -153,6 +172,7 @@ def main():
                             "g_force": total_g,
                             "sensor_health": sensor_health,
                             "power_profile": power_profile,
+                            "ai_metrics": ai_metrics,
                         },
                     )
                 )
