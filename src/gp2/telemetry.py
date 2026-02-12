@@ -2,6 +2,7 @@
 
 import json
 import time
+
 from .planning.connectivity import ConnectivityConfig, validate_connectivity_config
 
 try:
@@ -11,6 +12,7 @@ except ImportError:  # pragma: no cover
 
 TOPIC_TELEMETRY = "smarthelmet/v1/telemetry"
 TOPIC_ALERTS = "smarthelmet/v1/alerts"
+
 
 class TelemetryClient:
     """Handles MQTT connectivity and message publishing for runtime events."""
@@ -104,7 +106,7 @@ class TelemetryClient:
             "type": "ALERT",
             "alert": alert_type,
             "value": value,
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
         self._publish(TOPIC_ALERTS, payload, self.config.alert_qos)
 
@@ -121,7 +123,7 @@ class TelemetryClient:
             "device_id": self.device_id,
             "type": "STATUS",
             "perclos": perclos,
-            "g_force": g_force
+            "g_force": g_force,
         }
         if sensor_health is not None:
             payload["sensor_health"] = sensor_health

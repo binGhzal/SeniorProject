@@ -23,11 +23,13 @@ REG_ACCEL_X = 0x12
 REG_CMD = 0x7E
 CMD_SOFT_RESET = 0xB6
 
+
 class IMUSensor:
     """Legacy IMU wrapper with hardwired Raspberry Pi assumptions."""
 
     def __init__(self, bus_num=1):
         if smbus2 is None:
+
             class _StubBus:
                 def write_byte_data(self, *_args, **_kwargs):
                     """No-op write for non-Raspberry Pi environments."""
@@ -66,7 +68,7 @@ class IMUSensor:
 
             # Convert to 'g' (assuming default range +/- 2g)
             scale = 16384.0
-            return (x/scale, y/scale, z/scale)
+            return (x / scale, y / scale, z / scale)
         except (OSError, AttributeError, IndexError, TypeError, ValueError):
             return (0, 0, 0)
 
@@ -75,6 +77,7 @@ class IMUSensor:
         if val & 0x8000:
             return -((val ^ 0xFFFF) + 1)
         return val
+
 
 class CameraModule:
     """Legacy camera wrapper using OpenCV capture."""
@@ -101,6 +104,7 @@ class CameraModule:
         """Release the camera capture handle."""
         if self.cap is not None:
             self.cap.release()
+
 
 class IRSys:
     """Controls the IR LED array via GPIO."""

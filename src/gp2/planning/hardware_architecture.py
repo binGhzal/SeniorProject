@@ -1,8 +1,6 @@
 """Hardware interface placeholders for task-aligned architecture planning."""
 
 from dataclasses import dataclass
-from typing import Dict
-
 
 INTERFACE_IMU = "imu"
 INTERFACE_CAMERA = "camera"
@@ -18,7 +16,7 @@ class InterfaceSpec:
     notes: str = ""
 
 
-def default_interface_map() -> Dict[str, InterfaceSpec]:
+def default_interface_map() -> dict[str, InterfaceSpec]:
     """Return default peripheral interface assumptions for the prototype."""
 
     return {

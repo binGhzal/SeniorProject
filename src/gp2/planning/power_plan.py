@@ -1,7 +1,6 @@
 """Power-profile models and helpers for runtime estimation and reporting."""
 
 from dataclasses import dataclass
-from typing import Dict
 
 
 @dataclass
@@ -21,7 +20,7 @@ class PowerProfile:
         }
 
 
-def estimate_total_current(profiles: Dict[str, PowerProfile]) -> PowerProfile:
+def estimate_total_current(profiles: dict[str, PowerProfile]) -> PowerProfile:
     """Aggregate current estimates from per-subsystem power profiles."""
 
     return PowerProfile(
@@ -33,6 +32,4 @@ def estimate_total_current(profiles: Dict[str, PowerProfile]) -> PowerProfile:
 
 def has_valid_power_bounds(profile: PowerProfile) -> bool:
     """Validate basic electrical sanity: peak >= average >= standby >= 0."""
-    return (
-        profile.peak_ma >= profile.average_ma >= profile.standby_ma >= 0
-    )
+    return profile.peak_ma >= profile.average_ma >= profile.standby_ma >= 0

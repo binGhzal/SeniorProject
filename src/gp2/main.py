@@ -1,10 +1,12 @@
 """Main runtime loop for the GP2 smart-helmet prototype."""
 
 import time
+
 import numpy as np
-from .sensors import IMUSensor, CameraModule, IRSys
+
 from .detection import FatigueDetector
-from .telemetry import TelemetryClient
+from .planning.ai_algorithms import build_default_ai_plan, detector_mode
+from .planning.connectivity import ConnectivityConfig, validate_connectivity_config
 from .planning.features import (
     build_default_feature_definition,
     derive_runtime_feature_flags,
@@ -14,11 +16,10 @@ from .planning.power_plan import (
     estimate_total_current,
     has_valid_power_bounds,
 )
-from .planning.connectivity import ConnectivityConfig, validate_connectivity_config
-from .planning.storage_strategy import LocalStorageBuffer
-from .planning.storage_strategy import StorageEvent
-from .planning.storage_strategy import StoragePolicy
-from .planning.ai_algorithms import build_default_ai_plan, detector_mode
+from .planning.storage_strategy import LocalStorageBuffer, StorageEvent, StoragePolicy
+from .sensors import CameraModule, IMUSensor, IRSys
+from .telemetry import TelemetryClient
+
 # import dlib # Required for actual landmark detection
 
 

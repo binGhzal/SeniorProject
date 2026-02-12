@@ -4,35 +4,38 @@ import json
 import time
 import unittest
 from unittest.mock import MagicMock
-from src.gp2.sensors import IMUSensor
-from src.gp2.sensors import CameraModule, IRSys
+
 from src.gp2.detection import FatigueDetector
-from src.gp2.main import build_sensor_health
-from src.gp2.main import build_power_profile
-from src.gp2.planning.hardware_architecture import default_interface_map
-from src.gp2.planning.power_plan import PowerProfile, estimate_total_current
-from src.gp2.planning.power_plan import has_valid_power_bounds
-from src.gp2.planning.connectivity import ConnectivityConfig
-from src.gp2.planning.connectivity import validate_connectivity_config
-from src.gp2.planning.storage_strategy import LocalStorageBuffer
-from src.gp2.planning.storage_strategy import StorageEvent
-from src.gp2.planning.storage_strategy import StoragePolicy
-from src.gp2.planning.storage_strategy import resolve_sync_conflict
-from src.gp2.planning.software_architecture import RuntimeOrchestratorContract
-from src.gp2.planning.software_architecture import execute_runtime_cycle
-from src.gp2.planning.software_architecture import side_effect_boundaries
-from src.gp2.planning.software_architecture import dependency_versions
-from src.gp2.planning.ai_algorithms import AIPlan
-from src.gp2.planning.ai_algorithms import MODEL_MODE
-from src.gp2.planning.ai_algorithms import detector_mode
-from src.gp2.planning.ai_algorithms import evaluation_contract
-from src.gp2.planning.ai_algorithms import supported_dataset_scopes
+from src.gp2.main import build_power_profile, build_sensor_health
+from src.gp2.planning.ai_algorithms import (
+    MODEL_MODE,
+    AIPlan,
+    detector_mode,
+    evaluation_contract,
+    supported_dataset_scopes,
+)
+from src.gp2.planning.connectivity import ConnectivityConfig, validate_connectivity_config
 from src.gp2.planning.features import (
     AppFeatureSet,
     FeatureDefinition,
     OnBoardFeatureSet,
     derive_runtime_feature_flags,
 )
+from src.gp2.planning.hardware_architecture import default_interface_map
+from src.gp2.planning.power_plan import PowerProfile, estimate_total_current, has_valid_power_bounds
+from src.gp2.planning.software_architecture import (
+    RuntimeOrchestratorContract,
+    dependency_versions,
+    execute_runtime_cycle,
+    side_effect_boundaries,
+)
+from src.gp2.planning.storage_strategy import (
+    LocalStorageBuffer,
+    StorageEvent,
+    StoragePolicy,
+    resolve_sync_conflict,
+)
+from src.gp2.sensors import CameraModule, IMUSensor, IRSys
 from src.gp2.telemetry import TelemetryClient
 
 
@@ -45,9 +48,7 @@ class TestSmartHelmet(unittest.TestCase):
         """Test 1: Verify IMU reads data format correctly"""
         imu = IMUSensor()
         # Mocking the actual SMBus to avoid hardware errors on PC
-        imu.bus.read_i2c_block_data = MagicMock(
-            return_value=[0, 0, 0, 0, 32, 60]
-        )
+        imu.bus.read_i2c_block_data = MagicMock(return_value=[0, 0, 0, 0, 32, 60])
 
         accel = imu.read_accel()
         self.assertIsInstance(accel, tuple)
@@ -80,7 +81,7 @@ class TestSmartHelmet(unittest.TestCase):
         mock_imu.read_accel.return_value = (0, 0, 3.0)
 
         ax, ay, az = mock_imu.read_accel()
-        total_g = (ax**2 + ay**2 + az**2)**0.5
+        total_g = (ax**2 + ay**2 + az**2) ** 0.5
 
         if total_g > 2.5:
             mock_mqtt.send_alert("CRASH", total_g)
@@ -346,5 +347,5 @@ class TestSmartHelmet(unittest.TestCase):
         self.assertEqual(result["mode"], "heuristic-ear-perclos")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

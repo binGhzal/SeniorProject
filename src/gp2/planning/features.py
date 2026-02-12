@@ -1,7 +1,6 @@
 """Feature definitions and runtime flag derivation for the GP2 prototype."""
 
 from dataclasses import dataclass, field
-from typing import List
 
 
 @dataclass
@@ -30,7 +29,7 @@ class FeatureDefinition:
 
     app_features: AppFeatureSet = field(default_factory=AppFeatureSet)
     board_features: OnBoardFeatureSet = field(default_factory=OnBoardFeatureSet)
-    open_questions: List[str] = field(default_factory=list)
+    open_questions: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -54,7 +53,7 @@ def build_default_feature_definition() -> FeatureDefinition:
         open_questions=[
             "Confirm target client platform (mobile/web/both)",
             "Confirm emergency contact notification flow",
-        ]
+        ],
     )
 
 

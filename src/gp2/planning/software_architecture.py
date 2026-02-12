@@ -1,7 +1,8 @@
 """Software-architecture contracts for runtime orchestration boundaries."""
 
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Mapping, Optional
+from typing import Any
 
 
 @dataclass
@@ -17,8 +18,8 @@ class RuntimeTopology:
 class DependencyPlan:
     """Tracks required and optional runtime dependency groups."""
 
-    runtime_libraries: List[str] = field(default_factory=lambda: ["numpy"])
-    optional_libraries: List[str] = field(default_factory=lambda: ["opencv-python", "paho-mqtt"])
+    runtime_libraries: list[str] = field(default_factory=lambda: ["numpy"])
+    optional_libraries: list[str] = field(default_factory=lambda: ["opencv-python", "paho-mqtt"])
 
 
 @dataclass(frozen=True)
@@ -33,7 +34,7 @@ class RuntimeOrchestratorContract:
 def execute_runtime_cycle(
     contract: RuntimeOrchestratorContract,
     crash_threshold_g: float = 2.5,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Execute one orchestrator cycle using injected side-effect boundaries."""
     snapshot = dict(contract.read_sensor_snapshot())
     g_force = float(snapshot.get("g_force", 0.0))
@@ -54,7 +55,7 @@ def execute_runtime_cycle(
             },
         )
 
-    status_payload: Dict[str, Any] = {
+    status_payload: dict[str, Any] = {
         "g_force": g_force,
         "perclos": float(fatigue_result.get("perclos", 0.0)),
         "fatigue": fatigue_detected,
@@ -73,7 +74,7 @@ def execute_runtime_cycle(
     }
 
 
-def side_effect_boundaries() -> Dict[str, str]:
+def side_effect_boundaries() -> dict[str, str]:
     """Returns module ownership map to keep I/O side effects isolated."""
     return {
         "sensor_io": "src/gp2/sensors.py",
@@ -89,7 +90,7 @@ def architecture_ready_for_mvp(topology: RuntimeTopology, deps: DependencyPlan) 
     return bool(topology.sensor_loop and deps.runtime_libraries)
 
 
-def dependency_versions() -> Dict[str, Optional[str]]:
+def dependency_versions() -> dict[str, str | None]:
     """Declares expected runtime dependency versions for documentation/tests."""
     return {
         "python": "3.11+",

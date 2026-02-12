@@ -1,11 +1,6 @@
 {
   "include": ["src", "tests"],
-  "exclude": [
-    "**/__pycache__",
-    ".venv",
-    "archive",
-    "unit-tests"
-  ],
+  "exclude": ["**/__pycache__", ".venv", "archive", "unit-tests"],
   "venvPath": ".",
   "venv": ".venv",
   "executionEnvironments": [

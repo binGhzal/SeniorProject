@@ -1,12 +1,8 @@
 """Storage strategy models and local retention/replay helpers."""
 
-from dataclasses import dataclass
-from dataclasses import field
 import time
+from dataclasses import dataclass, field
 from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
 
 
 @dataclass
@@ -26,7 +22,7 @@ class StorageEvent:
     """Serializable runtime event record for local buffering."""
 
     event_type: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     timestamp: float = field(default_factory=time.time)
     synced: bool = False
 
@@ -36,7 +32,7 @@ class LocalStorageBuffer:
     """In-memory placeholder buffer for retention and replay logic."""
 
     policy: StoragePolicy
-    events: List[StorageEvent] = field(default_factory=list)
+    events: list[StorageEvent] = field(default_factory=list)
 
     def add_event(self, event: StorageEvent):
         """Append event and enforce retention/queue bounds."""
@@ -44,7 +40,7 @@ class LocalStorageBuffer:
         self.prune_retention()
         self.prune_capacity()
 
-    def prune_retention(self, now: Optional[float] = None):
+    def prune_retention(self, now: float | None = None):
         """Drop events older than retention window in hours."""
         effective_now = now if now is not None else time.time()
         cutoff = effective_now - (self.policy.on_device_retention_hours * 3600)
@@ -60,7 +56,7 @@ class LocalStorageBuffer:
         """Return unsynced events in insertion order for replay."""
         return [event for event in self.events if not event.synced]
 
-    def mark_synced(self, indexes: List[int]):
+    def mark_synced(self, indexes: list[int]):
         """Mark selected event indexes as synced after successful upload."""
         for index in indexes:
             if 0 <= index < len(self.events):

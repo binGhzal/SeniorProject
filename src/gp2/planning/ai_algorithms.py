@@ -1,8 +1,6 @@
 """AI planning models for heuristic/model runtime selection and validation hooks."""
 
 from dataclasses import dataclass
-from typing import Dict, List
-
 
 HEURISTIC_MODE = "heuristic-ear-perclos"
 MODEL_MODE = "model-based"
@@ -37,7 +35,7 @@ def build_default_ai_plan() -> AIPlan:
     return AIPlan()
 
 
-def evaluation_contract(plan: AIPlan) -> Dict[str, object]:
+def evaluation_contract(plan: AIPlan) -> dict[str, object]:
     """Defines dataset/metrics contract for AI validation and rollout gates."""
     return {
         "mode": detector_mode(plan),
@@ -51,7 +49,7 @@ def evaluation_contract(plan: AIPlan) -> Dict[str, object]:
     }
 
 
-def supported_dataset_scopes() -> List[str]:
+def supported_dataset_scopes() -> list[str]:
     """Enumerates dataset buckets to guide labeling and evaluation."""
     return [
         "indoor_day",

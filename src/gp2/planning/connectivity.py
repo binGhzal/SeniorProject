@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass
 
-
 SUPPORTED_PROTOCOLS = {"mqtt", "ble", "usb", "wifi", "cellular"}
 
 

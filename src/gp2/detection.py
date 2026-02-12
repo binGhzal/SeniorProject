@@ -1,11 +1,13 @@
 """Fatigue detection logic based on EAR and rolling PERCLOS-style scoring."""
 
 import time
+
 import numpy as np
 
 try:
     from scipy.spatial import distance as dist  # type: ignore
 except ImportError:  # pragma: no cover
+
     class _Dist:
         @staticmethod
         def euclidean(a, b):
@@ -17,9 +19,10 @@ except ImportError:  # pragma: no cover
     dist = _Dist()
 
 # Thresholds from report [cite: 226]
-EYE_AR_THRESH = 0.25      # Below this, eye is "closed"
-PERCLOS_THRESH = 0.12     # 12% fatigue threshold
+EYE_AR_THRESH = 0.25  # Below this, eye is "closed"
+PERCLOS_THRESH = 0.12  # 12% fatigue threshold
 EYE_AR_CONSEC_FRAMES = 3  # Frame buffer for blink consistency
+
 
 def eye_aspect_ratio(eye):
     """Compute eye aspect ratio (EAR) from a 6-point eye landmark slice."""
@@ -31,6 +34,7 @@ def eye_aspect_ratio(eye):
     # EAR Formula
     ear = (vertical_a + vertical_b) / (2.0 * horizontal)
     return ear
+
 
 class FatigueDetector:
     """Tracks rolling eye-closure state and detects fatigue events."""
@@ -95,7 +99,7 @@ class FatigueDetector:
             "latency_ms": latency_ms,
             "false_alert": false_alert,
             "mode": mode,
-            "perclos": sum(self.perclos_buffer) / len(self.perclos_buffer)
-            if self.perclos_buffer
-            else 0.0,
+            "perclos": (
+                sum(self.perclos_buffer) / len(self.perclos_buffer) if self.perclos_buffer else 0.0
+            ),
         }
