@@ -1,18 +1,8 @@
-# GP2 Documentation
+# GP2 – Smart Helmet (Fatigue + Crash Telemetry)
 
-This folder contains the canonical documentation for the GP2 smart-helmet prototype.
+Documentation is in `docs/`.
 
-## Docs
-
-- Architecture overview: `docs/ARCHITECTURE.md`
-- Component reference: `docs/COMPONENTS.md`
-- Testing guide + expected outputs: `docs/TESTING.md`
-
-## Report (SGP2)
-
-- LaTeX report draft + checklist: `docs/report/`
-  - Main file: `docs/report/sgp2-report.tex`
-  - Rubric checklist: `docs/report/RUBRIC-CHECKLIST.md`
+- Start here: `docs/README.md`
 
 ## Quick start (tests)
 
