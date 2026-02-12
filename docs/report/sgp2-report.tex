@@ -1,0 +1,375 @@
+% GP2 SGP2 Report Draft (derived from provided UAEU CIT template)
+% Fill in cover-page metadata (title, project id, student names/ids, advisor).
+
+\documentclass[12pt,a4paper]{report}
+
+\usepackage{longtable}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{glossaries}
+\usepackage{pdfpages}
+\usepackage{natbib}
+\usepackage{multirow}
+\usepackage{xcolor}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=black,
+    urlcolor=black,
+    citecolor=black
+}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  columns=fullflexible,
+  keepspaces=true
+}
+
+\begin{document}
+
+\include{acro}
+\pagenumbering{roman}
+
+% -------------------------------------------------------------------------------------------
+% COVER PAGE (fill in your metadata)
+% -------------------------------------------------------------------------------------------
+
+\newcommand{\HRule}{\rule{\linewidth}{0.3mm}}
+\begin{center}
+\IfFileExists{Figures/CIT_logo.jpg}{\includegraphics[width=120mm]{Figures/CIT_logo.jpg}}{%
+\fbox{\parbox{120mm}{\centering Place \texttt{CIT\_logo.jpg} in \texttt{docs/report/Figures/} to display the logo.}}}
+\\ \vspace{0.7cm}
+\textsc{\large \bfseries ITBP481: Senior Graduation Project II}\\ \vspace{0.3cm}
+\textsc{\large \bfseries Final Project Report }\\ \vspace{0.3cm}
+\textsc{Spring 2026} \\ \vspace{1.8cm}
+\Large \textbf{Project Title: Smart Helmet Fatigue \& Crash Telemetry}\\ \vspace{0.3cm}
+Project ID: XXX \\[0.6cm]
+
+\begin{center}
+\begin{tabular}{ c c c}
+Student1 Name: & Student ID   & Major\\
+Student2 Name: & Student ID  & Major\\
+Student3 Name: & Student ID  & Major\\
+Student4 Name: & Student ID  & Major\\
+Student5 Name: & Student ID  & Major\\
+\end{tabular}
+\end{center}
+
+
+\textbf{Project Advisor}: Dr. X \\ \vspace{1.3cm}
+
+\textsc{\large \bfseries\textbf{A project report submitted in partial fulfillment of the requirements for the Bachelor of Science degree at the College of Information Technology, United Arab Emirates University}} \\ \vspace{1.3cm}
+{\today}
+\end{center}
+
+\thispagestyle{empty}
+
+\newpage
+\setcounter{page}{1}
+
+% ----------------------------------------------------------------------------------------------
+% BEGINNING OF REPORT
+% ----------------------------------------------------------------------------------------------
+
+\section*{Executive Summary}
+
+This project delivers a prototype ``smart helmet'' software stack that monitors driver/operator state and incident events in real time. The implemented solution integrates (1) fatigue detection based on eye aspect ratio (EAR) and a rolling closed-eye score (PERCLOS-style), (2) crash detection using an inertial measurement unit (IMU) high-$g$ threshold, and (3) cloud telemetry using MQTT for both periodic status updates and event-driven alerts. The final system is organized as modular Python components and includes unit and integration-style tests that can be executed on a development machine without physical Raspberry Pi hardware.
+
+The primary outcome of SGP2 is a working end-to-end monitoring loop and a testable codebase. The fatigue detection module implements the EAR computation and a PERCLOS-like sliding window decision rule. Crash detection is implemented as a threshold on the acceleration magnitude $\sqrt{a_x^2+a_y^2+a_z^2}$, triggering a cloud alert when the threshold is exceeded. Testing is performed using Python \texttt{unittest} with mocking to validate IMU data formatting, fatigue trigger logic, and crash alert wiring, resulting in three passing tests in the current implementation.
+
+Overall, the project demonstrates a practical and extensible foundation for safety monitoring. It highlights how embedded sensing, computer vision landmarks, and lightweight IoT messaging can be combined into a modular architecture that supports future improvements such as real landmark extraction (MediaPipe/dlib integration), calibrated thresholds, and on-device buffering for post-incident evidence.
+
+\clearpage
+
+\tableofcontents
+\addcontentsline{toc}{section}{Table of contents}
+\clearpage
+
+\listoftables
+\addcontentsline{toc}{section}{List of tables}
+\clearpage
+
+\listoffigures
+\addcontentsline{toc}{section}{List of Figures}
+\clearpage
+
+\pagenumbering{arabic}
+
+% ---------------------------------------------
+\chapter{Introduction} \label{chapter:intro}
+
+This report presents the final implementation and evaluation of a smart helmet prototype developed during Senior Graduation Project II (SGP2). The objective is to reduce safety risks by detecting fatigue and crash-like events and transmitting alerts and telemetry to a remote receiver. The project is motivated by the high societal and economic impact of fatigue-related incidents and the need for rapid detection and reporting of emergency events.
+
+\section{Problem Statement}
+
+Fatigue and delayed incident response are common contributors to avoidable accidents in transportation and field operations. A practical helmet-mounted system must operate with constrained compute resources, tolerate varying lighting conditions, and provide reliable signaling when potentially unsafe states are detected. The problem addressed in this project is how to design a modular embedded software pipeline that (1) estimates fatigue using visual cues from the eyes, (2) detects crash-like events using inertial sensing, and (3) communicates status and alerts via a lightweight telemetry protocol.
+
+\section{Objectives}
+
+The project objectives for SGP2 are as follows:
+
+\begin{enumerate}
+  \item Implement a modular software architecture with clear separation between sensing, detection, and telemetry.
+  \item Implement fatigue detection using EAR and a rolling closed-eye score (PERCLOS-like) with configurable thresholds.
+  \item Implement crash detection using IMU acceleration magnitude and a defined high-$g$ threshold.
+  \item Implement telemetry publishing for periodic status and event-based alerts using MQTT.
+  \item Validate correctness using unit and integration-style tests with repeatable expected outputs.
+\end{enumerate}
+
+\section{Final Outcomes and Deliverables}
+
+By the end of SGP2, the project delivers:
+
+\begin{itemize}
+  \item A prototype runtime loop that integrates sensor acquisition, detection logic, and telemetry publishing.
+  \item Implemented Python modules for sensors, fatigue detection, and MQTT telemetry.
+  \item A unit test suite that executes on a development machine without physical hardware by using mocks and safe fallbacks.
+  \item Documentation describing the architecture, components, testing strategy, and expected results (see \texttt{docs/}).
+\end{itemize}
+
+\section{Motivation and Relevance}
+
+From a safety perspective, early fatigue detection can support timely interventions that reduce accident probability, while crash event detection can shorten response time by sending alerts immediately after a high-$g$ incident. The relevance of this work aligns with regional road-safety priorities and with broader industrial needs for low-cost monitoring of operator state and incident events. The proposed software design is also educationally relevant: it demonstrates system integration across sensing, signal processing, and IoT communication.
+
+\section{Report Structure Summary}
+
+Chapter~\ref{chapter:standards} discusses the professional standards and constraints considered during development. Chapter~\ref{chapter:system-design} presents the system design and integration, including modules and technologies used. Chapter~\ref{chapter:implementation} details implementation, testing strategy, and results analysis. Chapter~\ref{chapter:project-management} summarizes project management and teamwork reflections. Chapter~\ref{chapter:conclusion} concludes the report and recommends future improvements.
+
+% ---------------------------------------
+\clearpage
+\chapter{Professional Standards and Practice Constraints} \label{chapter:standards}
+
+This project was developed under constraints typical of embedded/IoT systems, including hardware availability, compute limitations, and safety considerations. Professional practice emphasizes reliability, transparency, and responsible handling of sensor and telemetry data.
+
+\section{Economic Constraints}
+
+The design prioritizes low-cost components and open-source tooling to keep the bill of materials and development cost manageable. The software was implemented in Python to accelerate prototyping and to reduce engineering time, with the understanding that performance-critical portions could be optimized or migrated to lower-level languages in future work.
+
+\section{Environmental Constraints}
+
+The proposed system is intended for battery-powered operation, so compute and radio usage should be efficient. The current prototype does not include power profiling; however, MQTT is selected because it is lightweight compared to many HTTP-based approaches. Future iterations should quantify energy consumption and evaluate duty-cycling strategies.
+
+\section{Health, Safety, and Security}
+
+Health and safety considerations include ensuring that alerts are conservative and do not induce distraction or overconfidence. The system should be treated as an assistive tool rather than a sole safety mechanism. Security considerations include protecting telemetry confidentiality and integrity. The current prototype uses a public MQTT broker for development; a production system should use authentication, TLS, and private broker infrastructure.
+
+\section{Social, Cultural, and Political Constraints}
+
+The project is relevant to the UAE context where road safety and rapid emergency response are strategic priorities. The solution must also be usable across varied environments (day/night, different users) and should avoid bias by validating performance across diverse participants and conditions.
+
+\section{Ethical and Legal Compliance}
+
+The system concept may involve camera-based monitoring, which raises privacy considerations. Ethical compliance requires minimizing data retention, avoiding unnecessary storage of identifiable video, and obtaining informed consent during data collection. Any future deployment should comply with applicable data protection requirements and institutional guidelines.
+
+% -----------------------------------------
+\clearpage
+\chapter{System Design and Integration} \label{chapter:system-design}
+
+\section{System Modules, Components, and Setup}
+
+The final prototype is organized as a modular pipeline with four primary layers: sensors, detection, telemetry, and orchestration.
+
+\subsection*{Sensors layer}
+
+The sensors layer includes: (1) an IMU interface that reports acceleration on three axes, (2) a camera interface for frame capture, and (3) an IR LED controller to support low-light conditions. For development convenience, the sensor wrappers include safe fallbacks so the software can be imported and tested without Raspberry Pi hardware.
+
+\subsection*{Detection layer}
+
+The fatigue detector computes the eye aspect ratio (EAR) from eye landmarks and maintains a rolling buffer of closed-eye indicators to approximate a PERCLOS-like metric. Crash detection is implemented as a threshold on acceleration magnitude.
+
+\subsection*{Telemetry layer}
+
+Telemetry is published over MQTT to separate topics for status and alerts. MQTT is suitable for constrained devices due to its low overhead and publish/subscribe semantics \citep{mqtt_oasis}.
+
+\subsection*{Orchestration}
+
+The orchestration loop coordinates sensor sampling, detection logic, and telemetry publishing at a fixed interval.
+
+\begin{figure}[h]
+\centering
+\fbox{\parbox{0.9\linewidth}{\centering
+\textbf{Architecture diagram placeholder.}\\
+The system consists of Sensors $\rightarrow$ Detection $\rightarrow$ Telemetry, coordinated by a main loop.
+}}
+\caption{High-level system architecture of the smart helmet prototype.}
+\label{fig:system_architecture}
+\end{figure}
+
+\section{Technologies and Standards Applied}
+
+The implementation uses:
+
+\begin{itemize}
+  \item Python 3 for rapid prototyping.
+  \item NumPy for numeric operations and array handling \citep{numpy_docs}.
+  \item OpenCV (optional) for camera frame capture \citep{opencv_docs}.
+  \item MediaPipe (reference snippet) for potential face/eye landmark extraction \citep{mediapipe_docs}.
+  \item MQTT for telemetry topics and event alerts \citep{mqtt_oasis}.
+  \item Python \texttt{unittest} and \texttt{unittest.mock} for automated testing.
+\end{itemize}
+
+\section{Challenges and Solutions}
+
+Key challenges during development included hardware-specific dependencies and the need to run tests on non-embedded machines. This was addressed by implementing optional imports and lightweight stubs for I2C/GPIO and camera interfaces, allowing unit tests to run without physical devices. Another challenge is that accurate fatigue detection requires robust landmark extraction; in the current prototype, the runtime loop uses mock landmarks to validate structure, and the included MediaPipe snippet serves as a starting point for full integration.
+
+% ----------------------------------
+\clearpage
+\chapter{Implementation, Testing, and Results Analysis}
+\label{chapter:implementation}
+
+\section{Implementation Summary}
+
+The final implementation is delivered as a set of Python modules located under \texttt{unit-tests/}. The orchestration script initializes the IMU, camera, IR controller, telemetry client, and fatigue detector, then iterates in a timed loop. In each iteration, acceleration is read and converted to total $g$ magnitude; if a high-$g$ threshold is exceeded, a crash alert is published. Separately, the fatigue detector is invoked to compute EAR and update the rolling closed-eye buffer; if fatigue is detected, a fatigue alert is published. Periodic telemetry provides status updates including estimated PERCLOS and current acceleration magnitude.
+
+\section{Testing Strategy and Process}
+
+Testing is performed with a focus on repeatability and isolation. The project uses unit tests and integration-style tests within Python \texttt{unittest}. Hardware interactions are replaced with mocks to ensure tests can execute on a laptop environment.
+
+\subsection*{Unit testing}
+
+Unit tests validate individual components:
+
+\begin{itemize}
+  \item IMU data formatting: verifies that the IMU wrapper returns a three-element tuple.
+  \item Fatigue trigger logic: verifies that a drowsiness condition is reported when EAR is below threshold (validated via injection).
+\end{itemize}
+
+\subsection*{Integration-style testing}
+
+An integration-style test validates crash detection wiring by simulating an IMU measurement exceeding the threshold and asserting that an alert publish call is made.
+
+\begin{table}[h]
+\centering
+\caption{Summary of implemented automated tests and expected outcomes.}
+\label{tab:test_summary}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Test} & \textbf{Component/Functionality} & \textbf{Expected Outcome} \\ \hline
+\texttt{test\_imu\_connection} & IMU wrapper return format & Returns 3-tuple; test passes \\ \hline
+\texttt{test\_fatigue\_logic} & Fatigue trigger condition & Drowsy=True with EAR<0.25; test passes \\ \hline
+\texttt{test\_crash\_integration} & Crash threshold \& alert wiring & Alert publish invoked for total\_g>2.5; test passes \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Results and Analysis}
+
+The automated test suite currently contains three tests, all of which pass successfully in the development environment. The verbose test output includes explicit ``[Pass]'' statements printed by each test case, enabling straightforward verification during demonstrations. The results support the core objective of validating the correctness of detection triggers and integration wiring.
+
+However, these results do not measure real-world accuracy, sensitivity, or false-positive rates. In particular, the fatigue detection module is not yet evaluated with real landmark extraction and real video sequences. Therefore, the current results are interpreted as evidence of correct implementation structure and basic logic, rather than clinical or production-grade fatigue detection performance.
+
+\section{Potential Improvements}
+
+Several improvements are recommended for future work:
+
+\begin{itemize}
+  \item Integrate a real facial landmark pipeline (e.g., MediaPipe FaceMesh) and map indices to the EAR computation.
+  \item Calibrate thresholds (EAR and PERCLOS) using recorded datasets under varied lighting and across multiple users.
+  \item Add end-to-end tests that run the orchestration loop for a fixed duration and verify telemetry publishes using a local MQTT broker.
+  \item Add security features for telemetry such as TLS and authentication and migrate away from public brokers.
+  \item Add power profiling and performance measurement on the target device.
+\end{itemize}
+
+% ------------------------------
+\clearpage
+\chapter{Project Management and Teamwork Reflection} \label{chapter:project-management}
+
+Project execution followed an iterative workflow with milestones for module implementation, integration, and testing. Team responsibilities should be documented by the group to reflect actual contribution and role distribution (e.g., sensing integration, detection development, telemetry, documentation, and testing).
+
+\section{Tasks And Schedule Gantt Chart}
+
+A Gantt chart should be inserted here to summarize the project schedule, key milestones, and actual completion dates. (Placeholder: add a figure export of your Gantt chart.)
+
+\section{Resources used During the Project}
+
+Resources used include Python documentation, MQTT specification \citep{mqtt_oasis}, and open-source libraries such as NumPy \citep{numpy_docs}. Additional resources include tutorials and vendor datasheets for IMU and Raspberry Pi interfacing.
+
+% --------------------------------------------
+\clearpage
+\chapter{Conclusion and Future Recommendations} \label{chapter:conclusion}
+
+This report presented a modular smart helmet prototype implementing fatigue detection, crash detection, and MQTT-based telemetry. The project achieved a complete software integration loop and a repeatable automated test suite that validates core triggers and event wiring. The main limitation is the absence of a full landmark extraction pipeline and quantitative evaluation on real data. Future work should prioritize integrating real facial landmarks, conducting controlled experiments to calibrate thresholds, and strengthening telemetry security for realistic deployment.
+
+% -----------------------------------
+\clearpage
+\chapter{Statement of Contribution}
+\label{chapter:Contribution}
+
+This chapter should be completed by the team to reflect actual tasks and contributions. Table~\ref{tab:student_contribution} can be extended to include implementation, testing, documentation, and integration tasks.
+
+\begin{table}[h]
+\centering
+\caption{Student contribution distribution during SGP2 (replace with your data).}
+\label{tab:student_contribution}
+
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Task} & \textbf{Student ID} & \textbf{Contribution Percentage} \\ \hline
+T1: Architecture \& Integration & 2021XXXXXXX & 25\% \\ \hline
+T2: Detection Module \& Thresholds & 2022XXXXXXX & 25\% \\ \hline
+T3: Testing \& Validation & 2019XXXXXXX & 25\% \\ \hline
+T4: Documentation \& Report Writing & 2020XXXXXXX & 25\% \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\caption{Student Signatures}
+\label{tab:signatures}
+\small
+\begin{tabular}{|p{0.18\textwidth}|p{0.4\textwidth}|p{0.2\textwidth}|}
+\hline
+\textbf{Student ID} & \textbf{Student Name} & \textbf{Signature} \\ \hline
+ &  &  \\ \hline
+ &  &  \\ \hline
+ &  &  \\ \hline
+\end{tabular}
+\end{table}
+
+% ----------------------------
+\newpage
+\renewcommand{\bibname}{References}
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+% --------------------------
+\newpage
+\section*{Appendix (Optional)}
+
+\subsection*{A.1 Test execution output}
+
+The following is an example of the expected console output from running the unit tests in verbose mode:
+
+\begin{lstlisting}
+cd unit-tests
+python -m unittest -v
+
+test_crash_integration (tests.TestSmartHelmet.test_crash_integration)
+Test 4: The 'Shake to Upload' Crash Logic ...
+[Pass] Crash Integration (Sensor -> Cloud Trigger) Verified
+ok
+
+test_fatigue_logic (tests.TestSmartHelmet.test_fatigue_logic)
+Test 5: Fatigue Logic Simulation (Software Injection) ...
+[Pass] Fatigue Logic Triggered Correctly
+ok
+
+test_imu_connection (tests.TestSmartHelmet.test_imu_connection)
+Test 1: Verify IMU reads data format correctly ...
+[Pass] IMU Data Format Verified
+ok
+
+----------------------------------------------------------------------
+Ran 3 tests in <time>s
+
+OK
+\end{lstlisting}
+
+\end{document}

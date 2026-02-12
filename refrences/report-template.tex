@@ -1,0 +1,386 @@
+
+% ---------------------------------------------- ---------------------------------------
+% This LaTeX template is designed for use by the College of Information Technology, United Arab Emirates University (UAEU), as a standardized format for Bachelor of Science Senior Graduation Project II (SGP2) technical report. Spring 2026.
+% ---------------------------------------------- ---------------------------------------
+
+\title{project report template}
+\documentclass[12pt,a4paper]{report}
+\usepackage{longtable}
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{glossaries}
+\usepackage{pdfpages}
+\usepackage{natbib}
+\usepackage{multirow}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=black,
+    urlcolor=black,
+    citecolor=black
+    }
+
+% -------------------------------------------------------------------------------------------
+% -----------------------------    COVER PAGE     ------------------------------------
+% -------------------------------------------------------------------------------------------
+
+\begin{document}
+%\setlength {\marginparwidth }{2cm}
+\include{acro}
+\pagenumbering{roman}
+%\include{coverpage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.3mm}}
+\begin{center}
+\includegraphics[width=120mm]{Figures/CIT_logo.jpg}\\ \vspace{0.7cm}
+\textsc{\large \bfseries ITBP481: Senior Graduation Project II}\\ \vspace{0.3cm}
+\textsc{\large \bfseries Final Project Report }\\ \vspace{0.3cm}
+\textsc{Spring 2026} \\ \vspace{1.8cm}
+\Large \textbf{Project Title }\\ \vspace{0.3cm}
+Project ID: XXX \\[0.6cm]
+
+\begin{center}
+\begin{tabular}{ c c c}
+Student1 Name: & Student ID   & Major\\
+Student2 Name: & Student ID  & Major\\
+Student3 Name: & Student ID  & Major\\
+Student4 Name: & Student ID  & Major\\
+Student5 Name: & Student ID  & Major\\
+\end{tabular}
+\end{center}
+
+
+\textbf{Project Advisor}: Dr. X \\ \vspace{1.3cm}
+
+\textsc{\large \bfseries\textbf{A project report submitted in partial fulfillment of the requirements for the Bachelor of Science degree at the College of Information Technology, United Arab Emirates University}} \\ \vspace{1.3cm}
+{\today}
+\end{center}
+
+\thispagestyle{empty}   % <-- no page number on cover
+
+\newpage
+%\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% ----------------------------------------------------------------------------------------------
+% -----------------------------    BEGINNING OF REPORT     ------------------------------------
+% ----------------------------------------------------------------------------------------------
+
+\section*{Executive Summary}
+
+\textcolor{blue}{\textit{Provide a concise, one-page summary of the project implementation and outcomes concisely. Describe the achievements since SGP1, technologies used, key results, and overall impact.}}
+
+
+
+
+\clearpage
+
+\tableofcontents
+\addcontentsline{toc}{section}{Table of contents}
+\clearpage
+
+\listoftables
+\addcontentsline{toc}{section}{List of tables}
+\clearpage
+
+\listoffigures
+\addcontentsline{toc}{section}{List of Figures}
+\clearpage
+
+%\printglossary[type=\acronymtype,title=List of Symbols and Acronym]
+%\addcontentsline{toc}{section}{List of Symbols and Acronyms}
+%\clearpage
+
+\pagenumbering{arabic}
+
+
+
+% ---------------------------------------------
+\chapter{Introduction} \label{chapter: intro}
+% \textcolor{green}{(ABET: Outcome 1 – Problem Solving; CIT: Research and Societal Impact)}
+
+
+\textcolor{blue}{\textit{Provide a brief overview of your project carried from SGP1. Update or restate the following sections:}}
+
+\textcolor{blue}{\textit{Writing guidelines: \textbf{Remove this text before submission}. The report length should be between 25 and 35 pages excluding appendices. This template must be used to prepare the report in Overleaf using \LaTeX{}, and all content must adhere to APA reporting standards. Citations and references must be managed using Bib\TeX{} or BibLaTeX. In-text citations should follow APA style or IEEE, for example: \cite{Gorucu2025asPractitioners}. Multiple sources should be cited together where appropriate (e.g., \cite{Gorucu2025asPractitioners, fu2024more}). All cited works must appear in the reference list.}}
+
+\textcolor{blue}{\textit{Figures and tables must be numbered consecutively and explicitly referenced in the text. Table captions must be placed above the table, while figure captions must be placed below the figure. For example, Table~\ref{tab:example_table} summarises the dataset, and Figure~\ref{fig:example_figure} illustrates the system architecture.}}
+
+
+\begin{table}[h]
+\centering
+\caption{Example Table Caption (APA Style)}
+\label{tab:example_table}
+\begin{tabular}{|c|c|}
+\hline
+Variable & Value \\ \hline
+A & 10 \\ \hline
+B & 20 \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\linewidth]{example-image}
+\caption{Example Figure Caption (APA Style)}
+\label{fig:example_figure}
+\end{figure}
+
+\textcolor{blue}{\textit{A consistent academic writing style must be maintained throughout the document. Sections and subsections should be used to organize content logically, and formal, objective language is required. Use bullet points only when necessary, and write paragraphs using full, continuous sentences with consistent terminology throughout the document.}}
+
+\textcolor{blue}{\textit{All hyperlinks must be functional and formatted using the \texttt{hyperref} package. URLs should be embedded within the text where possible, for example: \href{https://www.overleaf.com}{Overleaf}. Raw URLs should only be used when necessary and must not break the layout.}}
+
+\textcolor{blue}{\textit{Failure to adhere to these formatting, citation, and reporting requirements may result in penalties, as presentation and report quality is part of the assessment criteria.}}
+
+
+% -------------------------
+\section{Problem Statement}
+\textcolor{blue}{\textit{Summarize the main problem and context, referencing prior work from SGP1.}}
+
+
+
+
+
+% ------------------------------
+\section{Objectives}
+\textcolor{blue}{\textit{Restate or refine the overall project objectives, reflecting on progress made since SGP1. Explain how these objectives have been fulfilled or extended through your implementation and evaluation work in SGP2 to achieve the final intended outcomes of the project.}}
+
+
+
+
+% ----------------------------------------------
+\section{Final Outcomes and Deliverables}
+\textcolor{blue}{Describe what was achieved by the end of SGP2 (software, prototype, model, or research findings).}
+
+
+
+
+% --------------------------------------
+\section{Motivation and Relevance}
+\textcolor{blue}{\textit{In this section, state the reasons and motivation of choosing the project, problems it is trying to solve, and the impact of your solution to society, human kind,  industry, or research, etc.}}
+
+
+
+% ---------------------------------
+\section{Report Structure Summary}
+\textcolor{blue}{\textit{Summarize the purpose of each section of this report}}
+\begin{itemize}
+    \item \textcolor{blue}{Chapter 2 presents ---------}
+    \item \textcolor{blue}{Chapter 3 will include ------------}
+    \item \textcolor{blue}{Chapter 4 will discuss -------------}
+    \item \textcolor{blue}{Chapter 5 will include -------------}
+    \item \textcolor{blue}{Chapter 6 will discuss -------------}
+\end{itemize}
+
+
+
+
+
+% ---------------------------------------
+\clearpage
+\chapter{Professional Standards and Practice Constraints} \label{chapter: standards}
+% \textcolor{green}{(ABET: Outcome 4 – Professional and Ethical Responsibilities; CIT: Sustainability, Professional Practice)}
+
+\textcolor{blue}{\textit{Describe the engineering and professional standards that guided your project implementation. Include any relevant constraints:}}
+
+
+
+% ---------------------------------------
+\section{Economic Constraints}
+\textcolor{blue}{\textit{Cost and time considerations. }}
+
+
+
+% --------------------------------
+\section{Environmental Constraints}
+\textcolor{blue}{\textit{Impact on sustainability and energy use.}}
+
+
+% ---------------------------------
+\section{Health, Safety, and Security}
+\textcolor{blue}{\textit{Measures taken to ensure ethical and safe development.}}
+
+
+
+% --------------------------------------------
+\section{Social, Cultural, and Political Constraints}
+\textcolor{blue}{\textit{Relevance to UAE and regional contexts.}}
+
+
+
+% ------------------------------------------------
+\section{Ethical and Legal Compliance}
+\textcolor{blue}{\textit{Adherence to ACM/IEEE codes and data regulations.}}
+
+
+
+
+% -----------------------------------------
+\clearpage
+\chapter{System Design and Integration} \label{chapter: system-design}
+% \textcolor{green}{(ABET: Outcome 2 – Design and Implementation; CIT: Employability, Industry Readiness)}
+
+\textcolor{blue}{\textit{Describe how your design was realized as a working system.}}
+
+
+
+% ---------------------------------------------
+\section{System Modules, Components, and Setup}
+\textcolor{blue}{\textit{Describe the main modules or subsystems of your solution, their purposes, and how they integrate to form a complete system. Include details of your hardware and software environment (e.g., tools, platforms, configurations, devices, and dependencies). Explain how the setup supports your system’s functionality, performance, and scalability. (Note: Research-based projects should describe the experimental setup, simulation parameters, or datasets used instead of hardware.)}}
+
+
+
+
+% -----------------------------------------------
+\section{Technologies and Standards Applied}
+\textcolor{blue}{\textit{Explain the programming languages, frameworks, tools, and professional standards used (e.g., ISO, IEEE) you used.}}
+
+
+
+% --------------------------------------
+\section{Challenges and Solutions}
+\textcolor{blue}{\textit{Summarize key technical issues encountered during development and how you addressed them.}}
+
+
+
+
+
+
+% ----------------------------------
+\clearpage
+\chapter{Implementation, Testing, and Results Analysis}
+\label{chapter:implementation}
+%\textcolor{green}{(ABET: Outcome 6 – Experimentation; CIT: Applied Learning, Research Quality, and Innovation)}
+
+\textcolor{blue}{\textit{This section presents how your system was implemented, tested, and evaluated. Describe how your results validate the project objectives and demonstrate your technical and analytical skills.}}
+
+
+
+% ---------------------------------------------
+\section{Implementation Summary}
+\textcolor{blue}{\textit{Summarize the final implementation of your project. Describe what was completed, how it builds on SGP1, and any modifications made during SGP2. Highlight the core features, algorithms, or prototypes achieved. (Note: Research-based projects should describe the experimental setup or models developed.)}}
+
+
+
+
+% -------------------------------------
+\section{Testing Strategy and Process}
+\textcolor{blue}{\textit{Explain how you verified your system or experiment. Describe the testing methodology used — such as unit, integration, usability, performance, or simulation testing. Include how test cases were selected, tools used, and any challenges faced during validation.}}
+
+
+
+
+% -----------------------------------------
+\section{Results and Analysis }
+\textcolor{blue}{\textit{Present the main results obtained from your testing or experiments. Use tables, graphs, charts, or screenshots to illustrate findings clearly. Focus on outcomes that prove your system’s functionality, performance, or effectiveness.
+Interpret and discuss results, patterns, and insights. Evaluate how well objectives were met and what limitations exist.}}
+
+
+
+
+
+% -----------------------------------------------
+\section{Potential Improvements}
+% \textcolor{green}{(ABET: Outcome 7 – Lifelong Learning; CIT: Continuous Improvement and Innovation)}
+
+\textcolor{blue}{\textit{Discuss possible enhancements or optimizations for your system. Identify technical, design, or process improvements that could increase efficiency, accuracy, scalability, or usability. For research projects, suggest how future studies could extend or deepen the findings.}}
+
+
+
+
+
+% ------------------------------
+\clearpage
+\chapter{Project Management and Teamwork Reflection} \label{chapter: project-management}
+% \textcolor{green}{(ABET: Outcome 5 – Teamwork; CIT: Accountability and Transparency)}
+
+\textcolor{blue}{\textit{Reflect on team collaboration, role distribution, scheduling, and adjustments made since SGP1. Mention key lessons learned about teamwork and leadership.}}
+
+
+% -----------------------------------------
+\section{Tasks And Schedule Gantt Chart }
+Here
+
+
+% --------------------------------------------
+\section{Resources used During the Project }
+Here
+
+
+
+
+
+% --------------------------------------------
+\clearpage
+\chapter{Conclusion and Future Recommendations} \label{chapter: conclusion}
+% \textcolor{green}{(ABET: Outcome 7 – Lifelong Learning; CIT: Continuous Improvement and Innovation)}
+
+\textcolor{blue}{\textit{Summarize key achievements and challenges. Suggest future enhancements or research directions to extend the work.}}
+
+
+
+
+
+
+% -----------------------------------
+\clearpage
+\chapter{Statement of Contribution}
+\label{chapter:Contribution}
+% \textcolor{green}{(ABET: Outcome 5 – Teamwork; CIT: Accountability and Transparency)}
+
+\textcolor{blue}{\textit{ This section should have the list of tasks accomplished during the semester a long with the percentage/weight of each student’s contribution in each task using Table \ref{tab:student_contribution} and Table \ref{tab:signatures}. }}
+
+\begin{table}[h]
+\centering
+\caption{Student contribution distribution during SGP1}
+\label{tab:student_contribution}
+
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Task} & \textbf{Student ID} & \textbf{Contribution Percentage} \\ \hline
+\multirow{3}{*}{T1} & 2021XXXXXXX & 30\% \\ \cline{2-3}
+                    & 2022XXXXXXX & 25\% \\ \cline{2-3}
+                    & 2019XXXXXXX & 55\% \\ \hline
+T2 & & \\ \hline
+\end{tabular}
+\end{table}
+
+
+
+
+\begin{table}[h!]
+\centering
+\caption{Student Signatures}
+\label{tab:signatures}
+\small % reduce overall font size for compactness
+\begin{tabular}{|p{0.18\textwidth}|p{0.4\textwidth}|p{0.2\textwidth}|}
+\hline
+\textbf{Student ID} & \textbf{Student Name} & \textbf{Signature} \\ \hline
+ &  &  \\ \hline
+ &  &  \\ \hline
+ &  &  \\ \hline
+\end{tabular}
+\end{table}
+
+
+
+% ----------------------------
+\newpage
+\renewcommand{\bibname}{References}
+%\bibliographystyle{IEEEtran}
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+
+% --------------------------
+\newpage
+\section*{Appendix (Optional)}
+\textcolor{blue}{\textit{Include any additional material such as source code samples, extended test results or screenshots, user manuals, or datasets.}}
+
+\end{document}
