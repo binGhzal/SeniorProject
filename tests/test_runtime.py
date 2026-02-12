@@ -4,7 +4,7 @@ import json
 import time
 import unittest
 from typing import cast
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from src.gp2.detection import FatigueDetector
 from src.gp2.main import build_power_profile, build_sensor_health
@@ -193,8 +193,10 @@ class TestSmartHelmet(unittest.TestCase):
         """Rejects invalid connectivity configuration values."""
         valid = ConnectivityConfig()
         invalid = ConnectivityConfig(protocol="invalid")
+        invalid_attempts = ConnectivityConfig(max_reconnect_attempts=0)
         self.assertTrue(validate_connectivity_config(valid))
         self.assertFalse(validate_connectivity_config(invalid))
+        self.assertFalse(validate_connectivity_config(invalid_attempts))
 
     def test_offline_queue_placeholder_behavior(self):
         """Queues unsent messages when connectivity is unavailable."""
@@ -225,6 +227,67 @@ class TestSmartHelmet(unittest.TestCase):
         status_call = client.client.publish.call_args_list[1]
         self.assertEqual(alert_call.kwargs["qos"], 0)
         self.assertEqual(status_call.kwargs["qos"], 1)
+
+    def test_offline_replay_flush_behavior(self):
+        """Flushes queued records when transport is restored."""
+        config = ConnectivityConfig(offline_queue_enabled=True, offline_queue_max_items=5)
+        client = TelemetryClient(config=config)
+        client.client = None
+        client.send_alert("CRASH", 3.2)
+        client.send_alert("FATIGUE", 0.2)
+        self.assertEqual(len(client.offline_queue), 2)
+
+        client.client = MagicMock()
+        stats = client.replay_offline_queue()
+
+        self.assertEqual(stats["replayed"], 2)
+        self.assertEqual(stats["remaining"], 0)
+        self.assertEqual(client.client.publish.call_count, 2)
+
+    def test_reconnect_retry_ceiling(self):
+        """Stops reconnect attempts at configured retry ceiling."""
+        config = ConnectivityConfig(
+            reconnect_initial_delay_s=0.001,
+            reconnect_max_delay_s=0.01,
+            max_reconnect_attempts=3,
+        )
+        client = TelemetryClient(config=config)
+        client.client = MagicMock()
+        client.client.reconnect.side_effect = OSError("network down")
+
+        with patch("src.gp2.telemetry.time.sleep", return_value=None):
+            ok = client.recover_connectivity()
+
+        self.assertFalse(ok)
+        self.assertEqual(client.client.reconnect.call_count, 3)
+        self.assertEqual(client.fault_counters["reconnect_attempts"], 3)
+        self.assertEqual(client.fault_counters["reconnect_failures"], 3)
+
+    def test_telemetry_runtime_health_payload(self):
+        """Includes runtime health diagnostics in status telemetry payload."""
+        client = TelemetryClient()
+        client.client = MagicMock()
+        client.send_telemetry(
+            perclos=0.2,
+            g_force=1.5,
+            runtime_health={"fault_counters": {"sensor_read_failures": 1}},
+        )
+        publish_args = client.client.publish.call_args.args
+        payload = json.loads(publish_args[1])
+        self.assertIn("runtime_health", payload)
+        self.assertEqual(payload["runtime_health"]["fault_counters"]["sensor_read_failures"], 1)
+
+    def test_health_snapshot_reports_degraded_mode(self):
+        """Reports degraded mode when queue pressure is high."""
+        config = ConnectivityConfig(offline_queue_enabled=True, offline_queue_max_items=4)
+        client = TelemetryClient(config=config)
+        client.client = None
+        for value in [2.9, 3.0, 3.1, 3.2]:
+            client.send_alert("CRASH", value)
+
+        health = client.health_snapshot()
+        self.assertTrue(health["degraded_mode"])
+        self.assertEqual(health["offline_queue_depth"], 4)
 
     def test_storage_retention_pruning(self):
         """Prunes records older than retention window."""

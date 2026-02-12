@@ -47,6 +47,9 @@ Current runtime implementation status:
 - `TelemetryClient` validates connectivity config at startup and consumes configured `status_qos` and `alert_qos`.
 - Offline queue placeholders are implemented with bounded queue size (`offline_queue_max_items`).
 - Reconnect behavior uses exponential backoff (`reconnect_initial_delay_s` -> `reconnect_max_delay_s`).
+- Reconnect attempts are capped by `max_reconnect_attempts` to avoid unbounded retry loops.
+- Queued messages are automatically replayed after successful publish/reconnect events.
+- Transport health includes queue depth and reconnect/replay fault counters for diagnostics.
 - Runtime heartbeat cadence is driven by `telemetry_interval_s` in `src/gp2/main.py`.
 
 ## Security checklist

@@ -13,10 +13,10 @@ def sanitize(text: str) -> str:
     """Normalize source text to exactly one final __main__ block."""
     marker = text.find(MAIN_GUARD)
     if marker == -1:
-        return text.rstrip() + "\n\n" + MAIN_GUARD + "\n    main()\n"
+        return text.rstrip() + "\n\n\n" + MAIN_GUARD + "\n    main()\n"
 
     head = text[:marker].rstrip()
-    return head + "\n\n" + MAIN_GUARD + "\n    main()\n"
+    return head + "\n\n\n" + MAIN_GUARD + "\n    main()\n"
 
 
 def main() -> int:

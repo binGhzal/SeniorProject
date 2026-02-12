@@ -105,16 +105,25 @@ def main():
     power_profile = build_power_profile(sensor_health)
     runtime_state = {
         "last_status_publish_ts": 0.0,
+        "sensor_read_failures": 0,
+        "detect_failures": 0,
     }
 
     def read_sensor_snapshot():
-        frame = cam.get_frame()
-        ax, ay, az = imu.read_accel()
-        g_force = float(np.sqrt(ax**2 + ay**2 + az**2))
-        return {
-            "frame": frame,
-            "g_force": g_force,
-        }
+        try:
+            frame = cam.get_frame()
+            ax, ay, az = imu.read_accel()
+            g_force = float(np.sqrt(ax**2 + ay**2 + az**2))
+            return {
+                "frame": frame,
+                "g_force": g_force,
+            }
+        except (OSError, ValueError, TypeError):
+            runtime_state["sensor_read_failures"] += 1
+            return {
+                "frame": None,
+                "g_force": 0.0,
+            }
 
     def detect_fatigue(snapshot):
         if not runtime_flags.enable_fatigue_detection:
@@ -126,13 +135,23 @@ def main():
                 "mode": active_detector_mode,
                 "perclos": 0.0,
             }
-
-        return detector.analyze_frame_with_metrics(
-            None,
-            None,
-            active_detector_mode,
-            snapshot.get("frame"),
-        )
+        try:
+            return detector.analyze_frame_with_metrics(
+                None,
+                None,
+                active_detector_mode,
+                snapshot.get("frame"),
+            )
+        except (ValueError, TypeError):
+            runtime_state["detect_failures"] += 1
+            return {
+                "is_drowsy": False,
+                "ear": 0.0,
+                "latency_ms": 0.0,
+                "false_alert": False,
+                "mode": active_detector_mode,
+                "perclos": 0.0,
+            }
 
     def publish_runtime_event(event_type, payload):
         if event_type == "CRASH":
@@ -172,12 +191,20 @@ def main():
                 return
 
             ai_metrics = dict(payload.get("ai_metrics", {}))
+            runtime_health = {
+                "telemetry": mqtt.health_snapshot(),
+                "fault_counters": {
+                    "sensor_read_failures": runtime_state["sensor_read_failures"],
+                    "detect_failures": runtime_state["detect_failures"],
+                },
+            }
             mqtt.send_telemetry(
                 perclos=float(payload.get("perclos", 0.0)),
                 g_force=float(payload.get("g_force", 0.0)),
                 sensor_health=sensor_health,
                 power_profile=power_profile,
                 ai_metrics=ai_metrics,
+                runtime_health=runtime_health,
             )
             local_storage.add_event(
                 StorageEvent(
@@ -188,6 +215,7 @@ def main():
                         "sensor_health": sensor_health,
                         "power_profile": power_profile,
                         "ai_metrics": ai_metrics,
+                        "runtime_health": runtime_health,
                     },
                 )
             )
@@ -207,6 +235,7 @@ def main():
     finally:
         cam.release()
         ir.cleanup()
+
 
 if __name__ == "__main__":
     main()

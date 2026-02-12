@@ -4,7 +4,7 @@
 - [x] Document runtime model (threads/processes/event loop)
 - [x] Confirm libraries and dependency versions
 - [x] Define API contracts between board code and app/backend
-- [ ] Add health monitoring and fault-recovery strategy
+- [x] Add health monitoring and fault-recovery strategy
 
 ## Implementation plan
 

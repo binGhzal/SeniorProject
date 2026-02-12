@@ -25,6 +25,13 @@ class TelemetryClient:
         self.offline_queue = []
         self.client = None
         self.device_id = device_id
+        self.fault_counters = {
+            "publish_failures": 0,
+            "reconnect_attempts": 0,
+            "reconnect_failures": 0,
+            "replay_attempts": 0,
+            "replay_failures": 0,
+        }
 
         if mqtt is None:
             print("MQTT client unavailable (install paho-mqtt to enable telemetry).")
@@ -59,15 +66,24 @@ class TelemetryClient:
     def _flush_offline_queue(self):
         """Attempt to replay queued messages when connectivity is available."""
         if self.client is None or not self.offline_queue:
-            return
+            return {"replayed": 0, "remaining": len(self.offline_queue)}
 
         remaining = []
+        replayed = 0
         for item in self.offline_queue:
+            self.fault_counters["replay_attempts"] += 1
             try:
                 self.client.publish(item["topic"], json.dumps(item["payload"]), qos=item["qos"])
+                replayed += 1
             except (OSError, ConnectionError, ValueError):
                 remaining.append(item)
+                self.fault_counters["replay_failures"] += 1
         self.offline_queue = remaining
+        return {"replayed": replayed, "remaining": len(self.offline_queue)}
+
+    def replay_offline_queue(self):
+        """Public wrapper to replay queued messages after connectivity recovery."""
+        return self._flush_offline_queue()
 
     def _attempt_reconnect(self):
         """Reconnect with exponential backoff to restore publish channel."""
@@ -75,15 +91,26 @@ class TelemetryClient:
             return False
 
         delay = self.config.reconnect_initial_delay_s
-        while delay <= self.config.reconnect_max_delay_s:
+        attempts = 0
+        while (
+            delay <= self.config.reconnect_max_delay_s
+            and attempts < self.config.max_reconnect_attempts
+        ):
+            attempts += 1
+            self.fault_counters["reconnect_attempts"] += 1
             try:
                 self.client.reconnect()
                 self._flush_offline_queue()
                 return True
             except (OSError, ConnectionError, ValueError):
+                self.fault_counters["reconnect_failures"] += 1
                 time.sleep(delay)
                 delay *= 2
         return False
+
+    def recover_connectivity(self):
+        """Public wrapper for reconnect/recovery flow with bounded retries."""
+        return self._attempt_reconnect()
 
     def _publish(self, topic, payload, qos):
         """Publish payload with offline queue + reconnect fallback policy."""
@@ -93,11 +120,26 @@ class TelemetryClient:
 
         try:
             self.client.publish(topic, json.dumps(payload), qos=qos)
+            if self.offline_queue:
+                self._flush_offline_queue()
             return True
         except (OSError, ConnectionError, ValueError):
+            self.fault_counters["publish_failures"] += 1
             self._enqueue_offline(topic, payload, qos)
             self._attempt_reconnect()
             return False
+
+    def health_snapshot(self):
+        """Return transport health and recovery counters for status telemetry."""
+        queue_max = max(1, self.config.offline_queue_max_items)
+        queue_ratio = len(self.offline_queue) / queue_max
+        return {
+            "connected": self.client is not None,
+            "offline_queue_depth": len(self.offline_queue),
+            "offline_queue_max_items": queue_max,
+            "degraded_mode": queue_ratio >= 0.8 or self.fault_counters["reconnect_failures"] > 0,
+            "fault_counters": dict(self.fault_counters),
+        }
 
     def send_alert(self, alert_type, value):
         """Publish a high-priority alert event payload."""
@@ -117,6 +159,7 @@ class TelemetryClient:
         sensor_health=None,
         power_profile=None,
         ai_metrics=None,
+        runtime_health=None,
     ):
         """Publish periodic status telemetry with optional sensor health metadata."""
         payload = {
@@ -131,4 +174,6 @@ class TelemetryClient:
             payload["power_profile"] = power_profile
         if ai_metrics is not None:
             payload["ai_metrics"] = ai_metrics
+        if runtime_health is not None:
+            payload["runtime_health"] = runtime_health
         self._publish(TOPIC_TELEMETRY, payload, self.config.status_qos)

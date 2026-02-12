@@ -20,6 +20,7 @@ class ConnectivityConfig:
     offline_queue_max_items: int = 100
     reconnect_initial_delay_s: float = 0.5
     reconnect_max_delay_s: float = 8.0
+    max_reconnect_attempts: int = 5
 
 
 def validate_connectivity_config(config: ConnectivityConfig) -> bool:
@@ -38,6 +39,8 @@ def validate_connectivity_config(config: ConnectivityConfig) -> bool:
     if config.reconnect_initial_delay_s <= 0 or config.reconnect_max_delay_s <= 0:
         return False
     if config.reconnect_initial_delay_s > config.reconnect_max_delay_s:
+        return False
+    if config.max_reconnect_attempts <= 0:
         return False
     if config.offline_queue_max_items <= 0:
         return False

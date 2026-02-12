@@ -39,7 +39,7 @@ Status: this tracks alignment between the original GP1 report scope and the impl
 
 - [x] **Crash detection** (prototype: high-g threshold)
 - [x] **Fatigue detection** (prototype: EAR + rolling PERCLOS-like score)
-- [ ] **Sensor self-test** (startup checks + runtime health)
+- [x] **Sensor self-test** (startup checks + runtime health)
 
 ### Telemetry
 

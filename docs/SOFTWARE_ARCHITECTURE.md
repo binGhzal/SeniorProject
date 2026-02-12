@@ -39,7 +39,7 @@ Current runtime model:
 - [x] Runtime: Linux userspace prototype
 - [x] Process/thread model: single-thread polling with inline detection and telemetry
 - [x] Orchestrator contract for one cycle in `execute_runtime_cycle(...)`
-- [ ] Watchdog/health checks (planned)
+- [x] Runtime health/fault counters with degraded-mode telemetry snapshot
 
 ### Libraries, drivers, middleware
 
@@ -64,7 +64,7 @@ Current runtime model:
 ## Phase 6 implementation summary
 
 - Single-cycle orchestrator contract and execution path:
-  - `RuntimeOrchestratorContract`
-  - `execute_runtime_cycle(...)`
+    - `RuntimeOrchestratorContract`
+    - `execute_runtime_cycle(...)`
 - Side-effect boundary ownership map in `side_effect_boundaries()`.
 - Dependency declaration helper in `dependency_versions()`.

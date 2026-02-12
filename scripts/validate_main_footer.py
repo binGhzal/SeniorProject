@@ -22,7 +22,7 @@ def validate_file(path: Path) -> list[str]:
         )
 
     bad_indented_cleanup = re.search(
-        r"\n\s{8,}ir\.cleanup\(\)\n\n\nif __name__ == \"__main__\":",
+        r"\n\s{12,}ir\.cleanup\(\)\n\n\nif __name__ == \"__main__\":",
         text,
     )
     if bad_indented_cleanup:

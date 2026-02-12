@@ -198,9 +198,9 @@ The following items remain open in `docs/todo/` and are grouped into an executab
 
 ### Sprint B: Reliability and secure transport (Week 2)
 
-- Complete reconnect + offline replay behavior in runtime telemetry path (`TODO 04`).
+- [x] Complete reconnect + offline replay behavior in runtime telemetry path (`TODO 04`).
 - Finalize topic/schema contracts and alert latency SLOs (`TODO 04`).
-- Define health monitoring + fault-recovery policy for sensor outages and publish failures (`TODO 06`).
+- [x] Define health monitoring + fault-recovery policy for sensor outages and publish failures (`TODO 06`).
 
 ### Sprint C: Data and privacy controls (Week 3)
 
