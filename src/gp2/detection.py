@@ -9,6 +9,7 @@ except ImportError:  # pragma: no cover
     class _Dist:
         @staticmethod
         def euclidean(a, b):
+            """Compute Euclidean distance without scipy for test/dev environments."""
             a_arr = np.asarray(a, dtype=float)
             b_arr = np.asarray(b, dtype=float)
             return float(np.linalg.norm(a_arr - b_arr))
@@ -38,7 +39,7 @@ class FatigueDetector:
         self.counter = 0
         self.closed_frames = 0
         self.total_frames = 0
-        self.perclos_buffer = [] # Circular buffer for PERCLOS window
+        self.perclos_buffer = []  # Circular buffer for PERCLOS window
 
     def analyze_frame(self, landmarks):
         """
