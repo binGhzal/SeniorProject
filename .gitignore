@@ -15,6 +15,9 @@ unit-tests/
 *.swp
 *.swo
 *~
+.cache/
+.idea/
+*.orig
 
 # Notebook/cache byproducts
 .ipynb_checkpoints/
@@ -39,10 +42,14 @@ docs/report/indent.log
 *.lof
 *.log
 *.lot
+*.nav
 *.out
 *.run.xml
+*.snm
 *.toc
 *.synctex.gz
+*.vrb
+*.xdv
 
 # Generated report outputs
 docs/report/*.pdf
