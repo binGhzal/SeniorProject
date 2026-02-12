@@ -8,7 +8,7 @@
 - [ ] Confirm board SKU and compute constraints
 - [ ] Confirm IMU part and electrical interface details
 - [ ] Confirm camera module and interface bandwidth needs
-- [ ] Document IR subsystem driver and current path
+- [x] Document IR subsystem driver and current path
 - [ ] Produce final pin map and interface diagram
 - [ ] Verify signal direction and startup control sequence
 
@@ -17,3 +17,9 @@
 - Week 1: freeze target board SKU + IMU/camera part numbers and update `docs/HARDWARE.md`.
 - Week 1: create final pin map + signal-direction diagram and attach to report figures.
 - Week 2: run startup sequencing test on target board and record measured initialization behavior.
+
+## Blockers and next evidence required
+
+- Board/IMU/camera confirmation is blocked pending final hardware purchase/selection.
+- Final pin map is blocked pending selected board and module pinout references.
+- Startup verification remains blocked until hardware-in-loop boot and capture run.

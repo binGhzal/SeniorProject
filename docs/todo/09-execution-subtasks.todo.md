@@ -33,7 +33,7 @@ Execution rules:
 
 - [ ] T02-1 Freeze board SKU and compute constraints table in `docs/HARDWARE.md`.
 - [ ] T02-2 Freeze IMU/camera part numbers and interface modes.
-- [ ] T02-3 Add IR driver/current path description and startup control sequence.
+- [x] T02-3 Add IR driver/current path description and startup control sequence.
 - [ ] T02-4 Add final pin map and signal-direction diagram reference.
 - [ ] T02-5 Add measured startup behavior notes from board test run.
 
@@ -45,15 +45,20 @@ Execution rules:
 
 ### TODO 03 Subtasks
 
-- [ ] T03-1 Add voltage rails and tolerances table.
+- [x] T03-1 Add voltage rails and tolerances table.
 - [ ] T03-2 Add measured avg/peak/standby current worksheet (day/night).
-- [ ] T03-3 Add battery target and charging strategy rationale.
-- [ ] T03-4 Add runtime estimate worksheet and >=8h validation procedure.
-- [ ] T03-5 Add brownout/overcurrent protection plan.
+- [x] T03-3 Add battery target and charging strategy rationale.
+- [x] T03-4 Add runtime estimate worksheet and >=8h validation procedure.
+- [x] T03-5 Add brownout/overcurrent protection plan.
 
 ### TODO 03 Acceptance
 
 - [ ] `docs/POWER.md` includes measurement-backed tables and explicit protection strategy.
+
+### Remaining hardware-measurement blockers
+
+- T02-1, T02-2, T02-4, T02-5 require final hardware selection and board test runs.
+- T03-2 and 8-hour runtime validation require instrumented current/thermal measurements.
 
 ## TODO 04: Connectivity
 

@@ -41,7 +41,15 @@ from src.gp2.planning.features import (
     derive_runtime_feature_flags,
 )
 from src.gp2.planning.hardware_architecture import default_interface_map
-from src.gp2.planning.power_plan import PowerProfile, estimate_total_current, has_valid_power_bounds
+from src.gp2.planning.power_plan import (
+    PowerProfile,
+    estimate_runtime_hours,
+    estimate_total_current,
+    has_valid_power_bounds,
+    meets_runtime_target,
+    regulator_margin_ok,
+    required_battery_capacity_mah,
+)
 from src.gp2.planning.software_architecture import (
     RuntimeOrchestratorContract,
     dependency_versions,
@@ -180,6 +188,22 @@ class TestSmartHelmet(unittest.TestCase):
         self.assertIn("standby_ma", power_profile)
         self.assertIn("bounds_valid", power_profile)
         self.assertTrue(power_profile["bounds_valid"])
+
+    def test_power_runtime_and_capacity_estimators(self):
+        """Calculates runtime hours and required battery capacity targets."""
+        runtime_h = estimate_runtime_hours(battery_capacity_mah=5000, average_current_ma=500)
+        required_mah = required_battery_capacity_mah(target_runtime_h=8, average_current_ma=500)
+
+        self.assertGreater(runtime_h, 8.0)
+        self.assertGreater(required_mah, 4500)
+
+    def test_power_regulator_margin_and_runtime_target(self):
+        """Validates regulator headroom checks and 8-hour runtime target logic."""
+        self.assertTrue(regulator_margin_ok(regulator_max_ma=1500, expected_peak_ma=1000))
+        self.assertFalse(regulator_margin_ok(regulator_max_ma=1100, expected_peak_ma=1000))
+
+        self.assertTrue(meets_runtime_target(battery_capacity_mah=6000, average_current_ma=500))
+        self.assertFalse(meets_runtime_target(battery_capacity_mah=3000, average_current_ma=500))
 
     def test_telemetry_includes_power_profile(self):
         """Confirms status telemetry payload carries optional power profile fields."""

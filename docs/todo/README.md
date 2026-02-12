@@ -15,3 +15,4 @@ Execution plan: `docs/IMPLEMENTATION_ROADMAP.md`
 - `07-ai-advanced-algorithms.todo.md`
 - `08-gp1-carry-forward.todo.md`
 - `09-execution-subtasks.todo.md`
+- `10-hardware-power-evidence.template.md`

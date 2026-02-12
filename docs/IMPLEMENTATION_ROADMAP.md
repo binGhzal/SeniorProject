@@ -206,7 +206,7 @@ The following items remain open in `docs/todo/` and are grouped into an executab
 
 - [x] Define app-side schema for trips/events/diagnostics (`TODO 05`).
 - [x] Add encryption-at-rest and privacy controls for local sensitive payloads (`TODO 05`).
-- Lock retention/runtime estimates for day vs night operation profiles (`TODO 03`).
+- [x] Lock retention/runtime estimate method for day vs night operation profiles (`TODO 03`).
 
 ### Sprint D: AI dataset and evaluation readiness (Week 4)
 
