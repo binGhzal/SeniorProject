@@ -29,6 +29,38 @@ class StorageEvent:
     synced: bool = False
 
 
+@dataclass(frozen=True)
+class TripSummary:
+    """Application-side trip summary schema (v1)."""
+
+    trip_id: str
+    started_at: float
+    ended_at: float
+    distance_km: float
+    event_count: int
+
+
+@dataclass(frozen=True)
+class DiagnosticRecord:
+    """Application-side diagnostic snapshot schema (v1)."""
+
+    recorded_at: float
+    sensor_health: dict[str, Any]
+    runtime_health: dict[str, Any]
+
+
+@dataclass(frozen=True)
+class EventClipMetadata:
+    """Event-clip metadata schema for ±10-20 second buffering windows."""
+
+    event_id: str
+    trigger_ts: float
+    pre_event_s: int = 10
+    post_event_s: int = 20
+    storage_uri: str = ""
+    redacted: bool = False
+
+
 class LocalStorageBuffer:
     """SQLite-backed local buffer for retention, replay, and sync bookkeeping."""
 
@@ -137,6 +169,27 @@ class LocalStorageBuffer:
 def needs_cloud_policy(policy: StoragePolicy) -> bool:
     """Return whether cloud sync policy configuration is required."""
     return policy.cloud_sync_enabled
+
+
+def app_schema_v1() -> dict[str, str]:
+    """Return app-side schema class mapping for storage integration boundaries."""
+
+    return {
+        "trip_summary": "TripSummary",
+        "diagnostic_record": "DiagnosticRecord",
+        "event_record": "StorageEvent",
+        "event_clip_metadata": "EventClipMetadata",
+    }
+
+
+def dsar_supported_actions() -> list[str]:
+    """Return supported DSAR workflow actions for user-requested data operations."""
+
+    return [
+        "access-export",
+        "delete",
+        "correction",
+    ]
 
 
 def resolve_sync_conflict(local_event: StorageEvent, remote_event: StorageEvent, policy: str):

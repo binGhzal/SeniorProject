@@ -14,3 +14,4 @@ Execution plan: `docs/IMPLEMENTATION_ROADMAP.md`
 - `06-software-architecture.todo.md`
 - `07-ai-advanced-algorithms.todo.md`
 - `08-gp1-carry-forward.todo.md`
+- `09-execution-subtasks.todo.md`

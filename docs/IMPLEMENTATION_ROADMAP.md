@@ -199,18 +199,18 @@ The following items remain open in `docs/todo/` and are grouped into an executab
 ### Sprint B: Reliability and secure transport (Week 2)
 
 - [x] Complete reconnect + offline replay behavior in runtime telemetry path (`TODO 04`).
-- Finalize topic/schema contracts and alert latency SLOs (`TODO 04`).
+- [x] Finalize topic/schema contracts and alert latency SLOs (`TODO 04`).
 - [x] Define health monitoring + fault-recovery policy for sensor outages and publish failures (`TODO 06`).
 
 ### Sprint C: Data and privacy controls (Week 3)
 
-- Define app-side schema for trips/events/diagnostics (`TODO 05`).
-- Add encryption-at-rest and privacy controls for local sensitive payloads (`TODO 05`).
+- [x] Define app-side schema for trips/events/diagnostics (`TODO 05`).
+- [x] Add encryption-at-rest and privacy controls for local sensitive payloads (`TODO 05`).
 - Lock retention/runtime estimates for day vs night operation profiles (`TODO 03`).
 
 ### Sprint D: AI dataset and evaluation readiness (Week 4)
 
-- Define dataset collection scope, labeling protocol, and acceptance gates (`TODO 07`).
+- [x] Define dataset collection scope, labeling protocol, and acceptance gates (`TODO 07`).
 - Execute first benchmark run (latency + false-alert) and publish baseline report section (`TODO 07`, report update).
 
 ### Sprint E: GP1 carry-forward scope closure (Week 5)

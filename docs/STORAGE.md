@@ -29,9 +29,16 @@ Current runtime implementation:
 
 ## Application-side storage
 
-- [ ] Local database: (SQLite / IndexedDB / local files)
-- [ ] Data model: (trips, events, samples)
+- [x] Local database: SQLite-backed hooks in runtime and app-schema contracts
+- [x] Data model: schema v1 contracts for trips, events, diagnostics, and clip metadata
 - [ ] Export: CSV/JSON for reports
+
+App schema v1 contracts (see `src/gp2/planning/storage_strategy.py`):
+
+- `TripSummary`: trip window and aggregate event counts
+- `StorageEvent`: canonical event timeline payload
+- `DiagnosticRecord`: sensor/runtime-health diagnostics snapshot
+- `EventClipMetadata`: ±10-20s trigger-centered clip metadata
 
 ## Cloud storage (if applicable)
 
@@ -41,16 +48,21 @@ Current runtime implementation:
 
 ## Data synchronization and security
 
-- [ ] Encryption at rest (on device, in app, in cloud)
-- [ ] Encryption in transit (TLS)
-- [ ] Data minimization (store only what is needed)
-- [ ] Consent and privacy (who can see crash/fatigue data)
+- [x] Encryption at rest (policy defined; implementation target documented)
+- [x] Encryption in transit (TLS policy defined)
+- [x] Data minimization (alerts/status summaries as default storage scope)
+- [x] Consent and privacy (events-only and DSAR policy hooks documented)
 
 Implemented sync/replay hooks:
 
 - `pending_replay_events()` returns unsynced records in insertion order.
 - `mark_synced(...)` marks replayed records as synced.
 - `resolve_sync_conflict(...)` supports `local-wins`, `remote-wins`, and `last-write-wins` policy.
+
+DSAR workflow hooks:
+
+- Supported request actions: `access-export`, `correction`, `delete`
+- Policy intent: fulfill account-scoped data requests without exposing unrelated user/device records
 
 ## Open questions
 

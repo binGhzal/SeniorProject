@@ -58,3 +58,31 @@ def supported_dataset_scopes() -> list[str]:
         "outdoor_night",
         "helmet_with_glasses",
     ]
+
+
+def dataset_label_taxonomy() -> dict[str, list[str]]:
+    """Defines required label buckets for dataset collection and validation."""
+
+    return {
+        "state_labels": ["eyes_open", "eyes_closed", "drowsy_episode"],
+        "environment_labels": ["day", "night", "indoor", "outdoor"],
+        "subject_labels": ["with_glasses", "without_glasses", "helmet_fit_variation"],
+    }
+
+
+def distraction_validation_protocol() -> dict[str, object]:
+    """Defines requirements for gaze/head-pose distraction validation."""
+
+    return {
+        "signals": ["gaze_offset", "head_pitch", "head_yaw"],
+        "window_s": 2.0,
+        "trigger_thresholds": {
+            "gaze_offset_deg": 25,
+            "head_pitch_deg": 20,
+            "head_yaw_deg": 30,
+        },
+        "acceptance": {
+            "max_false_alert_rate": 0.05,
+            "max_detection_latency_ms": 200,
+        },
+    }

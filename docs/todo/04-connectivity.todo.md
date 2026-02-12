@@ -5,11 +5,11 @@
 - [x] Enforce distinct QoS policy for STATUS vs ALERT messages
 - [x] Complete Phase 4 software deliverables
 
-- [ ] Select primary transport path (Wi-Fi/BLE/USB)
-- [ ] Define topic schema and payload contracts
-- [ ] Set telemetry cadence and alert latency targets
+- [x] Select primary transport path (Wi-Fi/BLE/USB)
+- [x] Define topic schema and payload contracts
+- [x] Set telemetry cadence and alert latency targets
 - [x] Implement reconnection and offline replay behavior
-- [ ] Add transport security and credential rotation policy
+- [x] Add transport security and credential rotation policy
 
 ## Implementation plan
 

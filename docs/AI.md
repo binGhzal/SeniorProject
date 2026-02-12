@@ -27,8 +27,14 @@ Status: implemented with heuristic-first runtime mode and model-ready validation
 ## Training data requirements
 
 - [ ] Data sources: recorded videos (consented), public datasets
-- [ ] Labels: eyes-open/closed, drowsy episodes, lighting conditions
-- [ ] Diversity: users, skin tones, glasses, helmet fit
+- [x] Labels: eyes-open/closed, drowsy episodes, lighting conditions
+- [x] Diversity: users, skin tones, glasses, helmet fit
+
+Current dataset scope and labeling taxonomy:
+
+- Environments: `indoor_day`, `indoor_night`, `outdoor_day`, `outdoor_night`
+- Subject buckets: `helmet_with_glasses`, `without_glasses`, `helmet_fit_variation`
+- State labels: `eyes_open`, `eyes_closed`, `drowsy_episode`
 
 ## Data collection, training, validation, deployment strategy
 
@@ -38,11 +44,18 @@ Status: implemented with heuristic-first runtime mode and model-ready validation
 - [x] On-device deployment constraints (CPU, memory, power) captured in AI plan contract
 - [x] Update strategy (model versioning) captured in `AIPlan.model_version`
 
+Distraction-path validation protocol (planning contract):
+
+- Signals: `gaze_offset`, `head_pitch`, `head_yaw`
+- Trigger window: `2.0s`
+- Thresholds: gaze offset `25°`, head pitch `20°`, head yaw `30°`
+- Acceptance: max false-alert `0.05`, max detection latency `200ms`
+
 ## Phase 7 implementation summary
 
 - AI planning module (`src/gp2/planning/ai_algorithms.py`) now provides:
-  - `AIPlan` with dataset tag and rollout thresholds
-  - `detector_mode(...)` for runtime mode selection
-  - `evaluation_contract(...)` for dataset/metrics gate definitions
-  - `supported_dataset_scopes()` for labeling buckets
+    - `AIPlan` with dataset tag and rollout thresholds
+    - `detector_mode(...)` for runtime mode selection
+    - `evaluation_contract(...)` for dataset/metrics gate definitions
+    - `supported_dataset_scopes()` for labeling buckets
 - Fatigue runtime metrics now include `latency_ms`, `false_alert`, and `mode` fields.

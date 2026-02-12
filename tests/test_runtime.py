@@ -11,11 +11,20 @@ from src.gp2.main import build_power_profile, build_sensor_health
 from src.gp2.planning.ai_algorithms import (
     MODEL_MODE,
     AIPlan,
+    dataset_label_taxonomy,
     detector_mode,
+    distraction_validation_protocol,
     evaluation_contract,
     supported_dataset_scopes,
 )
-from src.gp2.planning.connectivity import ConnectivityConfig, validate_connectivity_config
+from src.gp2.planning.connectivity import (
+    ConnectivityConfig,
+    default_connectivity_slo,
+    default_security_policy,
+    topic_contracts,
+    transport_profile,
+    validate_connectivity_config,
+)
 from src.gp2.planning.features import (
     AppFeatureSet,
     FeatureDefinition,
@@ -34,6 +43,8 @@ from src.gp2.planning.storage_strategy import (
     LocalStorageBuffer,
     StorageEvent,
     StoragePolicy,
+    app_schema_v1,
+    dsar_supported_actions,
     resolve_sync_conflict,
 )
 from src.gp2.sensors import CameraModule, IMUSensor, IRSys
@@ -198,6 +209,18 @@ class TestSmartHelmet(unittest.TestCase):
         self.assertFalse(validate_connectivity_config(invalid))
         self.assertFalse(validate_connectivity_config(invalid_attempts))
 
+    def test_connectivity_contract_and_security_defaults(self):
+        """Publishes default transport/topic/SLO/security contracts."""
+        contracts = topic_contracts()
+        slo = default_connectivity_slo()
+        security = default_security_policy()
+        transport = transport_profile()
+
+        self.assertEqual(contracts["STATUS"].topic, "smarthelmet/v1/telemetry")
+        self.assertEqual(slo.alert_path_budget_ms, 200)
+        self.assertTrue(security.tls_required)
+        self.assertEqual(transport["primary"], "wifi")
+
     def test_offline_queue_placeholder_behavior(self):
         """Queues unsent messages when connectivity is unavailable."""
         config = ConnectivityConfig(
@@ -335,6 +358,16 @@ class TestSmartHelmet(unittest.TestCase):
 
         self.assertEqual(winner.payload["source"], "local")
 
+    def test_storage_app_schema_and_dsar_actions(self):
+        """Defines app schema v1 and DSAR workflow actions for storage governance."""
+        schema = app_schema_v1()
+        actions = dsar_supported_actions()
+
+        self.assertEqual(schema["trip_summary"], "TripSummary")
+        self.assertIn("event_clip_metadata", schema)
+        self.assertIn("access-export", actions)
+        self.assertIn("delete", actions)
+
     def test_software_architecture_contract_cycle(self):
         """Executes a single cycle through injected boundaries and publishes outputs."""
         published = []
@@ -410,6 +443,17 @@ class TestSmartHelmet(unittest.TestCase):
         self.assertTrue(result["false_alert"])
         self.assertGreaterEqual(result["latency_ms"], 0.0)
         self.assertEqual(result["mode"], "heuristic-ear-perclos")
+
+    def test_ai_dataset_taxonomy_and_distraction_protocol(self):
+        """Publishes dataset labeling taxonomy and distraction validation contract."""
+        taxonomy = dataset_label_taxonomy()
+        protocol = distraction_validation_protocol()
+
+        self.assertIn("eyes_open", taxonomy["state_labels"])
+        self.assertIn("helmet_fit_variation", taxonomy["subject_labels"])
+        self.assertIn("gaze_offset", protocol["signals"])
+        acceptance = cast(dict[str, float], protocol["acceptance"])
+        self.assertEqual(acceptance["max_detection_latency_ms"], 200)
 
 
 if __name__ == "__main__":

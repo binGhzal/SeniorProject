@@ -4,14 +4,19 @@ This document defines communication between the GP2 device and application/cloud
 
 ## Application ↔ Device communication
 
-Primary path (prototype):
+Primary path (frozen for MVP):
 
 - Device publishes telemetry and alerts via MQTT topics.
 - Application or backend subscribes and stores/visualizes events.
 
-Optional direct path:
+Fallback path:
 
 - Bluetooth or USB link for local setup and diagnostics.
+
+Selected transport profile:
+
+- Primary: Wi-Fi + MQTT transport
+- Backup: USB diagnostics path
 
 ## Protocol options
 
@@ -29,11 +34,23 @@ Baseline targets (to be validated):
 - Alert publication: immediate event-driven publish
 - End-to-end alert latency target: < 2 seconds on stable network
 
+Frozen runtime SLO defaults:
+
+- Status cadence target: `1.0s`
+- Alert publish SLO target: `<=2.0s`
+- Alert path budget target (benchmark): `<200ms`
+
 ## Message classes
 
 - STATUS: periodic operational metrics (for example fatigue score, g-force)
 - ALERT: discrete high-priority events (CRASH/FATIGUE)
 - HEALTH: optional diagnostics (sensor availability, battery state)
+
+Topic and payload contracts (v1):
+
+- `smarthelmet/v1/telemetry` → `StatusPayload`
+- `smarthelmet/v1/alerts` → `AlertPayload`
+- `smarthelmet/v1/health` → `HealthPayload`
 
 ## Reliability and quality-of-service strategy
 
@@ -54,7 +71,13 @@ Current runtime implementation status:
 
 ## Security checklist
 
-- [ ] Enforce authentication for publish/subscribe paths
-- [ ] Use TLS for transport encryption
-- [ ] Rotate device credentials and revoke compromised nodes
-- [ ] Limit topic permissions by device identity
+- [x] Enforce authentication for publish/subscribe paths (policy defined)
+- [x] Use TLS for transport encryption (policy required)
+- [x] Rotate device credentials and revoke compromised nodes (90-day policy)
+- [x] Limit topic permissions by device identity (topic ACL policy)
+
+Security policy baseline:
+
+- Require TLS and authenticated device publish/subscription.
+- Rotate credentials every 90 days (or immediately on compromise).
+- Restrict topic access by device identity and role-specific ACLs.
