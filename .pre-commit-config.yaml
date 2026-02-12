@@ -33,3 +33,8 @@ repos:
         entry: python3 scripts/validate_main_footer.py
         language: system
         files: ^src/gp2/main\.py$
+
+  - repo: https://github.com/cmhughes/latexindent.pl.git
+    rev: V3.24.7
+    hooks:
+      - id: latexindent
