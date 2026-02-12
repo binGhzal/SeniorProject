@@ -4,7 +4,7 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 
 ## Phase 0: Baseline and guardrails
 
-- Confirm environment and test baseline with `python -m unittest -v` in `unit-tests/`.
+- Confirm environment and test baseline with `python -m unittest tests/test_runtime.py -v`.
 - Keep runtime behavior stable while replacing placeholder logic incrementally.
 - Treat docs and checklist updates as part of done criteria for every phase.
 
@@ -21,9 +21,9 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 
 ### Phase 1 code touchpoints
 
-- `unit-tests/placeholders/features.py`
-- `unit-tests/main.py`
-- `unit-tests/tests.py`
+- `src/gp2/planning/features.py`
+- `src/gp2/main.py`
+- `tests/test_runtime.py`
 
 ### Phase 1 deliverables
 
@@ -44,9 +44,9 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 
 ### Phase 2 code touchpoints
 
-- `unit-tests/placeholders/hardware_architecture.py`
-- `unit-tests/sensors.py`
-- `unit-tests/main.py`
+- `src/gp2/planning/hardware_architecture.py`
+- `src/gp2/sensors.py`
+- `src/gp2/main.py`
 
 ### Phase 2 deliverables
 
@@ -67,9 +67,9 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 
 ### Phase 3 code touchpoints
 
-- `unit-tests/placeholders/power_plan.py`
-- `unit-tests/telemetry.py`
-- `unit-tests/tests.py`
+- `src/gp2/planning/power_plan.py`
+- `src/gp2/telemetry.py`
+- `tests/test_runtime.py`
 
 ### Phase 3 deliverables
 
@@ -90,9 +90,9 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 
 ### Phase 4 code touchpoints
 
-- `unit-tests/placeholders/connectivity.py`
-- `unit-tests/telemetry.py`
-- `unit-tests/main.py`
+- `src/gp2/planning/connectivity.py`
+- `src/gp2/telemetry.py`
+- `src/gp2/main.py`
 
 ### Phase 4 deliverables
 
@@ -113,9 +113,9 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 
 ### Phase 5 code touchpoints
 
-- `unit-tests/placeholders/storage_strategy.py`
-- `unit-tests/main.py`
-- `unit-tests/tests.py`
+- `src/gp2/planning/storage_strategy.py`
+- `src/gp2/main.py`
+- `tests/test_runtime.py`
 
 ### Phase 5 deliverables
 
@@ -136,11 +136,11 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 
 ### Phase 6 code touchpoints
 
-- `unit-tests/placeholders/software_architecture.py`
-- `unit-tests/main.py`
-- `unit-tests/sensors.py`
-- `unit-tests/detection.py`
-- `unit-tests/telemetry.py`
+- `src/gp2/planning/software_architecture.py`
+- `src/gp2/main.py`
+- `src/gp2/sensors.py`
+- `src/gp2/detection.py`
+- `src/gp2/telemetry.py`
 
 ### Phase 6 deliverables
 
@@ -161,10 +161,10 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 
 ### Phase 7 code touchpoints
 
-- `unit-tests/placeholders/ai_algorithms.py`
+- `src/gp2/planning/ai_algorithms.py`
 - `perclos.py`
-- `unit-tests/detection.py`
-- `unit-tests/tests.py`
+- `src/gp2/detection.py`
+- `tests/test_runtime.py`
 
 ### Phase 7 deliverables
 

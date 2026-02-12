@@ -1,6 +1,6 @@
 # Running the Prototype
 
-The prototype orchestration loop is in `unit-tests/main.py`.
+The prototype orchestration loop is in `src/gp2/main.py`.
 
 ## Run on a development machine
 
@@ -13,8 +13,7 @@ python -m pip install numpy paho-mqtt opencv-python
 2. Run the loop:
 
 ```bash
-cd unit-tests
-python main.py
+PYTHONPATH=src python -m gp2.main
 ```
 
 ## What you should see

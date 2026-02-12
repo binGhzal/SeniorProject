@@ -7,8 +7,7 @@ This project uses Python `unittest`.
 From the repository root:
 
 ```bash
-cd unit-tests
-python -m unittest -v
+python -m unittest tests/test_runtime.py -v
 ```
 
 If `numpy` is missing:
@@ -20,8 +19,7 @@ python -m pip install numpy
 If you are using the repo virtual environment explicitly:
 
 ```bash
-cd unit-tests
-../.venv/bin/python -m unittest -v
+./.venv/bin/python -m unittest tests/test_runtime.py -v
 ```
 
 ## Coverage map (all components)

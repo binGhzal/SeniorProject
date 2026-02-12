@@ -23,8 +23,7 @@ python -m pip install numpy
 Run tests:
 
 ```bash
-cd unit-tests
-python -m unittest -v
+python -m unittest tests/test_runtime.py -v
 ```
 
 ## Optional dependencies (runtime)
@@ -64,5 +63,5 @@ The code is written so these are optional when running on a dev machine.
 
 ## Notes
 
-- The current `unit-tests/main.py` uses _mock landmarks_ to demonstrate structure. Real face landmark extraction is not yet integrated into the runtime loop.
+- The current `src/gp2/main.py` uses _mock landmarks_ to demonstrate structure. Real face landmark extraction is not yet integrated into the runtime loop.
 - For production-like testing of telemetry, prefer a local MQTT broker with authentication and TLS.

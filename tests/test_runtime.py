@@ -1,10 +1,15 @@
 """Unit tests for GP2 prototype logic and feature-flag wiring."""
 
+from pathlib import Path
+import sys
 import unittest
 from unittest.mock import MagicMock
-from sensors import IMUSensor
-from detection import FatigueDetector
-from placeholders.features import (
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from gp2.sensors import IMUSensor
+from gp2.detection import FatigueDetector
+from gp2.planning.features import (
     AppFeatureSet,
     FeatureDefinition,
     OnBoardFeatureSet,

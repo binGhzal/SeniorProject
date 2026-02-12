@@ -2,10 +2,13 @@
 
 import time
 import numpy as np
-from sensors import IMUSensor, CameraModule, IRSys
-from detection import FatigueDetector
-from telemetry import TelemetryClient
-from placeholders.features import build_default_feature_definition, derive_runtime_feature_flags
+from .sensors import IMUSensor, CameraModule, IRSys
+from .detection import FatigueDetector
+from .telemetry import TelemetryClient
+from .planning.features import (
+    build_default_feature_definition,
+    derive_runtime_feature_flags,
+)
 # import dlib # Required for actual landmark detection
 
 

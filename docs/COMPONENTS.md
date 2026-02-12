@@ -7,7 +7,7 @@ This is a file-by-file reference for the GP2 prototype.
 - Purpose: reference snippet for MediaPipe FaceMesh configuration (`refine_landmarks=True`) for better eye/iris landmarks.
 - Status: not integrated into the runtime loop; use as a starting point for real landmark extraction.
 
-## `unit-tests/main.py`
+## `src/gp2/main.py`
 
 - Purpose: prototype orchestration loop that stitches together sensors, detection, and telemetry.
 - Key behaviors:
@@ -15,7 +15,7 @@ This is a file-by-file reference for the GP2 prototype.
   - Fatigue alert when `FatigueDetector` returns `drowsy=True`
   - Periodic `send_telemetry(perclos=..., g_force=...)`
 
-## `unit-tests/sensors.py`
+## `src/gp2/sensors.py`
 
 ### `IMUSensor`
 
@@ -37,7 +37,7 @@ Dev-machine behavior:
 - Uses Raspberry Pi GPIO PWM if available.
 - If GPIO libs are missing, calls are no-ops.
 
-## `unit-tests/detection.py`
+## `src/gp2/detection.py`
 
 ### `eye_aspect_ratio(eye)`
 
@@ -55,7 +55,7 @@ Dev-machine behavior:
 
 - If SciPy is not installed, a NumPy-based Euclidean fallback is used.
 
-## `unit-tests/telemetry.py`
+## `src/gp2/telemetry.py`
 
 ### `TelemetryClient`
 
@@ -68,7 +68,7 @@ Dev-machine behavior:
 
 - If MQTT library is not installed, the client initializes in a disabled mode and send methods become no-ops.
 
-## `unit-tests/tests.py`
+## `tests/test_runtime.py`
 
 - Purpose: unit and “integration-style” tests.
 - Covered behaviors:
@@ -78,7 +78,7 @@ Dev-machine behavior:
 
 For expected outputs and full run example, see `docs/TESTING.md`.
 
-## `unit-tests/placeholders/`
+## `src/gp2/planning/`
 
 - Purpose: task-aligned scaffolding modules created from `docs/tasks.md`.
 - Scope: non-runtime placeholder classes/configs for:
@@ -90,9 +90,9 @@ For expected outputs and full run example, see `docs/TESTING.md`.
   - software architecture
   - AI/algorithm planning
 
-## `unit-tests/legacy/`
+## `archive/legacy/`
 
 - Purpose: archived or superseded runtime files kept for reference only.
 - Current contents:
   - `sensors_rpi_only_legacy.py` (older sensor implementation previously named `sensons.py`)
-- Rule: new work should target active modules under `unit-tests/` only.
+- Rule: new work should target active modules under `src/gp2/` only.

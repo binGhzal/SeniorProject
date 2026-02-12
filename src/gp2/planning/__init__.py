@@ -1,1 +1,1 @@
-"""Task-aligned placeholder package for future GP2 implementations."""
+"""Task-aligned planning models for phased GP2 implementation."""

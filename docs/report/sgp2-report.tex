@@ -227,7 +227,7 @@ Key challenges during development included hardware-specific dependencies and th
 
 \section{Implementation Summary}
 
-The final implementation is delivered as a set of Python modules located under \texttt{unit-tests/}. The orchestration script initializes the IMU, camera, IR controller, telemetry client, and fatigue detector, then iterates in a timed loop. In each iteration, acceleration is read and converted to total $g$ magnitude; if a high-$g$ threshold is exceeded, a crash alert is published. Separately, the fatigue detector is invoked to compute EAR and update the rolling closed-eye buffer; if fatigue is detected, a fatigue alert is published. Periodic telemetry provides status updates including estimated PERCLOS and current acceleration magnitude.
+The final implementation is delivered as a Python runtime package under \texttt{src/gp2/} with tests under \texttt{tests/}. The orchestration script initializes the IMU, camera, IR controller, telemetry client, and fatigue detector, then iterates in a timed loop. In each iteration, acceleration is read and converted to total $g$ magnitude; if a high-$g$ threshold is exceeded, a crash alert is published. Separately, the fatigue detector is invoked to compute EAR and update the rolling closed-eye buffer; if fatigue is detected, a fatigue alert is published. Periodic telemetry provides status updates including estimated PERCLOS and current acceleration magnitude.
 
 \section{Testing Strategy and Process}
 
@@ -348,8 +348,7 @@ T4: Documentation \& Report Writing & 2020XXXXXXX & 25\% \\ \hline
 The following is an example of the expected console output from running the unit tests in verbose mode:
 
 \begin{lstlisting}
-cd unit-tests
-python -m unittest -v
+python -m unittest tests/test_runtime.py -v
 
 test_crash_integration (tests.TestSmartHelmet.test_crash_integration)
 Test 4: The 'Shake to Upload' Crash Logic ...

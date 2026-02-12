@@ -29,7 +29,7 @@ Placeholder (fill with actual choice):
 
 ### Firmware architecture
 
-Current prototype is Python modules under `unit-tests/`.
+Current prototype runtime is packaged under `src/gp2/` with tests in `tests/`.
 
 For the target device, define:
 

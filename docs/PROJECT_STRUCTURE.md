@@ -5,7 +5,9 @@ This guide defines where to place code and documentation so the repository stays
 ## Top-level layout
 
 - `docs/` - canonical project documentation
-- `unit-tests/` - active Python runtime modules and test suite
+- `src/gp2/` - active Python runtime package
+- `tests/` - test suite
+- `archive/` - archived legacy code kept for reference
 - `perclos.py` - standalone MediaPipe reference snippet (not yet integrated)
 
 ## Documentation layout
@@ -17,9 +19,9 @@ This guide defines where to place code and documentation so the repository stays
 
 ## Runtime code layout
 
-- Active runtime and tests stay in `unit-tests/`.
-- Planning placeholders live in `unit-tests/placeholders/`.
-- Retired files move to `unit-tests/legacy/`.
+- Active runtime modules stay in `src/gp2/`.
+- Planning placeholders live in `src/gp2/planning/`.
+- Retired files move to `archive/legacy/`.
 
 ## Naming rules
 
@@ -30,5 +32,5 @@ This guide defines where to place code and documentation so the repository stays
 ## Change management rules
 
 - Update related docs in `docs/` when module behavior changes.
-- Add or update tests in `unit-tests/tests.py` for any new behavior.
+- Add or update tests in `tests/test_runtime.py` for any new behavior.
 - Do not place new runtime code in `legacy/` or top-level root files.

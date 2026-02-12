@@ -8,8 +8,7 @@ Documentation is in `docs/`.
 ## Quick start (tests)
 
 ```bash
-cd unit-tests
-python3 -m unittest -v
+python3 -m unittest tests/test_runtime.py -v
 ```
 
 If `numpy` is missing:

@@ -10,14 +10,16 @@ GP2 is a prototype “smart helmet” loop that combines:
 
 - `perclos.py`
   - Reference snippet for MediaPipe FaceMesh initialization (eye/iris landmarks).
-- `unit-tests/`
-  - Prototype runtime loop and testable modules.
+- `src/gp2/`
+  - Prototype runtime modules.
+- `tests/`
+  - Unit and integration-style tests.
 
 ## Runtime pipeline
 
 ### 1) Sensors
 
-Implemented in `unit-tests/sensors.py`.
+Implemented in `src/gp2/sensors.py`.
 
 - **IMU (`IMUSensor`)**
   - Reads 6 bytes from an accelerometer register block and converts to `(ax, ay, az)` in g’s.
@@ -30,7 +32,7 @@ On non-Raspberry Pi machines, `sensors.py` includes safe fallbacks so the module
 
 ### 2) Detection
 
-Implemented in `unit-tests/detection.py`.
+Implemented in `src/gp2/detection.py`.
 
 - **EAR (Eye Aspect Ratio)**
   - Computes an eye openness measure from 6 eye landmarks.
@@ -45,7 +47,7 @@ Inputs/outputs:
 
 ### 3) Crash detection
 
-Implemented in the orchestration loop (`unit-tests/main.py`).
+Implemented in the orchestration loop (`src/gp2/main.py`).
 
 - Computes total acceleration magnitude:
   - $total_g = \sqrt{a_x^2 + a_y^2 + a_z^2}$
@@ -53,7 +55,7 @@ Implemented in the orchestration loop (`unit-tests/main.py`).
 
 ### 4) Telemetry
 
-Implemented in `unit-tests/telemetry.py`.
+Implemented in `src/gp2/telemetry.py`.
 
 - **Topics**
   - Telemetry: `smarthelmet/v1/telemetry`
@@ -66,7 +68,7 @@ MQTT is treated as an optional dependency so the code can import in environments
 
 ## Orchestration
 
-The prototype loop is in `unit-tests/main.py`:
+The prototype loop is in `src/gp2/main.py`:
 
 1. Initialize sensors, telemetry, detector
 2. In a loop:

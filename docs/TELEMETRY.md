@@ -2,7 +2,7 @@
 
 Telemetry uses MQTT publish/subscribe semantics.
 
-Implementation: `unit-tests/telemetry.py`.
+Implementation: `src/gp2/telemetry.py`.
 
 ## Broker and topics
 
@@ -53,7 +53,7 @@ Use any MQTT client to subscribe:
 - Subscribe to `smarthelmet/v1/telemetry`
 - Subscribe to `smarthelmet/v1/alerts`
 
-Then run `unit-tests/main.py` and observe incoming messages.
+Then run `PYTHONPATH=src python -m gp2.main` and observe incoming messages.
 
 ## Security note
 
