@@ -6,6 +6,7 @@ from src.gp2.sensors import IMUSensor
 from src.gp2.sensors import CameraModule, IRSys
 from src.gp2.detection import FatigueDetector
 from src.gp2.main import build_sensor_health
+from src.gp2.planning.hardware_architecture import default_interface_map
 from src.gp2.planning.features import (
     AppFeatureSet,
     FeatureDefinition,
@@ -102,6 +103,15 @@ class TestSmartHelmet(unittest.TestCase):
         self.assertIn("ir", snapshot)
         self.assertIn("available", snapshot["imu"])
         self.assertIn("mode", snapshot["imu"])
+
+    def test_sensor_health_includes_shared_interface_specs(self):
+        """Ensures runtime health reports use planning interface constants."""
+        specs = default_interface_map()
+        snapshot = build_sensor_health(IMUSensor(), CameraModule(), IRSys())
+
+        self.assertEqual(snapshot["imu"]["bus"], specs["imu"].bus)
+        self.assertEqual(snapshot["camera"]["direction"], specs["camera"].direction)
+        self.assertEqual(snapshot["ir"]["bus"], specs["ir"].bus)
 
 
 if __name__ == '__main__':

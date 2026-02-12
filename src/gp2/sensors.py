@@ -1,6 +1,12 @@
 """Sensor and actuator abstractions for IMU, camera, and IR subsystems."""
 
 import time
+from .planning.hardware_architecture import (
+    INTERFACE_CAMERA,
+    INTERFACE_IMU,
+    INTERFACE_IR,
+    interface_spec,
+)
 
 try:
     import smbus2  # type: ignore
@@ -28,6 +34,7 @@ class IMUSensor:
     """IMU abstraction with optional stub behavior for development machines."""
 
     def __init__(self, bus_num=1):
+        self.interface = interface_spec(INTERFACE_IMU)
         self.is_stub = smbus2 is None
         if smbus2 is None:
             # Minimal stub bus for dev/test machines. Unit tests can monkeypatch
@@ -52,6 +59,8 @@ class IMUSensor:
         return {
             "available": True,
             "mode": "stub" if self.is_stub else "hardware",
+            "bus": self.interface.bus,
+            "direction": self.interface.direction,
         }
 
     def _init_sensor(self):
@@ -92,6 +101,7 @@ class CameraModule:
     """Camera capture abstraction with optional OpenCV stub behavior."""
 
     def __init__(self):
+        self.interface = interface_spec(INTERFACE_CAMERA)
         self.is_stub = cv2 is None
         if cv2 is None:
             self.cap = None
@@ -121,6 +131,8 @@ class CameraModule:
         return {
             "available": self.cap is not None,
             "mode": "stub" if self.is_stub else "hardware",
+            "bus": self.interface.bus,
+            "direction": self.interface.direction,
         }
 
 
@@ -128,6 +140,7 @@ class IRSys:
     """Controls the IR LED array via GPIO."""
 
     def __init__(self, pin=18):
+        self.interface = interface_spec(INTERFACE_IR)
         self.pin = pin
         self.is_stub = GPIO is None
         self.pwm = None
@@ -156,4 +169,6 @@ class IRSys:
         return {
             "available": self.pwm is not None,
             "mode": "stub" if self.is_stub else "hardware",
+            "bus": self.interface.bus,
+            "direction": self.interface.direction,
         }
