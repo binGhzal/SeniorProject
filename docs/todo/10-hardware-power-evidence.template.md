@@ -47,5 +47,12 @@ Use this template during bench validation to close remaining hardware/power TODO
 
 ## Closeout mapping to TODOs
 
-- TODO 02 (hardware architecture): - [ ] board SKU confirmed - [ ] IMU/camera details confirmed - [ ] pin map finalized - [ ] startup sequence verified
-- TODO 03 (power plan): - [ ] subsystem currents measured - [ ] runtime objective validated - [ ] protection strategy verified
+- TODO 02 (hardware architecture):
+    - [ ] board SKU confirmed
+    - [ ] IMU/camera details confirmed
+    - [ ] pin map finalized
+    - [ ] startup sequence verified
+- TODO 03 (power plan):
+    - [ ] subsystem currents measured
+    - [ ] runtime objective validated
+    - [ ] protection strategy verified

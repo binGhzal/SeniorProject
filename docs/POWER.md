@@ -106,6 +106,11 @@ Day/night profile template:
 | Day               |              TBD |                   TBD | TBD         |
 | Night (IR active) |              TBD |                   TBD | TBD         |
 
+Automation hook:
+
+- Use `src/gp2/planning/hardware_power_validation.py` (`PowerEvidence`) to
+  evaluate TODO 03 closeout readiness against runtime and protection criteria.
+
 ## Protection strategy baseline
 
 - Brownout handling: define threshold and safe shutdown/degraded mode behavior.

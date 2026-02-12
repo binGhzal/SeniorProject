@@ -88,6 +88,11 @@ Verification log template:
 | Health snapshot   | bus/direction fields present               | TBD            | TBD       |       |
 | Loop start        | status/alerts emitted as expected          | TBD            | TBD       |       |
 
+Automation hook:
+
+Use `src/gp2/planning/hardware_power_validation.py` (`HardwareEvidence`) to
+evaluate whether TODO 02 closeout criteria are satisfied.
+
 ## IR subsystem driver and current path
 
 Reference control path:

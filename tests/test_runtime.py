@@ -41,6 +41,13 @@ from src.gp2.planning.features import (
     derive_runtime_feature_flags,
 )
 from src.gp2.planning.hardware_architecture import default_interface_map
+from src.gp2.planning.hardware_power_validation import (
+    HardwareEvidence,
+    PowerEvidence,
+    closeout_summary,
+    hardware_closeout_ready,
+    power_closeout_ready,
+)
 from src.gp2.planning.power_plan import (
     PowerProfile,
     estimate_runtime_hours,
@@ -515,6 +522,48 @@ class TestSmartHelmet(unittest.TestCase):
         self.assertIn("/api/v1/dsar/delete", privacy.dsar_endpoints)
         self.assertEqual(benchmark.latency_target_ms, 200)
         self.assertEqual(targets["runtime_hours_target"], 8)
+
+    def test_hardware_power_closeout_helpers(self):
+        """Evaluates TODO closeout readiness from captured hardware/power evidence."""
+        hardware_ok = HardwareEvidence(
+            board_sku_confirmed=True,
+            imu_camera_confirmed=True,
+            pin_map_finalized=True,
+            startup_sequence_verified=True,
+        )
+        power_ok = PowerEvidence(
+            currents_measured=True,
+            runtime_validated=True,
+            protection_verified=True,
+            total_average_ma=500.0,
+            total_peak_ma=900.0,
+            estimated_runtime_h=9.2,
+        )
+        summary = closeout_summary(hardware_ok, power_ok)
+
+        self.assertTrue(hardware_closeout_ready(hardware_ok))
+        self.assertTrue(power_closeout_ready(power_ok))
+        self.assertTrue(summary["overall_ready"])
+
+    def test_hardware_power_closeout_helpers_fail_conditions(self):
+        """Flags incomplete evidence and insufficient runtime as not ready."""
+        hardware_pending = HardwareEvidence(
+            board_sku_confirmed=True,
+            imu_camera_confirmed=False,
+            pin_map_finalized=True,
+            startup_sequence_verified=True,
+        )
+        power_pending = PowerEvidence(
+            currents_measured=True,
+            runtime_validated=False,
+            protection_verified=True,
+            total_average_ma=600.0,
+            total_peak_ma=700.0,
+            estimated_runtime_h=6.0,
+        )
+
+        self.assertFalse(hardware_closeout_ready(hardware_pending))
+        self.assertFalse(power_closeout_ready(power_pending))
 
 
 if __name__ == "__main__":
