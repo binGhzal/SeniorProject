@@ -16,3 +16,22 @@ If `numpy` is missing:
 ```bash
 python3 -m pip install numpy
 ```
+
+## Workspace consistency
+
+Install dev tooling:
+
+```bash
+python3 -m pip install -r requirements-dev.txt
+pre-commit install
+```
+
+Run local quality checks:
+
+```bash
+ruff check .
+ruff format .
+black .
+pylint src tests
+pyright
+```
