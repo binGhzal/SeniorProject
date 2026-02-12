@@ -8,3 +8,18 @@
 .coverage
 htmlcov/
 unit-tests/
+
+# Generic temporary/editor files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Notebook/cache byproducts
+.ipynb_checkpoints/
+
+# LaTeX/latexindent byproducts
+*.bak
+*.bak*
+docs/report/indent.log
