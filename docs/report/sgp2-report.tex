@@ -9,11 +9,11 @@
 \usepackage{listings}
 \usepackage{amsmath}
 \usepackage{graphicx}
-\usepackage{microtype}
 \usepackage{glossaries}
 \usepackage{pdfpages}
 \usepackage{natbib}
 \usepackage{multirow}
+\usepackage{array}
 \usepackage{xcolor}
 
 \usepackage{hyperref}
@@ -34,6 +34,7 @@
 }
 
 \setlength{\emergencystretch}{3em}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 
 \begin{document}
 
@@ -54,9 +55,10 @@
 	\textsc{Spring 2026} \\ \vspace{1.8cm}
 	\Large \textbf{Project Title: Smart Helmet Fatigue \& Crash Telemetry}\\ \vspace{0.3cm}
 	Project ID: Group 11 \\[0.6cm]
+	\normalsize
 
 	\begin{center}
-		\begin{tabular}{ c c c}
+		\begin{tabular}{@{}L{0.34\linewidth}L{0.18\linewidth}L{0.24\linewidth}@{}}
 			Suhail Alblooshi  & 202230373 & Computer Engineering \\
 			Mohammed Alshamsi & 202107716 & Computer Engineering \\
 			Ahmed Mustafa     & 700041219 & Computer Engineering \\
@@ -67,7 +69,7 @@
 
 	\textbf{Project Advisor}: Dr. Mohammad Naouss \\ \vspace{1.3cm}
 
-	\textbf{\large A project report submitted in partial fulfillment of the requirements for the Bachelor of Science degree at the College of Information Technology, United Arab Emirates University} \\ \vspace{1.3cm}
+	\parbox{0.94\linewidth}{\centering\textbf{\large A project report submitted in partial fulfillment of the requirements for the Bachelor of Science degree at the College of Information Technology, United Arab Emirates University}} \\ \vspace{1.3cm}
 	{\today}
 \end{center}
 
@@ -85,7 +87,7 @@ This project delivers a prototype ``smart helmet'' software stack that monitors 
 
 The primary outcome of SGP2 is a working end-to-end monitoring loop and a testable codebase. The fatigue detection module implements the EAR computation and a PERCLOS-like sliding window decision rule. Crash detection is implemented as a threshold on the acceleration magnitude $\sqrt{a_x^2+a_y^2+a_z^2}$, triggering a cloud alert when the threshold is exceeded. Testing is performed using Python \texttt{unittest} with mocking to validate runtime contracts, telemetry behavior, detection logic, and storage rules.
 
-Compared with the broader GP1 concept (which included EEG and distraction/head-pose modules), SGP2 intentionally delivers an MVP-aligned scope focused on fatigue + crash + telemetry reliability. EEG and distraction analytics remain planned future extensions and are tracked in the project TODO roadmap.
+Compared with the broader GP1 concept (which included EEG and distraction plus head-pose modules), SGP2 intentionally delivers an MVP-aligned scope focused on fatigue, crash, and telemetry reliability. EEG and distraction analytics remain planned future extensions and are tracked in the project TODO roadmap.
 
 Overall, the project demonstrates a practical and extensible foundation for safety monitoring. It highlights how embedded sensing, computer vision landmarks, and lightweight IoT messaging can be combined into a modular architecture that supports future improvements such as real landmark extraction (MediaPipe/dlib integration), calibrated thresholds, and on-device buffering for post-incident evidence.
 
@@ -169,7 +171,7 @@ The proposed system is intended for battery-powered operation, so compute and ra
 
 Health and safety considerations include ensuring that alerts are conservative and do not induce distraction or overconfidence. The system should be treated as an assistive tool rather than a sole safety mechanism. Security considerations include protecting telemetry confidentiality and integrity. The current prototype uses a public MQTT broker for development; a production system should use authentication, TLS, and private broker infrastructure.
 
-\section{Social, Cultural, and Political Constraints}
+\section{Social, Cultural, and Policy Constraints}
 
 The project is relevant to the UAE context where road safety and rapid emergency response are strategic priorities. The solution must also be usable across varied environments (day/night, different users) and should avoid bias by validating performance across diverse participants and conditions.
 
@@ -181,7 +183,7 @@ The system concept may involve camera-based monitoring, which raises privacy con
 \clearpage
 \chapter{System Design and Integration} \label{chapter:system-design}
 
-\section{System Modules, Components, and Setup}
+\section{System Modules and Setup}
 
 The final prototype is organized as a modular pipeline with four primary layers: sensors, detection, telemetry, and orchestration.
 
@@ -251,7 +253,7 @@ Table~\ref{tab:objective_traceability} maps the major SGP2 objectives to impleme
 	\centering
 	\caption{Objective-to-implementation traceability.}
 	\label{tab:objective_traceability}
-	\begin{tabular}{|p{0.24\textwidth}|p{0.36\textwidth}|p{0.28\textwidth}|}
+	\begin{tabular}{|L{0.24\textwidth}|L{0.36\textwidth}|L{0.28\textwidth}|}
 		\hline
 		\textbf{Objective}    & \textbf{Implementation evidence}                                                                      & \textbf{Validation evidence}                    \\ \hline
 		Modular architecture  & Runtime orchestration contract, separated sensing/detection/telemetry modules under \texttt{src/gp2/} & Contract-cycle test and module-level unit tests \\ \hline
@@ -281,15 +283,15 @@ An integration-style test validates crash detection wiring by simulating an IMU 
 	\centering
 	\caption{Summary of implemented automated tests and expected outcomes.}
 	\label{tab:test_summary}
-	\begin{tabular}{|p{0.32\textwidth}|p{0.31\textwidth}|p{0.27\textwidth}|}
+	\begin{tabular}{|L{0.29\textwidth}|L{0.30\textwidth}|L{0.31\textwidth}|}
 		\hline
-		\textbf{Test}                                          & \textbf{Component/Functionality}  & \textbf{Expected Outcome}                           \\ \hline
-		\texttt{test\_imu\_connection}                         & IMU wrapper return format         & Returns 3-tuple; test passes                        \\ \hline
-		\texttt{test\_fatigue\_logic}                          & Fatigue trigger condition         & Drowsy=True with EAR<0.25; test passes              \\ \hline
-		\texttt{test\_crash\_integration}                      & Crash threshold \& alert wiring   & Alert publish invoked for total\_g>2.5; test passes \\ \hline
-		\texttt{test\_offline\_queue\_placeholder\_behavior}   & Connectivity fallback queueing    & Messages are queued while transport is unavailable  \\ \hline
-		\texttt{test\_storage\_retention\_pruning}             & Local retention enforcement       & Records older than retention window are pruned      \\ \hline
-		\texttt{test\_software\_architecture\_contract\_cycle} & End-to-end runtime cycle contract & Crash/fatigue/status events emitted in one cycle    \\ \hline
+		\textbf{Test}               & \textbf{Component Scope}          & \textbf{Expected Outcome}                           \\ \hline
+		IMU connection check        & IMU wrapper return format         & Returns 3-tuple; test passes                        \\ \hline
+		Fatigue-logic check         & Fatigue trigger condition         & Drowsy=True with EAR<0.25; test passes              \\ \hline
+		Crash integration path      & Crash threshold \& alert wiring   & Alert publish invoked for total\_g>2.5; test passes \\ \hline
+		Offline queue placeholder   & Connectivity fallback queueing    & Messages are queued while transport is unavailable  \\ \hline
+		Storage retention pruning   & Local retention enforcement       & Records older than retention window are pruned      \\ \hline
+		Architecture contract cycle & End-to-end runtime cycle contract & Crash/fatigue/status events emitted in one cycle    \\ \hline
 	\end{tabular}
 \end{table}
 
@@ -325,7 +327,7 @@ The project schedule used a milestone-oriented sequence aligned with the GP1 pla
 	\centering
 	\caption{Milestone schedule adapted from GP1 planning to GP2 execution.}
 	\label{tab:gantt_milestones}
-	\begin{tabular}{|p{0.16\textwidth}|p{0.17\textwidth}|p{0.52\textwidth}|}
+	\begin{tabular}{|L{0.16\textwidth}|L{0.17\textwidth}|L{0.52\textwidth}|}
 		\hline
 		\textbf{Milestone}                & \textbf{Window} & \textbf{Key output}                                                     \\ \hline
 		M1: Requirements \& design freeze & Weeks 1--2      & Finalized target metrics, privacy baseline, and MVP scope boundaries    \\ \hline
@@ -347,13 +349,13 @@ Table~\ref{tab:team_allocation} summarizes the role allocation derived from GP1 
 	\centering
 	\caption{Team organization and resource allocation.}
 	\label{tab:team_allocation}
-	\begin{tabular}{|p{0.28\textwidth}|p{0.25\textwidth}|p{0.32\textwidth}|}
+	\begin{tabular}{|L{0.28\textwidth}|L{0.25\textwidth}|L{0.32\textwidth}|}
 		\hline
-		\textbf{Member}                       & \textbf{Primary role}        & \textbf{Representative deliverables}                                            \\ \hline
-		Suhail Khaled Alblooshi (202230373)   & Hardware \& integration      & Sensor bring-up support, power/thermal checks, integration validation           \\ \hline
-		Mohammed Abdulla Alshamsi (202107716) & Edge AI \& embedded software & Fatigue/crash runtime pipeline, detector integration, runtime behavior tuning   \\ \hline
-		Ahmed Omar Mustafa (700041219)        & Cloud/telemetry integration  & MQTT status/alert path, payload contracts, storage/connectivity alignment       \\ \hline
-		Abdulla Salem Alshamsi (202112121)    & QA/documentation/compliance  & Test planning/execution, report consolidation, privacy/compliance documentation \\ \hline
+		\textbf{Member}                       & \textbf{Primary role}         & \textbf{Representative deliverables}                                            \\ \hline
+		Suhail Khaled Alblooshi (202230373)   & Hardware \& integration       & Sensor bring-up support, power/thermal checks, integration validation           \\ \hline
+		Mohammed Abdulla Alshamsi (202107716) & Edge AI \& embedded software  & Fatigue/crash runtime pipeline, detector integration, runtime behavior tuning   \\ \hline
+		Ahmed Omar Mustafa (700041219)        & Cloud/telemetry integration   & MQTT status/alert path, payload contracts, storage/connectivity alignment       \\ \hline
+		Abdulla Salem Alshamsi (202112121)    & QA, documentation, compliance & Test planning/execution, report consolidation, privacy/compliance documentation \\ \hline
 	\end{tabular}
 \end{table}
 
@@ -363,7 +365,7 @@ Resources used include Python documentation, MQTT specification \citep{mqtt_oasi
 
 \section{Remaining Implementation Plan (Post-Submission Roadmap)}
 
-The remaining open work is tracked in the project TODO files under \texttt{docs/todo/} and consolidated in \texttt{docs/IMPLEMENTATION\_ROADMAP.md}. The planned sequence is organized into four short sprints: (1) requirements freeze and platform scope finalization, (2) connectivity hardening and fault-recovery policy, (3) storage/privacy hardening with schema and encryption controls, and (4) AI dataset labeling and benchmark validation.
+The remaining open work is tracked in the project TODO files under \path{docs/todo/} and consolidated in \path{docs/IMPLEMENTATION_ROADMAP.md}. The planned sequence is organized into four short sprints: (1) requirements freeze and platform scope finalization, (2) connectivity hardening and fault-recovery policy, (3) storage/privacy hardening with schema and encryption controls, and (4) AI dataset labeling and benchmark validation.
 
 This staged plan keeps the current MVP stable while enabling incremental expansion toward the broader GP1 vision (including distraction and EEG-related extensions). Each sprint requires synchronized updates to code, tests, checklist status, and report sections to preserve traceability.
 
@@ -385,7 +387,7 @@ This chapter summarizes contribution distribution by major workstream for the GP
 	\caption{Student contribution distribution during SGP2.}
 	\label{tab:student_contribution}
 
-	\begin{tabular}{|c|c|c|}
+	\begin{tabular}{|L{0.40\textwidth}|L{0.20\textwidth}|L{0.28\textwidth}|}
 		\hline
 		\textbf{Task}                      & \textbf{Student ID} & \textbf{Contribution Percentage} \\ \hline
 		T1: Architecture \& Integration    & 202230373           & 25\%                             \\ \hline
@@ -400,7 +402,7 @@ This chapter summarizes contribution distribution by major workstream for the GP
 	\caption{Student Signatures}
 	\label{tab:signatures}
 	\small
-	\begin{tabular}{|p{0.18\textwidth}|p{0.4\textwidth}|p{0.2\textwidth}|}
+	\begin{tabular}{|L{0.18\textwidth}|L{0.4\textwidth}|L{0.2\textwidth}|}
 		\hline
 		\textbf{Student ID} & \textbf{Student Name}     & \textbf{Signature} \\ \hline
 		202230373           & Suhail Khaled Alblooshi   &                    \\ \hline
@@ -444,7 +446,7 @@ ok
 
 ... additional connectivity/storage/architecture/AI tests ...
 
-----------------------------------------------------------------------
+-------------------------------
 Ran 22 tests in ~0.4s
 
 OK
