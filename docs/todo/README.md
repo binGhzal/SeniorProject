@@ -2,6 +2,8 @@
 
 These checklists mirror `docs/tasks.md` and break each section into implementation-ready items.
 
+Execution plan: `docs/IMPLEMENTATION_ROADMAP.md`
+
 ## Sections
 
 - `01-feature-definition.todo.md`
