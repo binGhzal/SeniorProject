@@ -30,9 +30,11 @@ class IMUSensor:
         if smbus2 is None:
             class _StubBus:
                 def write_byte_data(self, *_args, **_kwargs):
+                    """No-op write for non-Raspberry Pi environments."""
                     return None
 
                 def read_i2c_block_data(self, *_args, **_kwargs):
+                    """Return zeroed sample data for non-hardware execution."""
                     return [0, 0, 0, 0, 0, 0]
 
             self.bus = _StubBus()
