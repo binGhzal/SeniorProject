@@ -39,7 +39,7 @@
 \pagenumbering{roman}
 
 % -------------------------------------------------------------------------------------------
-% COVER PAGE (fill in your metadata)
+% COVER PAGE
 % -------------------------------------------------------------------------------------------
 
 \newcommand{\HRule}{\rule{\linewidth}{0.3mm}}
@@ -218,7 +218,7 @@ The implementation uses:
   \item Python 3 for rapid prototyping.
   \item NumPy for numeric operations and array handling \citep{numpy_docs}.
   \item OpenCV (optional) for camera frame capture \citep{opencv_docs}.
-  \item MediaPipe (reference snippet) for potential face/eye landmark extraction \citep{mediapipe_docs}.
+  \item MediaPipe for optional runtime face/eye landmark extraction \citep{mediapipe_docs}.
   \item MQTT for telemetry topics and event alerts \citep{mqtt_oasis}.
   \item SQLite (standard library) for local retention and offline replay buffering.
   \item Optional hardware drivers: \texttt{smbus2} (I2C) and \texttt{RPi.GPIO} (PWM/GPIO).
@@ -236,7 +236,7 @@ Key challenges during development included hardware-specific dependencies and th
 
 \section{Implementation Summary}
 
-The final implementation is delivered as a Python runtime package under \texttt{src/gp2/} with tests under \texttt{tests/}. The orchestration script initializes the IMU, camera, IR controller, telemetry client, and fatigue detector, then iterates in a timed loop. In each iteration, acceleration is read and converted to total $g$ magnitude; if a high-$g$ threshold is exceeded, a crash alert is published. Separately, the fatigue detector is invoked to compute EAR and update the rolling closed-eye buffer; if fatigue is detected, a fatigue alert is published. Periodic telemetry provides status updates including estimated PERCLOS and current acceleration magnitude.
+The final implementation is delivered as a Python runtime package under \texttt{src/gp2/} with tests under \texttt{tests/}. The orchestration script initializes the IMU, camera, IR controller, telemetry client, and fatigue detector, then iterates in a timed loop. In each iteration, acceleration is read and converted to total $g$ magnitude; if a high-$g$ threshold is exceeded, a crash alert is published. Separately, the fatigue detector is invoked to compute EAR and update the rolling closed-eye buffer; if fatigue is detected, a fatigue alert is published. Periodic telemetry publishes status data including PERCLOS, acceleration magnitude, sensor-health state, power-profile estimates, and AI-metric fields.
 
 \section{Testing Strategy and Process}
 
@@ -268,6 +268,8 @@ Unit tests validate individual components:
 \begin{itemize}
   \item IMU data formatting: verifies that the IMU wrapper returns a three-element tuple.
   \item Fatigue trigger logic: verifies that a drowsiness condition is reported when EAR is below threshold (validated via injection).
+  \item Telemetry behavior: verifies payload-shape, QoS routing, and offline-queue placeholder behavior under disconnected transport assumptions.
+  \item Storage behavior: verifies local retention pruning and replay-related policy hooks.
 \end{itemize}
 
 \subsection*{Integration-style testing}
@@ -314,7 +316,7 @@ Several improvements are recommended for future work:
 
 Project execution followed an iterative workflow with milestones for module implementation, integration, and testing. The management approach evolved from the GP1 design/planning timeline into a focused GP2 implementation and validation track.
 
-\section{Tasks And Schedule Gantt Chart}
+\section{Tasks and Schedule (Gantt Summary)}
 
 The project schedule used a milestone-oriented sequence aligned with the GP1 plan structure and adapted for GP2 delivery priorities.
 
