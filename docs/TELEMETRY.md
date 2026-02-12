@@ -28,9 +28,24 @@ Example payload (JSON):
   "perclos": 0.05,
   "g_force": 1.02,
   "sensor_health": {
-    "imu": { "available": true, "mode": "hardware" },
-    "camera": { "available": true, "mode": "hardware" },
-    "ir": { "available": true, "mode": "hardware" }
+    "imu": {
+      "available": true,
+      "mode": "hardware",
+      "bus": "I2C",
+      "direction": "bidirectional"
+    },
+    "camera": {
+      "available": true,
+      "mode": "hardware",
+      "bus": "CSI/USB",
+      "direction": "camera->board"
+    },
+    "ir": {
+      "available": true,
+      "mode": "hardware",
+      "bus": "GPIO/PWM",
+      "direction": "board->ir"
+    }
   }
 }
 ```

@@ -51,6 +51,12 @@ Control loop summary:
 3. Board emits alerts and periodic telemetry.
 4. Board adjusts actuators (for example IR brightness) based on conditions.
 
+Implementation note (current prototype):
+
+- Interface metadata is centralized in `src/gp2/planning/hardware_architecture.py`.
+- Runtime modules in `src/gp2/sensors.py` consume the same interface specs.
+- Health telemetry now includes per-module `bus` and `direction` fields to reflect these shared constants.
+
 ## Integration checklist
 
 - [ ] Confirm final IMU part number and register map
