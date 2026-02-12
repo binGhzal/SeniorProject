@@ -4,7 +4,8 @@ This is a file-by-file reference for the GP2 prototype.
 
 ## `src/gp2/main.py`
 
-- Purpose: prototype orchestration loop that stitches together sensors, detection, and telemetry.
+- Purpose: prototype orchestration loop that stitches together sensors,
+  detection, and telemetry.
 - Key behaviors:
     - Crash detection threshold: `total_g > 2.5`
     - Fatigue alert when `FatigueDetector` returns `drowsy=True`
@@ -48,12 +49,14 @@ Dev-machine behavior:
 
 Dev-machine behavior:
 
-- If MediaPipe is not installed, the detector gracefully falls back to no-landmark mode.
+- If MediaPipe is not installed, the detector gracefully falls back to
+  no-landmark mode.
 
 ### MediaPipe helpers
 
 - `create_face_mesh()` builds an optional FaceMesh instance.
-- `extract_face_landmarks(frame, face_mesh)` extracts landmarks from a frame when available.
+- `extract_face_landmarks(frame, face_mesh)` extracts landmarks from a frame
+  when available.
 
 ## `src/gp2/telemetry.py`
 
@@ -66,7 +69,8 @@ Dev-machine behavior:
 
 Dev-machine behavior:
 
-- If MQTT library is not installed, the client initializes in a disabled mode and send methods become no-ops.
+- If MQTT library is not installed, the client initializes in a disabled mode
+  and send methods become no-ops.
 
 ## `tests/test_runtime.py`
 
@@ -94,5 +98,6 @@ For expected outputs and full run example, see `docs/TESTING.md`.
 
 - Purpose: archived or superseded runtime files kept for reference only.
 - Current contents:
-    - `sensors_rpi_only_legacy.py` (older sensor implementation previously named `sensons.py`)
+    - `sensors_rpi_only_legacy.py` (older sensor implementation previously
+      named `sensons.py`)
 - Rule: new work should target active modules under `src/gp2/` only.

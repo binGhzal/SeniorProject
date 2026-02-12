@@ -19,16 +19,19 @@ GP2 is a prototype “smart helmet” loop that combines:
 
 Implemented in `src/gp2/sensors.py`.
 
-- **IMU (`IMUSensor`)**
-    - Reads 6 bytes from an accelerometer register block and converts to `(ax, ay, az)` in g’s.
+- **IMU (`IMUSensor`)** - Reads 6 bytes from an accelerometer register block and converts to
+  `(ax, ay, az)` in g’s.
 - **Camera (`CameraModule`)**
     - Captures frames via OpenCV `VideoCapture`.
 - **IR (`IRSys`)**
     - Controls IR LED brightness through PWM.
 
-On non-Raspberry Pi machines, `sensors.py` includes safe fallbacks so the module can still be imported and unit tests can run without hardware.
+On non-Raspberry Pi machines, `sensors.py` includes safe fallbacks so the
+module can still be imported and unit tests can run without hardware.
 
-Sensor modules expose a `health_status()` method, allowing the runtime to generate a consolidated hardware-health snapshot (`imu`, `camera`, `ir`) for status telemetry.
+Sensor modules expose a `health_status()` method, allowing the runtime to
+generate a consolidated hardware-health snapshot (`imu`, `camera`, `ir`) for
+status telemetry.
 
 ### 2) Detection
 
@@ -64,13 +67,16 @@ Implemented in `src/gp2/telemetry.py`.
     - Status: includes `perclos` and `g_force`.
     - Alert: includes `alert` type and `value`.
 
-MQTT is treated as an optional dependency so the code can import in environments without `paho-mqtt`.
+MQTT is treated as an optional dependency so the code can import in
+environments without `paho-mqtt`.
 
 ### 5) Local storage strategy
 
-Implemented in `src/gp2/planning/storage_strategy.py` and used by `src/gp2/main.py`.
+Implemented in `src/gp2/planning/storage_strategy.py` and used by
+`src/gp2/main.py`.
 
-- Defines storage policy (retention hours, queue bounds, sync toggles, conflict policy).
+- Defines storage policy (retention hours, queue bounds, sync toggles,
+  conflict policy).
 - Buffers crash/fatigue/status events locally before cloud replay.
 - Provides replay list and sync-marking hooks for post-outage recovery.
 
@@ -88,5 +94,7 @@ The prototype loop is in `src/gp2/main.py`:
 
 ## Key design assumptions (prototype)
 
-- Runtime fatigue flow can consume camera frames and extract MediaPipe FaceMesh landmarks through `src/gp2/detection.py`.
-- The fatigue test suite focuses on **logic trigger and integration wiring**, not accuracy/validation against real video.
+- Runtime fatigue flow can consume camera frames and extract MediaPipe
+  FaceMesh landmarks through `src/gp2/detection.py`.
+- The fatigue test suite focuses on **logic trigger and integration wiring**,
+  not accuracy/validation against real video.

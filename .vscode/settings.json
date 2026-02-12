@@ -6,7 +6,8 @@
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports": "explicit",
-    "source.fixAll": "explicit"
+    "source.fixAll": "explicit",
+    "source.fixAll.markdownlint": "explicit"
   },
   "files.exclude": {
     "**/__pycache__": true,

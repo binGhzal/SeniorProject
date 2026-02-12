@@ -3,6 +3,7 @@
 import json
 import time
 import unittest
+from typing import cast
 from unittest.mock import MagicMock
 
 from src.gp2.detection import FatigueDetector
@@ -328,7 +329,8 @@ class TestSmartHelmet(unittest.TestCase):
         self.assertEqual(detector_mode(plan), MODEL_MODE)
         contract = evaluation_contract(plan)
         self.assertEqual(contract["dataset_tag"], "night-helmet-v1")
-        self.assertEqual(contract["metrics"]["max_latency_ms"], 65.0)
+        metrics = cast(dict[str, float], contract["metrics"])
+        self.assertEqual(metrics["max_latency_ms"], 65.0)
         self.assertIn("outdoor_night", supported_dataset_scopes())
 
     def test_fatigue_metrics_include_false_alert_tracking(self):

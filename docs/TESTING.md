@@ -24,13 +24,20 @@ If you are using the repo virtual environment explicitly:
 
 ## Coverage map (all components)
 
-- **IMU (`IMUSensor`)**: unit-tested via mocking I2C reads (`test_imu_connection`).
-- **Fatigue detection (`FatigueDetector`)**: logic-trigger is unit-tested via software injection (`test_fatigue_logic`).
-- **Crash detection threshold**: integration-style test validates alert trigger (`test_crash_integration`).
-- **Camera (`CameraModule`)**: not unit-tested; manual verification by running the loop and confirming frames are non-`None`.
-- **IR LEDs (`IRSys`)**: not unit-tested; manual on-device verification (brightness changes).
-- **Telemetry (`TelemetryClient`)**: unit-tested for payload shape, QoS routing, and offline queue behavior.
-- **FaceMesh integration (`src/gp2/detection.py`)**: logic path is covered, but accuracy against real video remains manual/experimental.
+- **IMU (`IMUSensor`)**: unit-tested via mocking I2C reads
+  (`test_imu_connection`).
+- **Fatigue detection (`FatigueDetector`)**: logic-trigger is unit-tested via
+  software injection (`test_fatigue_logic`).
+- **Crash detection threshold**: integration-style test validates alert trigger
+  (`test_crash_integration`).
+- **Camera (`CameraModule`)**: not unit-tested; manual verification by running
+  the loop and confirming frames are non-`None`.
+- **IR LEDs (`IRSys`)**: not unit-tested; manual on-device verification
+  (brightness changes).
+- **Telemetry (`TelemetryClient`)**: unit-tested for payload shape, QoS routing,
+  and offline queue behavior.
+- **FaceMesh integration (`src/gp2/detection.py`)**: logic path is covered, but
+  accuracy against real video remains manual/experimental.
 
 ## Test-by-test detail
 

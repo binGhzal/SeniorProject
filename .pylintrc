@@ -17,6 +17,12 @@ disable=
     R0903,
     R0913,
     R0914,
+    R0402,
+    R0902,
+    R0904,
+    R0911,
+    R0915,
+    R0917,
     W0511
 
 [FORMAT]
@@ -27,6 +33,7 @@ good-names=i,j,k,ax,ay,az
 
 [TYPECHECK]
 extension-pkg-allow-list=numpy
+ignored-modules=numpy,cv2,mediapipe,paho.mqtt.client,RPi.GPIO,smbus2
 
 [DESIGN]
 max-args=8
