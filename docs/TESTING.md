@@ -29,8 +29,8 @@ If you are using the repo virtual environment explicitly:
 - **Crash detection threshold**: integration-style test validates alert trigger (`test_crash_integration`).
 - **Camera (`CameraModule`)**: not unit-tested; manual verification by running the loop and confirming frames are non-`None`.
 - **IR LEDs (`IRSys`)**: not unit-tested; manual on-device verification (brightness changes).
-- **Telemetry (`TelemetryClient`)**: not unit-tested; manual verification by subscribing to MQTT topics and observing publishes.
-- **FaceMesh snippet (`perclos.py`)**: not tested.
+- **Telemetry (`TelemetryClient`)**: unit-tested for payload shape, QoS routing, and offline queue behavior.
+- **FaceMesh integration (`src/gp2/detection.py`)**: logic path is covered, but accuracy against real video remains manual/experimental.
 
 ## Test-by-test detail
 
@@ -40,11 +40,11 @@ If you are using the repo virtual environment explicitly:
 
 - **Component under test:** `IMUSensor.read_accel()`
 - **What it validates:**
-  - Returns a 3-tuple `(ax, ay, az)`
-  - Can be exercised on a dev machine by mocking the bus read
+    - Returns a 3-tuple `(ax, ay, az)`
+    - Can be exercised on a dev machine by mocking the bus read
 - **How it is tested:**
-  - Replaces `imu.bus.read_i2c_block_data` with a `MagicMock` returning 6 bytes
-  - Asserts the return type and length
+    - Replaces `imu.bus.read_i2c_block_data` with a `MagicMock` returning 6 bytes
+    - Asserts the return type and length
 
 **Expected output fragment:**
 
@@ -58,11 +58,11 @@ If you are using the repo virtual environment explicitly:
 
 - **Component under test:** `FatigueDetector.analyze_frame()`
 - **What it validates:**
-  - The “drowsy” condition is triggered when EAR is below threshold
+    - The “drowsy” condition is triggered when EAR is below threshold
 - **How it is tested:**
-  - Injects a mocked return `(True, 0.15)` and asserts:
-    - `is_drowsy == True`
-    - `ear < 0.25`
+    - Injects a mocked return `(True, 0.15)` and asserts:
+        - `is_drowsy == True`
+        - `ear < 0.25`
 
 **Expected output fragment:**
 
@@ -76,11 +76,11 @@ If you are using the repo virtual environment explicitly:
 
 - **Component under test:** crash threshold logic used in the runtime loop
 - **What it validates:**
-  - If `total_g > 2.5`, `send_alert("CRASH", total_g)` is invoked
+    - If `total_g > 2.5`, `send_alert("CRASH", total_g)` is invoked
 - **How it is tested:**
-  - Mocks IMU to return `(0, 0, 3.0)`
-  - Computes `total_g`
-  - Asserts `mock_mqtt.send_alert` was called with the expected args
+    - Mocks IMU to return `(0, 0, 3.0)`
+    - Computes `total_g`
+    - Asserts `mock_mqtt.send_alert` was called with the expected args
 
 **Expected output fragment:**
 
@@ -118,6 +118,6 @@ OK
 
 - **Required for unit tests:** `numpy`
 - **Optional:**
-  - `paho-mqtt` (telemetry)
-  - `opencv-python` (camera on non-Pi machines)
-  - Raspberry Pi I/O libraries for I2C/GPIO
+    - `paho-mqtt` (telemetry)
+    - `opencv-python` (camera on non-Pi machines)
+    - Raspberry Pi I/O libraries for I2C/GPIO

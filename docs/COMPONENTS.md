@@ -2,18 +2,13 @@
 
 This is a file-by-file reference for the GP2 prototype.
 
-## `perclos.py`
-
-- Purpose: reference snippet for MediaPipe FaceMesh configuration (`refine_landmarks=True`) for better eye/iris landmarks.
-- Status: not integrated into the runtime loop; use as a starting point for real landmark extraction.
-
 ## `src/gp2/main.py`
 
 - Purpose: prototype orchestration loop that stitches together sensors, detection, and telemetry.
 - Key behaviors:
-  - Crash detection threshold: `total_g > 2.5`
-  - Fatigue alert when `FatigueDetector` returns `drowsy=True`
-  - Periodic `send_telemetry(perclos=..., g_force=...)`
+    - Crash detection threshold: `total_g > 2.5`
+    - Fatigue alert when `FatigueDetector` returns `drowsy=True`
+    - Periodic `send_telemetry(perclos=..., g_force=...)`
 
 ## `src/gp2/sensors.py`
 
@@ -46,14 +41,19 @@ Dev-machine behavior:
 ### `FatigueDetector`
 
 - `analyze_frame(landmarks)`:
-  - Splits the input landmarks into left/right eye slices using 68-point indices.
-  - Computes average EAR.
-  - Updates a rolling buffer of “closed eye” frames.
-  - Returns drowsy state based on `PERCLOS_THRESH`.
+    - Splits the input landmarks into left/right eye slices using 68-point indices.
+    - Computes average EAR.
+    - Updates a rolling buffer of “closed eye” frames.
+    - Returns drowsy state based on `PERCLOS_THRESH`.
 
 Dev-machine behavior:
 
-- If SciPy is not installed, a NumPy-based Euclidean fallback is used.
+- If MediaPipe is not installed, the detector gracefully falls back to no-landmark mode.
+
+### MediaPipe helpers
+
+- `create_face_mesh()` builds an optional FaceMesh instance.
+- `extract_face_landmarks(frame, face_mesh)` extracts landmarks from a frame when available.
 
 ## `src/gp2/telemetry.py`
 
@@ -61,8 +61,8 @@ Dev-machine behavior:
 
 - Uses MQTT if `paho-mqtt` is installed.
 - Provides:
-  - `send_alert(alert_type, value)`
-  - `send_telemetry(perclos, g_force)`
+    - `send_alert(alert_type, value)`
+    - `send_telemetry(perclos, g_force)`
 
 Dev-machine behavior:
 
@@ -72,9 +72,9 @@ Dev-machine behavior:
 
 - Purpose: unit and “integration-style” tests.
 - Covered behaviors:
-  - IMU return format
-  - Fatigue trigger behavior (via injected return)
-  - Crash alert wiring (threshold → alert call)
+    - IMU return format
+    - Fatigue trigger behavior (via injected return)
+    - Crash alert wiring (threshold → alert call)
 
 For expected outputs and full run example, see `docs/TESTING.md`.
 
@@ -82,17 +82,17 @@ For expected outputs and full run example, see `docs/TESTING.md`.
 
 - Purpose: task-aligned scaffolding modules created from `docs/tasks.md`.
 - Scope: non-runtime placeholder classes/configs for:
-  - features
-  - hardware architecture
-  - power plan
-  - connectivity
-  - storage strategy
-  - software architecture
-  - AI/algorithm planning
+    - features
+    - hardware architecture
+    - power plan
+    - connectivity
+    - storage strategy
+    - software architecture
+    - AI/algorithm planning
 
 ## `archive/legacy/`
 
 - Purpose: archived or superseded runtime files kept for reference only.
 - Current contents:
-  - `sensors_rpi_only_legacy.py` (older sensor implementation previously named `sensons.py`)
+    - `sensors_rpi_only_legacy.py` (older sensor implementation previously named `sensons.py`)
 - Rule: new work should target active modules under `src/gp2/` only.

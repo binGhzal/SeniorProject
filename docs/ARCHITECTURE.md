@@ -9,9 +9,9 @@ GP2 is a prototype “smart helmet” loop that combines:
 ## Directory layout
 
 - `src/gp2/`
-  - Prototype runtime modules.
+    - Prototype runtime modules.
 - `tests/`
-  - Unit and integration-style tests.
+    - Unit and integration-style tests.
 
 ## Runtime pipeline
 
@@ -20,11 +20,11 @@ GP2 is a prototype “smart helmet” loop that combines:
 Implemented in `src/gp2/sensors.py`.
 
 - **IMU (`IMUSensor`)**
-  - Reads 6 bytes from an accelerometer register block and converts to `(ax, ay, az)` in g’s.
+    - Reads 6 bytes from an accelerometer register block and converts to `(ax, ay, az)` in g’s.
 - **Camera (`CameraModule`)**
-  - Captures frames via OpenCV `VideoCapture`.
+    - Captures frames via OpenCV `VideoCapture`.
 - **IR (`IRSys`)**
-  - Controls IR LED brightness through PWM.
+    - Controls IR LED brightness through PWM.
 
 On non-Raspberry Pi machines, `sensors.py` includes safe fallbacks so the module can still be imported and unit tests can run without hardware.
 
@@ -35,10 +35,10 @@ Sensor modules expose a `health_status()` method, allowing the runtime to genera
 Implemented in `src/gp2/detection.py`.
 
 - **EAR (Eye Aspect Ratio)**
-  - Computes an eye openness measure from 6 eye landmarks.
+    - Computes an eye openness measure from 6 eye landmarks.
 - **Rolling closed-eye score (PERCLOS-like)**
-  - Tracks a rolling buffer of closed-eye frames.
-  - Triggers fatigue when `perclos_score > PERCLOS_THRESH`.
+    - Tracks a rolling buffer of closed-eye frames.
+    - Triggers fatigue when `perclos_score > PERCLOS_THRESH`.
 
 Inputs/outputs:
 
@@ -50,7 +50,7 @@ Inputs/outputs:
 Implemented in the orchestration loop (`src/gp2/main.py`).
 
 - Computes total acceleration magnitude:
-  - $total_g = \sqrt{a_x^2 + a_y^2 + a_z^2}$
+    - $total_g = \sqrt{a_x^2 + a_y^2 + a_z^2}$
 - Triggers crash if `total_g > 2.5`.
 
 ### 4) Telemetry
@@ -58,11 +58,11 @@ Implemented in the orchestration loop (`src/gp2/main.py`).
 Implemented in `src/gp2/telemetry.py`.
 
 - **Topics**
-  - Telemetry: `smarthelmet/v1/telemetry`
-  - Alerts: `smarthelmet/v1/alerts`
+    - Telemetry: `smarthelmet/v1/telemetry`
+    - Alerts: `smarthelmet/v1/alerts`
 - **Payloads**
-  - Status: includes `perclos` and `g_force`.
-  - Alert: includes `alert` type and `value`.
+    - Status: includes `perclos` and `g_force`.
+    - Alert: includes `alert` type and `value`.
 
 MQTT is treated as an optional dependency so the code can import in environments without `paho-mqtt`.
 

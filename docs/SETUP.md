@@ -44,9 +44,9 @@ Install OpenCV:
 python -m pip install opencv-python
 ```
 
-### Face landmarks (future integration)
+### Face landmarks
 
-`perclos.py` is a reference snippet for MediaPipe FaceMesh. To experiment:
+MediaPipe FaceMesh is integrated in `src/gp2/detection.py` for frame-based landmark extraction. To enable it:
 
 ```bash
 python -m pip install mediapipe opencv-python
@@ -63,5 +63,5 @@ The code is written so these are optional when running on a dev machine.
 
 ## Notes
 
-- The current `src/gp2/main.py` uses _mock landmarks_ to demonstrate structure. Real face landmark extraction is not yet integrated into the runtime loop.
+- The current `src/gp2/main.py` passes camera frames into `FatigueDetector`; when MediaPipe is available, real landmarks are extracted.
 - For production-like testing of telemetry, prefer a local MQTT broker with authentication and TLS.
