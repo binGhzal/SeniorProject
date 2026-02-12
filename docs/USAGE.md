@@ -10,7 +10,7 @@ The prototype orchestration loop is in `src/gp2/main.py`.
 python -m pip install numpy paho-mqtt opencv-python
 ```
 
-2. Run the loop:
+1. Run the loop:
 
 ```bash
 PYTHONPATH=src python -m gp2.main

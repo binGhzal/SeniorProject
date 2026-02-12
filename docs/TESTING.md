@@ -48,7 +48,7 @@ If you are using the repo virtual environment explicitly:
 
 **Expected output fragment:**
 
-```
+```text
 [Pass] IMU Data Format Verified
 ```
 
@@ -66,7 +66,7 @@ If you are using the repo virtual environment explicitly:
 
 **Expected output fragment:**
 
-```
+```text
 [Pass] Fatigue Logic Triggered Correctly
 ```
 
@@ -84,7 +84,7 @@ If you are using the repo virtual environment explicitly:
 
 **Expected output fragment:**
 
-```
+```text
 [Pass] Crash Integration (Sensor -> Cloud Trigger) Verified
 ```
 
@@ -92,7 +92,7 @@ If you are using the repo virtual environment explicitly:
 
 A successful run should resemble:
 
-```
+```text
 test_crash_integration (tests.TestSmartHelmet.test_crash_integration)
 Test 4: The 'Shake to Upload' Crash Logic ...
 [Pass] Crash Integration (Sensor -> Cloud Trigger) Verified

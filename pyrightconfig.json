@@ -1,14 +1,9 @@
 {
-  "include": [
-    "src",
-    "tests"
-  ],
+  "include": ["src", "tests"],
   "executionEnvironments": [
     {
       "root": ".",
-      "extraPaths": [
-        "src"
-      ]
+      "extraPaths": ["src"]
     }
   ]
 }
