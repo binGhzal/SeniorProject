@@ -10,6 +10,7 @@
 - [ ] Size regulators and thermal margins
 - [ ] Define battery capacity target and charging strategy
 - [ ] Estimate runtime for day/night operating profiles
+- [ ] Validate continuous operation target (>= 8 hours) under representative duty cycle
 - [ ] Add brownout and overcurrent protection plan
 
 ## Implementation plan

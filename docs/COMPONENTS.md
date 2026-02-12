@@ -84,7 +84,7 @@ For expected outputs and full run example, see `docs/TESTING.md`.
 
 ## `src/gp2/planning/`
 
-- Purpose: task-aligned scaffolding modules created from `docs/tasks.md`.
+- Purpose: task-aligned scaffolding modules created from `docs/todo/` checklists.
 - Scope: runtime contracts/configuration used by tests and orchestration boundaries for:
     - features
     - hardware architecture

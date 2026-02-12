@@ -44,29 +44,29 @@
 
 \newcommand{\HRule}{\rule{\linewidth}{0.3mm}}
 \begin{center}
-\IfFileExists{Figures/CIT_logo.jpg}{\includegraphics[width=120mm]{Figures/CIT_logo.jpg}}{%
-\fbox{\parbox{120mm}{\centering Place \texttt{CIT\_logo.jpg} in \texttt{docs/report/Figures/} to display the logo.}}}
-\\ \vspace{0.7cm}
-\textsc{\large \bfseries ITBP481: Senior Graduation Project II}\\ \vspace{0.3cm}
-\textsc{\large \bfseries Final Project Report }\\ \vspace{0.3cm}
-\textsc{Spring 2026} \\ \vspace{1.8cm}
-\Large \textbf{Project Title: Smart Helmet Fatigue \& Crash Telemetry}\\ \vspace{0.3cm}
-Project ID: Group 11 \\[0.6cm]
+	\IfFileExists{Figures/CIT_logo.jpg}{\includegraphics[width=120mm]{Figures/CIT_logo.jpg}}{%
+		\fbox{\parbox{120mm}{\centering Place \texttt{CIT\_logo.jpg} in \texttt{docs/report/Figures/} to display the logo.}}}
+	\\ \vspace{0.7cm}
+	\textsc{\large \bfseries ITBP481: Senior Graduation Project II}\\ \vspace{0.3cm}
+	\textsc{\large \bfseries Final Project Report }\\ \vspace{0.3cm}
+	\textsc{Spring 2026} \\ \vspace{1.8cm}
+	\Large \textbf{Project Title: Smart Helmet Fatigue \& Crash Telemetry}\\ \vspace{0.3cm}
+	Project ID: Group 11 \\[0.6cm]
 
-\begin{center}
-\begin{tabular}{ c c c}
-Suhail Khaled Alblooshi & 202230373 & Computer and Network Engineering\\
-Mohammed Abdulla Alshamsi & 202107716 & Computer and Network Engineering\\
-Ahmed Omar Mustafa & 700041219 & Computer and Network Engineering\\
-Abdulla Salem Alshamsi & 202112121 & Computer and Network Engineering\\
-\end{tabular}
-\end{center}
+	\begin{center}
+		\begin{tabular}{ c c c}
+			Suhail Alblooshi  & 202230373 & Computer Engineering \\
+			Mohammed Alshamsi & 202107716 & Computer Engineering \\
+			Ahmed Mustafa     & 700041219 & Computer Engineering \\
+			Abdulla Alshamsi  & 202112121 & Computer Engineering \\
+		\end{tabular}
+	\end{center}
 
 
-\textbf{Project Advisor}: Dr. Mohammad Naouss \\ \vspace{1.3cm}
+	\textbf{Project Advisor}: Dr. Mohammad Naouss \\ \vspace{1.3cm}
 
-\textsc{\large \bfseries\textbf{A project report submitted in partial fulfillment of the requirements for the Bachelor of Science degree at the College of Information Technology, United Arab Emirates University}} \\ \vspace{1.3cm}
-{\today}
+	\textsc{\large \bfseries\textbf{A project report submitted in partial fulfillment of the requirements for the Bachelor of Science degree at the College of Information Technology, United Arab Emirates University}} \\ \vspace{1.3cm}
+	{\today}
 \end{center}
 
 \thispagestyle{empty}
@@ -118,11 +118,11 @@ Fatigue and delayed incident response are common contributors to avoidable accid
 The project objectives for SGP2 are as follows:
 
 \begin{enumerate}
-  \item Implement a modular software architecture with clear separation between sensing, detection, and telemetry.
-  \item Implement fatigue detection using EAR and a rolling closed-eye score (PERCLOS-like) with configurable thresholds.
-  \item Implement crash detection using IMU acceleration magnitude and a defined high-$g$ threshold.
-  \item Implement telemetry publishing for periodic status and event-based alerts using MQTT.
-  \item Validate correctness using unit and integration-style tests with repeatable expected outputs.
+	\item Implement a modular software architecture with clear separation between sensing, detection, and telemetry.
+	\item Implement fatigue detection using EAR and a rolling closed-eye score (PERCLOS-like) with configurable thresholds.
+	\item Implement crash detection using IMU acceleration magnitude and a defined high-$g$ threshold.
+	\item Implement telemetry publishing for periodic status and event-based alerts using MQTT.
+	\item Validate correctness using unit and integration-style tests with repeatable expected outputs.
 \end{enumerate}
 
 \section{Final Outcomes and Deliverables}
@@ -130,10 +130,10 @@ The project objectives for SGP2 are as follows:
 By the end of SGP2, the project delivers:
 
 \begin{itemize}
-  \item A prototype runtime loop that integrates sensor acquisition, detection logic, and telemetry publishing.
-  \item Implemented Python modules for sensors, fatigue detection, and MQTT telemetry.
-  \item A unit test suite that executes on a development machine without physical hardware by using mocks and safe fallbacks.
-  \item Documentation describing the architecture, components, testing strategy, and expected results (see \texttt{docs/}).
+	\item A prototype runtime loop that integrates sensor acquisition, detection logic, and telemetry publishing.
+	\item Implemented Python modules for sensors, fatigue detection, and MQTT telemetry.
+	\item A unit test suite that executes on a development machine without physical hardware by using mocks and safe fallbacks.
+	\item Documentation describing the architecture, components, testing strategy, and expected results (see \texttt{docs/}).
 \end{itemize}
 
 \section{GP1 Baseline to GP2 Delivery Scope}
@@ -201,13 +201,13 @@ Telemetry is published over MQTT to separate topics for status and alerts. MQTT 
 The orchestration loop coordinates sensor sampling, detection logic, and telemetry publishing at a fixed interval.
 
 \begin{figure}[h]
-\centering
-\fbox{\parbox{0.9\linewidth}{\centering
-\textbf{Architecture diagram summary.}\\
-The system consists of Sensors $\rightarrow$ Detection $\rightarrow$ Telemetry, coordinated by a main loop.
-}}
-\caption{High-level system architecture of the smart helmet prototype.}
-\label{fig:system_architecture}
+	\centering
+	\fbox{\parbox{0.9\linewidth}{\centering
+			\textbf{Architecture diagram summary.}\\
+			The system consists of Sensors $\rightarrow$ Detection $\rightarrow$ Telemetry, coordinated by a main loop.
+		}}
+	\caption{High-level system architecture of the smart helmet prototype.}
+	\label{fig:system_architecture}
 \end{figure}
 
 \section{Technologies and Standards Applied}
@@ -215,14 +215,14 @@ The system consists of Sensors $\rightarrow$ Detection $\rightarrow$ Telemetry, 
 The implementation uses:
 
 \begin{itemize}
-  \item Python 3 for rapid prototyping.
-  \item NumPy for numeric operations and array handling \citep{numpy_docs}.
-  \item OpenCV (optional) for camera frame capture \citep{opencv_docs}.
-  \item MediaPipe for optional runtime face/eye landmark extraction \citep{mediapipe_docs}.
-  \item MQTT for telemetry topics and event alerts \citep{mqtt_oasis}.
-  \item SQLite (standard library) for local retention and offline replay buffering.
-  \item Optional hardware drivers: \texttt{smbus2} (I2C) and \texttt{RPi.GPIO} (PWM/GPIO).
-  \item Python \texttt{unittest} and \texttt{unittest.mock} for automated testing.
+	\item Python 3 for rapid prototyping.
+	\item NumPy for numeric operations and array handling \citep{numpy_docs}.
+	\item OpenCV (optional) for camera frame capture \citep{opencv_docs}.
+	\item MediaPipe for optional runtime face/eye landmark extraction \citep{mediapipe_docs}.
+	\item MQTT for telemetry topics and event alerts \citep{mqtt_oasis}.
+	\item SQLite (standard library) for local retention and offline replay buffering.
+	\item Optional hardware drivers: \texttt{smbus2} (I2C) and \texttt{RPi.GPIO} (PWM/GPIO).
+	\item Python \texttt{unittest} and \texttt{unittest.mock} for automated testing.
 \end{itemize}
 
 \section{Challenges and Solutions}
@@ -247,18 +247,18 @@ Testing is performed with a focus on repeatability and isolation. The project us
 Table~\ref{tab:objective_traceability} maps the major SGP2 objectives to implementation artifacts and validation evidence.
 
 \begin{table}[h]
-\centering
-\caption{Objective-to-implementation traceability.}
-\label{tab:objective_traceability}
-\begin{tabular}{|p{0.24\textwidth}|p{0.36\textwidth}|p{0.28\textwidth}|}
-\hline
-\textbf{Objective} & \textbf{Implementation evidence} & \textbf{Validation evidence} \\ \hline
-Modular architecture & Runtime orchestration contract, separated sensing/detection/telemetry modules under \texttt{src/gp2/} & Contract-cycle test and module-level unit tests \\ \hline
-Fatigue detection & EAR + rolling PERCLOS logic in \texttt{detection.py} & Fatigue trigger tests and runtime metric fields \\ \hline
-Crash detection & High-$g$ threshold on acceleration magnitude in orchestration cycle & Crash integration test with mocked IMU event \\ \hline
-Telemetry publishing & MQTT alert/status client with QoS policy and offline queue behavior & Telemetry payload, QoS, and offline-queue tests \\ \hline
-Repeatable validation & Automated \texttt{unittest} suite and reproducible execution command & Full suite pass in development environment \\ \hline
-\end{tabular}
+	\centering
+	\caption{Objective-to-implementation traceability.}
+	\label{tab:objective_traceability}
+	\begin{tabular}{|p{0.24\textwidth}|p{0.36\textwidth}|p{0.28\textwidth}|}
+		\hline
+		\textbf{Objective}    & \textbf{Implementation evidence}                                                                      & \textbf{Validation evidence}                    \\ \hline
+		Modular architecture  & Runtime orchestration contract, separated sensing/detection/telemetry modules under \texttt{src/gp2/} & Contract-cycle test and module-level unit tests \\ \hline
+		Fatigue detection     & EAR + rolling PERCLOS logic in \texttt{detection.py}                                                  & Fatigue trigger tests and runtime metric fields \\ \hline
+		Crash detection       & High-$g$ threshold on acceleration magnitude in orchestration cycle                                   & Crash integration test with mocked IMU event    \\ \hline
+		Telemetry publishing  & MQTT alert/status client with QoS policy and offline queue behavior                                   & Telemetry payload, QoS, and offline-queue tests \\ \hline
+		Repeatable validation & Automated \texttt{unittest} suite and reproducible execution command                                  & Full suite pass in development environment      \\ \hline
+	\end{tabular}
 \end{table}
 
 \subsection*{Unit testing}
@@ -266,10 +266,10 @@ Repeatable validation & Automated \texttt{unittest} suite and reproducible execu
 Unit tests validate individual components:
 
 \begin{itemize}
-  \item IMU data formatting: verifies that the IMU wrapper returns a three-element tuple.
-  \item Fatigue trigger logic: verifies that a drowsiness condition is reported when EAR is below threshold (validated via injection).
-  \item Telemetry behavior: verifies payload-shape, QoS routing, and offline-queue placeholder behavior under disconnected transport assumptions.
-  \item Storage behavior: verifies local retention pruning and replay-related policy hooks.
+	\item IMU data formatting: verifies that the IMU wrapper returns a three-element tuple.
+	\item Fatigue trigger logic: verifies that a drowsiness condition is reported when EAR is below threshold (validated via injection).
+	\item Telemetry behavior: verifies payload-shape, QoS routing, and offline-queue placeholder behavior under disconnected transport assumptions.
+	\item Storage behavior: verifies local retention pruning and replay-related policy hooks.
 \end{itemize}
 
 \subsection*{Integration-style testing}
@@ -277,19 +277,19 @@ Unit tests validate individual components:
 An integration-style test validates crash detection wiring by simulating an IMU measurement exceeding the threshold and asserting that an alert publish call is made.
 
 \begin{table}[h]
-\centering
-\caption{Summary of implemented automated tests and expected outcomes.}
-\label{tab:test_summary}
-\begin{tabular}{|l|l|l|}
-\hline
-\textbf{Test} & \textbf{Component/Functionality} & \textbf{Expected Outcome} \\ \hline
-\texttt{test\_imu\_connection} & IMU wrapper return format & Returns 3-tuple; test passes \\ \hline
-\texttt{test\_fatigue\_logic} & Fatigue trigger condition & Drowsy=True with EAR<0.25; test passes \\ \hline
-\texttt{test\_crash\_integration} & Crash threshold \& alert wiring & Alert publish invoked for total\_g>2.5; test passes \\ \hline
-\texttt{test\_offline\_queue\_placeholder\_behavior} & Connectivity fallback queueing & Messages are queued while transport is unavailable \\ \hline
-\texttt{test\_storage\_retention\_pruning} & Local retention enforcement & Records older than retention window are pruned \\ \hline
-\texttt{test\_software\_architecture\_contract\_cycle} & End-to-end runtime cycle contract & Crash/fatigue/status events emitted in one cycle \\ \hline
-\end{tabular}
+	\centering
+	\caption{Summary of implemented automated tests and expected outcomes.}
+	\label{tab:test_summary}
+	\begin{tabular}{|l|l|l|}
+		\hline
+		\textbf{Test}                                          & \textbf{Component/Functionality}  & \textbf{Expected Outcome}                           \\ \hline
+		\texttt{test\_imu\_connection}                         & IMU wrapper return format         & Returns 3-tuple; test passes                        \\ \hline
+		\texttt{test\_fatigue\_logic}                          & Fatigue trigger condition         & Drowsy=True with EAR<0.25; test passes              \\ \hline
+		\texttt{test\_crash\_integration}                      & Crash threshold \& alert wiring   & Alert publish invoked for total\_g>2.5; test passes \\ \hline
+		\texttt{test\_offline\_queue\_placeholder\_behavior}   & Connectivity fallback queueing    & Messages are queued while transport is unavailable  \\ \hline
+		\texttt{test\_storage\_retention\_pruning}             & Local retention enforcement       & Records older than retention window are pruned      \\ \hline
+		\texttt{test\_software\_architecture\_contract\_cycle} & End-to-end runtime cycle contract & Crash/fatigue/status events emitted in one cycle    \\ \hline
+	\end{tabular}
 \end{table}
 
 \section{Results and Analysis}
@@ -303,11 +303,11 @@ However, these results do not measure real-world accuracy, sensitivity, or false
 Several improvements are recommended for future work:
 
 \begin{itemize}
-  \item Integrate a real facial landmark pipeline (e.g., MediaPipe FaceMesh) and map indices to the EAR computation.
-  \item Calibrate thresholds (EAR and PERCLOS) using recorded datasets under varied lighting and across multiple users.
-  \item Add end-to-end tests that run the orchestration loop for a fixed duration and verify telemetry publishes using a local MQTT broker.
-  \item Add security features for telemetry such as TLS and authentication and migrate away from public brokers.
-  \item Add power profiling and performance measurement on the target device.
+	\item Integrate a real facial landmark pipeline (e.g., MediaPipe FaceMesh) and map indices to the EAR computation.
+	\item Calibrate thresholds (EAR and PERCLOS) using recorded datasets under varied lighting and across multiple users.
+	\item Add end-to-end tests that run the orchestration loop for a fixed duration and verify telemetry publishes using a local MQTT broker.
+	\item Add security features for telemetry such as TLS and authentication and migrate away from public brokers.
+	\item Add power profiling and performance measurement on the target device.
 \end{itemize}
 
 % ------------------------------
@@ -321,21 +321,21 @@ Project execution followed an iterative workflow with milestones for module impl
 The project schedule used a milestone-oriented sequence aligned with the GP1 plan structure and adapted for GP2 delivery priorities.
 
 \begin{table}[h]
-\centering
-\caption{Milestone schedule adapted from GP1 planning to GP2 execution.}
-\label{tab:gantt_milestones}
-\begin{tabular}{|p{0.16\textwidth}|p{0.17\textwidth}|p{0.52\textwidth}|}
-\hline
-\textbf{Milestone} & \textbf{Window} & \textbf{Key output} \\ \hline
-M1: Requirements \& design freeze & Weeks 1--2 & Finalized target metrics, privacy baseline, and MVP scope boundaries \\ \hline
-M2: Hardware bring-up & Weeks 3--5 & Sensor interface verification and startup health checks \\ \hline
-M3: Perception v1 & Weeks 6--9 & EAR/PERCLOS heuristic pipeline and detector integration \\ \hline
-M4: Event buffering \& telemetry & Weeks 10--12 & Status/alert topics, QoS policy, and local buffer hooks \\ \hline
-M5: Field tuning \& fusion & Weeks 13--16 & Threshold tuning and false-alert reduction iterations \\ \hline
-M6: Privacy \& governance & Weeks 17--18 & Retention and consent constraints reflected in documentation and policy \\ \hline
-M7: Power/thermal hardening & Weeks 19--21 & Power profile model and runtime budget checks \\ \hline
-M8: Demo-ready integration & Weeks 22--24 & End-to-end validated prototype and final report packaging \\ \hline
-\end{tabular}
+	\centering
+	\caption{Milestone schedule adapted from GP1 planning to GP2 execution.}
+	\label{tab:gantt_milestones}
+	\begin{tabular}{|p{0.16\textwidth}|p{0.17\textwidth}|p{0.52\textwidth}|}
+		\hline
+		\textbf{Milestone}                & \textbf{Window} & \textbf{Key output}                                                     \\ \hline
+		M1: Requirements \& design freeze & Weeks 1--2      & Finalized target metrics, privacy baseline, and MVP scope boundaries    \\ \hline
+		M2: Hardware bring-up             & Weeks 3--5      & Sensor interface verification and startup health checks                 \\ \hline
+		M3: Perception v1                 & Weeks 6--9      & EAR/PERCLOS heuristic pipeline and detector integration                 \\ \hline
+		M4: Event buffering \& telemetry  & Weeks 10--12    & Status/alert topics, QoS policy, and local buffer hooks                 \\ \hline
+		M5: Field tuning \& fusion        & Weeks 13--16    & Threshold tuning and false-alert reduction iterations                   \\ \hline
+		M6: Privacy \& governance         & Weeks 17--18    & Retention and consent constraints reflected in documentation and policy \\ \hline
+		M7: Power/thermal hardening       & Weeks 19--21    & Power profile model and runtime budget checks                           \\ \hline
+		M8: Demo-ready integration        & Weeks 22--24    & End-to-end validated prototype and final report packaging               \\ \hline
+	\end{tabular}
 \end{table}
 
 \section{Team Organization and Resource Allocation}
@@ -343,17 +343,17 @@ M8: Demo-ready integration & Weeks 22--24 & End-to-end validated prototype and f
 Table~\ref{tab:team_allocation} summarizes the role allocation derived from GP1 planning and maintained through GP2 implementation.
 
 \begin{table}[h]
-\centering
-\caption{Team organization and resource allocation.}
-\label{tab:team_allocation}
-\begin{tabular}{|p{0.28\textwidth}|p{0.25\textwidth}|p{0.32\textwidth}|}
-\hline
-\textbf{Member} & \textbf{Primary role} & \textbf{Representative deliverables} \\ \hline
-Suhail Khaled Alblooshi (202230373) & Hardware \& integration & Sensor bring-up support, power/thermal checks, integration validation \\ \hline
-Mohammed Abdulla Alshamsi (202107716) & Edge AI \& embedded software & Fatigue/crash runtime pipeline, detector integration, runtime behavior tuning \\ \hline
-Ahmed Omar Mustafa (700041219) & Cloud/telemetry integration & MQTT status/alert path, payload contracts, storage/connectivity alignment \\ \hline
-Abdulla Salem Alshamsi (202112121) & QA/documentation/compliance & Test planning/execution, report consolidation, privacy/compliance documentation \\ \hline
-\end{tabular}
+	\centering
+	\caption{Team organization and resource allocation.}
+	\label{tab:team_allocation}
+	\begin{tabular}{|p{0.28\textwidth}|p{0.25\textwidth}|p{0.32\textwidth}|}
+		\hline
+		\textbf{Member}                       & \textbf{Primary role}        & \textbf{Representative deliverables}                                            \\ \hline
+		Suhail Khaled Alblooshi (202230373)   & Hardware \& integration      & Sensor bring-up support, power/thermal checks, integration validation           \\ \hline
+		Mohammed Abdulla Alshamsi (202107716) & Edge AI \& embedded software & Fatigue/crash runtime pipeline, detector integration, runtime behavior tuning   \\ \hline
+		Ahmed Omar Mustafa (700041219)        & Cloud/telemetry integration  & MQTT status/alert path, payload contracts, storage/connectivity alignment       \\ \hline
+		Abdulla Salem Alshamsi (202112121)    & QA/documentation/compliance  & Test planning/execution, report consolidation, privacy/compliance documentation \\ \hline
+	\end{tabular}
 \end{table}
 
 \section{Resources used During the Project}
@@ -380,33 +380,33 @@ This report presented a modular smart helmet prototype implementing fatigue dete
 This chapter summarizes contribution distribution by major workstream for the GP2 delivery phase.
 
 \begin{table}[h]
-\centering
-\caption{Student contribution distribution during SGP2.}
-\label{tab:student_contribution}
+	\centering
+	\caption{Student contribution distribution during SGP2.}
+	\label{tab:student_contribution}
 
-\begin{tabular}{|c|c|c|}
-\hline
-\textbf{Task} & \textbf{Student ID} & \textbf{Contribution Percentage} \\ \hline
-T1: Architecture \& Integration & 202230373 & 25\% \\ \hline
-T2: Detection Module \& Thresholds & 202107716 & 25\% \\ \hline
-T3: Telemetry/Validation Support & 700041219 & 25\% \\ \hline
-T4: Documentation \& Compliance & 202112121 & 25\% \\ \hline
-\end{tabular}
+	\begin{tabular}{|c|c|c|}
+		\hline
+		\textbf{Task}                      & \textbf{Student ID} & \textbf{Contribution Percentage} \\ \hline
+		T1: Architecture \& Integration    & 202230373           & 25\%                             \\ \hline
+		T2: Detection Module \& Thresholds & 202107716           & 25\%                             \\ \hline
+		T3: Telemetry/Validation Support   & 700041219           & 25\%                             \\ \hline
+		T4: Documentation \& Compliance    & 202112121           & 25\%                             \\ \hline
+	\end{tabular}
 \end{table}
 
 \begin{table}[h!]
-\centering
-\caption{Student Signatures}
-\label{tab:signatures}
-\small
-\begin{tabular}{|p{0.18\textwidth}|p{0.4\textwidth}|p{0.2\textwidth}|}
-\hline
-\textbf{Student ID} & \textbf{Student Name} & \textbf{Signature} \\ \hline
-202230373 & Suhail Khaled Alblooshi &  \\ \hline
-202107716 & Mohammed Abdulla Alshamsi &  \\ \hline
-700041219 & Ahmed Omar Mustafa &  \\ \hline
-202112121 & Abdulla Salem Alshamsi &  \\ \hline
-\end{tabular}
+	\centering
+	\caption{Student Signatures}
+	\label{tab:signatures}
+	\small
+	\begin{tabular}{|p{0.18\textwidth}|p{0.4\textwidth}|p{0.2\textwidth}|}
+		\hline
+		\textbf{Student ID} & \textbf{Student Name}     & \textbf{Signature} \\ \hline
+		202230373           & Suhail Khaled Alblooshi   &                    \\ \hline
+		202107716           & Mohammed Abdulla Alshamsi &                    \\ \hline
+		700041219           & Ahmed Omar Mustafa        &                    \\ \hline
+		202112121           & Abdulla Salem Alshamsi    &                    \\ \hline
+	\end{tabular}
 \end{table}
 
 % ----------------------------

@@ -1,6 +1,7 @@
 # GP2 Implementation Roadmap
 
-This roadmap converts `docs/tasks.md` into implementation phases and maps each section to concrete code touchpoints.
+This roadmap converts the checklist set under `docs/todo/` into
+implementation phases and maps each section to concrete code touchpoints.
 
 ## Phase 0: Baseline and guardrails
 
@@ -162,8 +163,8 @@ This roadmap converts `docs/tasks.md` into implementation phases and maps each s
 ### Phase 7 code touchpoints
 
 - `src/gp2/planning/ai_algorithms.py`
-- `perclos.py`
 - `src/gp2/detection.py`
+- `src/gp2/main.py`
 - `tests/test_runtime.py`
 
 ### Phase 7 deliverables
@@ -211,6 +212,13 @@ The following items remain open in `docs/todo/` and are grouped into an executab
 
 - Define dataset collection scope, labeling protocol, and acceptance gates (`TODO 07`).
 - Execute first benchmark run (latency + false-alert) and publish baseline report section (`TODO 07`, report update).
+
+### Sprint E: GP1 carry-forward scope closure (Week 5)
+
+- Execute deferred GP1 scope items tracked in `TODO 08` (distraction/head-pose, clip buffering, dashboard integration).
+- Add compliance-completion items (DSAR workflow documentation, retention toggles, events-only mode).
+- Validate GP1 acceptance thresholds where feasible (`<200ms` alert path
+  target, false-alert tracking baseline, 8-hour runtime budget test plan).
 
 ### Exit criteria for all remaining TODOs
 
