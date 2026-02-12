@@ -162,7 +162,7 @@ The design prioritizes low-cost components and open-source tooling to keep the b
 
 \section{Environmental Constraints}
 
-The proposed system is intended for battery-powered operation, so compute and radio usage should be efficient. The current prototype does not include power profiling; however, MQTT is selected because it is lightweight compared to many HTTP-based approaches. Future iterations should quantify energy consumption and evaluate duty-cycling strategies.
+The proposed system is intended for battery-powered operation, so compute and radio usage should be efficient. The current prototype includes modeled power estimates in telemetry, but does not yet include measured on-device current profiling. MQTT is selected because it is lightweight compared to many HTTP-based approaches. Future iterations should quantify energy consumption with instrumented measurements and evaluate duty-cycling strategies.
 
 \section{Health, Safety, and Security}
 
@@ -227,7 +227,7 @@ The implementation uses:
 
 \section{Challenges and Solutions}
 
-Key challenges during development included hardware-specific dependencies and the need to run tests on non-embedded machines. This was addressed by implementing optional imports and lightweight stubs for I2C/GPIO and camera interfaces, allowing unit tests to run without physical devices. Another challenge is that accurate fatigue detection requires robust landmark extraction; in the current prototype, the runtime loop uses mock landmarks to validate structure, and the included MediaPipe snippet serves as a starting point for full integration.
+Key challenges during development included hardware-specific dependencies and the need to run tests on non-embedded machines. This was addressed by implementing optional imports and lightweight stubs for I2C/GPIO and camera interfaces, allowing unit tests to run without physical devices. Another challenge is that accurate fatigue detection requires robust landmark extraction under varied conditions; the current runtime supports frame-based landmark extraction when optional dependencies are available, while tests use controlled mocks/injection to validate logic and integration contracts.
 
 % ----------------------------------
 \clearpage
@@ -425,17 +425,17 @@ The following is an example of the expected console output from running the unit
 python -m unittest tests/test_runtime.py -v
 
 test_crash_integration (tests.TestSmartHelmet.test_crash_integration)
-Test 4: The 'Shake to Upload' Crash Logic ...
+Crash threshold integration path ...
 [Pass] Crash Integration (Sensor -> Cloud Trigger) Verified
 ok
 
 test_fatigue_logic (tests.TestSmartHelmet.test_fatigue_logic)
-Test 5: Fatigue Logic Simulation (Software Injection) ...
+Fatigue logic simulation (software injection) ...
 [Pass] Fatigue Logic Triggered Correctly
 ok
 
 test_imu_connection (tests.TestSmartHelmet.test_imu_connection)
-Test 1: Verify IMU reads data format correctly ...
+Verify IMU reads data format correctly ...
 [Pass] IMU Data Format Verified
 ok
 
